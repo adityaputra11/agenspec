@@ -509,7 +509,7 @@ export const MEMBER_PROVIDER_NOT_ALLOWED = "Your organization does not allow thi
  * member's API key or OpenAI-compatible endpoint gets. Only API keys and endpoints are offered
  * for an organization, so a sign-in token never reaches this path.
  */
-async function resolveOrganizationModelKey(
+export async function resolveOrganizationModelKey(
   deps: ExecutorDeps,
   organization: OrganizationModel,
   modelId: string,

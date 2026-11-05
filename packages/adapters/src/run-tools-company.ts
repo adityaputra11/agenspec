@@ -1,3 +1,4 @@
+import { messageBlockForArtifact } from "@rakazo/core";
 import { runAsSystem } from "@rakazo/db";
 import {
   organizationIdForSpace,
@@ -48,7 +49,8 @@ export const companyTools: ToolHandlers = {
       ? await readyCompanyDocument(deps.prisma, { organizationId, documentId })
       : null;
     if (!document) return fail("document not found or not ready");
-    // Once per chat: a document already attached in this thread is not attached again.
+    // A document stored for this chat before is shown again from that copy rather than stored
+    // twice. Its earlier card may be gone (a cleared chat), so the card is always posted.
     const attachedBefore = await runAsSystem("check a chat's attachments", async () => {
       const runs = await deps.prisma.run.findMany({
         where: { threadId: thread.id },
@@ -60,11 +62,13 @@ export const companyTools: ToolHandlers = {
           runId: { in: runs.map((item) => item.id) },
           name: document.name,
         },
-        select: { id: true },
+        select: { id: true, name: true, mimeType: true, size: true },
       });
     });
-    if (attachedBefore)
-      return call.finish({ ok: true, artifactId: attachedBefore.id, alreadyAttached: true });
+    if (attachedBefore) {
+      await publishMessage(deps, run, "bot", [messageBlockForArtifact(attachedBefore)]);
+      return call.finish({ ok: true, artifactId: attachedBefore.id });
+    }
     const bytes = await deps.artifacts.get(document.artifactStorageId, context);
     try {
       const attached = await attachWorkspaceFileToThread(

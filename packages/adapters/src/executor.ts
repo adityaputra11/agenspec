@@ -128,6 +128,7 @@ import {
 import { modelAcceptsImageInput } from "./model-vision.js";
 import { usesNativeShell } from "./native-shell.js";
 import { organizationHasReadyDocumentsForSpace } from "./organization-documents.js";
+import { organizationModelFor } from "./organization-model.js";
 import { paymentWalletConnected } from "./payment-wallets.js";
 import { isRetiredModelCredentialError } from "./pi-oauth.js";
 import { restoreComputerModels } from "./pi-runtime-computer-mode.js";
@@ -176,6 +177,7 @@ import {
   resolveConnectedRunModel,
   resolvedModelRunFields,
   resolveModelKey,
+  resolveOrganizationModelKey,
   resolveRunModel,
   runtimeFallbackModel,
 } from "./run-model.js";
@@ -921,17 +923,23 @@ export function createRunExecutor(executorDeps: ExecutorDeps) {
           )
             ? pinnedModelCredentialError(modelChoice, overrideCredential)
             : undefined;
+        // The organization's model serves members without one of their own (resolveRunModel agrees).
+        const organization = pinnedComputerModels
+          ? null
+          : await organizationModelFor(deps.prisma, { spaceId: run.spaceId });
         const selected = pinnedComputerModels
           ? {
               provider: pinnedComputerModels.main.provider,
               id: pinnedComputerModels.main.id,
               thinkingLevel: pinnedComputerModels.main.thinkingLevel,
               credential: null,
+              source: undefined,
             }
           : selectConfiguredModel({
               override: modelChoice,
               overrideCredential,
               main,
+              organization,
               hostedProvider: (await modelCreditBillingEnabled(deps))
                 ? resolveDeploymentModel().provider
                 : undefined,
@@ -1047,15 +1055,22 @@ export function createRunExecutor(executorDeps: ExecutorDeps) {
                     retireOAuth: pinnedComputerModels.main.oauth?.retire,
                     redact: [],
                   }
-                : await resolveModelKey(
-                    deps,
-                    run.userId,
-                    run.spaceId,
-                    selected.credential,
-                    selectedProvider,
-                    selectedModelId,
-                    (values) => runSecrets.push(...values),
-                  ),
+                : organization && selected.source === "organization"
+                  ? await resolveOrganizationModelKey(deps, organization, selectedModelId).then(
+                      (resolved) => {
+                        runSecrets.push(...resolved.redact);
+                        return resolved;
+                      },
+                    )
+                  : await resolveModelKey(
+                      deps,
+                      run.userId,
+                      run.spaceId,
+                      selected.credential,
+                      selectedProvider,
+                      selectedModelId,
+                      (values) => runSecrets.push(...values),
+                    ),
             };
           } catch (error) {
             // An incompatible saved model or a dead (already retired) credential is a

@@ -3214,6 +3214,7 @@ description: Prepare standup notes
         ),
       },
       userModelCredential: { findMany: vi.fn(async () => []), findFirst: vi.fn(async () => null) },
+      space: { findUnique: vi.fn(async () => null) },
       organizationModelSettings: { findUnique: vi.fn(async () => null) },
       deploymentSettings: { findUnique: vi.fn(async () => null) },
       taughtSkill: { findMany: vi.fn(async () => []) },
