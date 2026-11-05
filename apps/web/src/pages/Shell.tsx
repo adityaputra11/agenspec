@@ -282,6 +282,8 @@ function SpaceShell() {
     inGroup || routeChat?.groupId
       ? undefined
       : (bots.find((b) => b.id === (botId ?? routeChat?.botId)) ?? bots[0]);
+  // A bot the organization manages has nothing to configure, so it gets no settings panel.
+  const lockedChat = !inGroup && Boolean(active?.locked);
   const selectBot = useCallback(
     (id: string) => {
       setMobileSidebarOpen(false);
@@ -1034,7 +1036,8 @@ function SpaceShell() {
             phoneCallsEnabled={Boolean(bootstrapMe?.phoneCallsEnabled)}
             voiceReady={Boolean(voiceStatus?.ready)}
             inCall={Boolean(active) && call?.botId === active?.id}
-            panelOpen={chatPanelOpen}
+            panelOpen={chatPanelOpen && !lockedChat}
+            panelAvailable={!lockedChat}
             onOpenNavigation={() => setMobileSidebarOpen(true)}
             onTogglePanel={() => {
               if (chatPanelOpen) setPanel(null);
@@ -1188,7 +1191,7 @@ function SpaceShell() {
 
       <ShellSidePanel
         rpc={rpc}
-        panel={panel}
+        panel={lockedChat ? null : panel}
         setPanel={setPanel}
         active={active}
         activeGroup={activeGroup}

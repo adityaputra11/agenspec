@@ -65,13 +65,15 @@ afterEach(() => {
   writeText.mockClear();
 });
 
-function renderHeader({ inGroup = false } = {}) {
+function renderHeader({ inGroup = false, locked = false } = {}) {
   act(() =>
     root.render(
       <ChatHeader
         inGroup={inGroup}
         active={
-          inGroup ? undefined : ({ id: "bot-1", name: "Helper", color: BOT_COLORS[0] } as Bot)
+          inGroup
+            ? undefined
+            : ({ id: "bot-1", name: "Helper", color: BOT_COLORS[0], locked } as Bot)
         }
         activeGroup={undefined}
         activeSnapshot={null}
@@ -79,6 +81,7 @@ function renderHeader({ inGroup = false } = {}) {
         voiceReady={false}
         inCall={false}
         panelOpen={false}
+        panelAvailable={!locked}
         onOpenNavigation={() => undefined}
         onTogglePanel={() => undefined}
         onCall={() => undefined}
@@ -86,6 +89,15 @@ function renderHeader({ inGroup = false } = {}) {
     ),
   );
 }
+
+it("opens the settings panel from the bot name, except for a managed bot", () => {
+  const trigger = () =>
+    container.querySelector<HTMLButtonElement>('[data-testid="bot-settings-trigger"]');
+  renderHeader();
+  expect(trigger()?.getAttribute("aria-expanded")).toBe("false");
+  renderHeader({ locked: true });
+  expect(trigger()?.hasAttribute("aria-expanded")).toBe(false);
+});
 
 const gift = () => container.querySelector<HTMLButtonElement>('[aria-label="Invite a friend"]');
 

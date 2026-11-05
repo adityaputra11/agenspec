@@ -17,6 +17,7 @@ export function ChatHeader({
   voiceReady,
   inCall,
   panelOpen,
+  panelAvailable,
   onOpenNavigation,
   onTogglePanel,
   onCall,
@@ -30,6 +31,8 @@ export function ChatHeader({
   voiceReady: boolean;
   inCall: boolean;
   panelOpen: boolean;
+  /** False for a bot with no settings to open. */
+  panelAvailable: boolean;
   onOpenNavigation: () => void;
   onTogglePanel: () => void;
   onCall: (bot: Bot) => void;
@@ -53,9 +56,10 @@ export function ChatHeader({
       <Button
         variant="floating"
         data-testid="bot-settings-trigger"
-        aria-expanded={panelOpen}
-        onClick={onTogglePanel}
-        className="app-no-drag h-auto min-w-0 gap-2 py-1 ps-1 pe-3.5"
+        aria-expanded={panelAvailable ? panelOpen : undefined}
+        onClick={panelAvailable ? onTogglePanel : undefined}
+        tabIndex={panelAvailable ? undefined : -1}
+        className={`app-no-drag h-auto min-w-0 gap-2 py-1 ps-1 pe-3.5 ${panelAvailable ? "" : "cursor-default"}`}
       >
         {inGroup ? (
           <GroupAvatar members={activeSnapshot?.members ?? activeGroup?.members ?? []} size={26} />
