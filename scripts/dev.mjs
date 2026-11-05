@@ -390,6 +390,12 @@ if (pending.length) {
 env.DATABASE_URL = database.url;
 env.DATABASE_MIGRATION_URL = database.migrationUrl;
 env.DATA_DIR = database.dataDir;
+// Live updates LISTEN on the database the app writes to. A separate realtime URL (a direct
+// connection beside a pooled DATABASE_URL) follows the app onto its branch database.
+const realtimeUrl = setting("REALTIME_DATABASE_URL");
+if (realtimeUrl && database !== shared) {
+  env.REALTIME_DATABASE_URL = withDatabase(realtimeUrl, new URL(database.url).pathname.slice(1));
+}
 
 generateClientIfStale(env);
 // Checkouts starting together would otherwise grant the server-wide runtime role at the same
