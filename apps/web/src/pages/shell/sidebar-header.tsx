@@ -22,6 +22,7 @@ export function SidebarHeader({
   setPanel,
   navigate,
   setNewSpaceOpen,
+  onCreateFromBlueprint,
   setCreateBotOpen,
 }: {
   mini?: boolean;
@@ -37,6 +38,7 @@ export function SidebarHeader({
   setPanel: (panel: Panel) => void;
   navigate: (path: string) => void;
   setNewSpaceOpen: (open: boolean) => void;
+  onCreateFromBlueprint?: () => void;
   setCreateBotOpen: (open: boolean) => void;
 }) {
   const { t } = useLingui();
@@ -142,6 +144,15 @@ export function SidebarHeader({
                   setMobileSidebarOpen(false);
                   setNewSpaceOpen(true);
                 }}
+                onCreateFromBlueprint={
+                  onCreateFromBlueprint
+                    ? () => {
+                        setCreateMenuOpen(false);
+                        setMobileSidebarOpen(false);
+                        onCreateFromBlueprint();
+                      }
+                    : undefined
+                }
               />
             </PopoverContent>
           ) : null}

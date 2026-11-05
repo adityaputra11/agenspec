@@ -50,6 +50,7 @@ import { lazyComponent } from "../../lib/preload-recovery";
 import { useSpaceQueries } from "../../lib/query";
 import { errorText } from "../../lib/user-error";
 import { AvatarStudioPopover } from "./avatar-studio-popover";
+import { BotReferences } from "./bot-references";
 import { ChatModelPicker } from "./chat-model-picker";
 
 const ScratchpadSection = lazyComponent(() =>
@@ -599,6 +600,11 @@ export function BotSettings({
         {/* Stays mounted so scratchpad and knowledge drafts survive a tab switch. */}
         <TabsContent value="settings" keepMounted data-testid="bot-settings-advanced">
           <fieldset disabled={locked} className="contents">
+            {bot.blueprintId ? (
+              <div className="mt-6">
+                <BotReferences bot={bot} />
+              </div>
+            ) : null}
             <section className="mt-6">
               <SectionHeading variant="label" className="mb-2">
                 <Trans>Notifications</Trans>

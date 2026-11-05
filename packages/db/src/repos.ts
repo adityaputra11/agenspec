@@ -110,6 +110,7 @@ function mapBot(
     fleetManagement?: boolean;
     disabledBuiltinTools?: string[];
     disabledSkills?: string[];
+    blueprintId?: string | null;
     webhookSecretId?: string | null;
     spawnKey?: string | null;
     locked?: boolean;
@@ -160,6 +161,7 @@ function mapBot(
     // Stored lists may name a tool that no longer exists; settings resend what they read.
     disabledBuiltinTools: [...disabledBuiltinToolSet(bot.disabledBuiltinTools)],
     disabledSkills: bot.disabledSkills ?? [],
+    blueprintId: bot.blueprintId ?? null,
     webhookConfigured: Boolean(bot.webhookSecretId),
     spawnKey: bot.spawnKey ?? null,
     locked: bot.locked ?? false,

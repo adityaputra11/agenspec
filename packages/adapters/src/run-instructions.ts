@@ -446,6 +446,25 @@ export function threadContextForRun<T extends { id?: string; role: string }>(
     : { ...context, includeSemanticRecall: true };
 }
 
+/**
+ * The line naming each blueprint reference slot with the bot's document for it, or undefined when
+ * the blueprint names no slots. A slot without a document reads "missing".
+ */
+export function blueprintReferenceLine(
+  references: ReadonlyArray<{
+    referenceName: string;
+    document: { name: string; status: string } | null;
+  }>,
+): string | undefined {
+  if (references.length === 0) return undefined;
+  const parts = references.map(({ referenceName, document }) =>
+    document
+      ? `${referenceName}: ${document.name} (${document.status})`
+      : `${referenceName}: missing`,
+  );
+  return `Reference documents: ${parts.join("; ")}.`;
+}
+
 /** Profile fields the creation intro is asked to explain. Other runs keep the prior identity line. */
 export function runIdentityInstruction(
   bot: {

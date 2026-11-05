@@ -27,7 +27,7 @@ export function companyAttachmentFileName(name: string, mimeType: string): strin
 /** Organization documents for the bot's organization: search and attach, nothing else. */
 export const companyTools: ToolHandlers = {
   async company_documents_search(ctx, call) {
-    const { deps, run } = ctx;
+    const { deps, run, bot } = ctx;
     const query = String(call.args.query ?? "").trim();
     if (!query) return call.finish({ error: "query is required" });
     const requested = Number(call.args.limit);
@@ -36,7 +36,12 @@ export const companyTools: ToolHandlers = {
       : SEARCH_DEFAULT_LIMIT;
     const organizationId = await organizationIdForSpace(deps.prisma, run.spaceId);
     if (!organizationId) return call.finish({ results: [] });
-    const results = await searchCompanyDocuments(deps.prisma, { organizationId, query, limit });
+    const results = await searchCompanyDocuments(deps.prisma, {
+      organizationId,
+      query,
+      limit,
+      botId: bot.id,
+    });
     return call.finish({ results });
   },
   async attach_company_document(ctx, call) {
@@ -46,7 +51,7 @@ export const companyTools: ToolHandlers = {
     if (!deps.artifacts) return fail("artifact storage unavailable");
     const organizationId = await organizationIdForSpace(deps.prisma, run.spaceId);
     const document = organizationId
-      ? await readyCompanyDocument(deps.prisma, { organizationId, documentId })
+      ? await readyCompanyDocument(deps.prisma, { organizationId, documentId, botId: bot.id })
       : null;
     if (!document) return fail("document not found or not ready");
     // A document stored for this chat before is shown again from that copy rather than stored

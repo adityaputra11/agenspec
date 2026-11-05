@@ -767,6 +767,8 @@ model Bot {
   disabledBuiltinTools String[] @default([])
   /// Agent skill names this bot does not use; empty means every skill is available.
   disabledSkills       String[] @default([])
+  /// The organization blueprint this bot was made from; its instructions apply on every run.
+  blueprintId          String?
   webhookSecretId   String?
   teamChatAmbientEnabled Boolean @default(false)
   teamChatRules          String  @default("")
@@ -799,6 +801,7 @@ model Bot {
   @@index([sectionId])
   @@index([computerId])
   @@index([parentBotId])
+  @@index([blueprintId])
   @@map("bots")
   messagingInstallations MessagingInstallation[]
   messagingInstallSessions MessagingInstallSession[]
@@ -2431,11 +2434,35 @@ model OrganizationDocument {
   /// The original file in the artifact store.
   artifactStorageId String?
   createdByUserId String
+  /// Set when the document is one bot's reference; NULL for the organization's own documents.
+  botId           String?
+  /// Which of the blueprint's reference slots this document fills, such as "Proposal".
+  referenceName   String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   @@index([organizationId])
+  @@index([botId])
   @@map("organization_documents")
+}
+
+/// An organization's template for a bot: fixed instructions and the reference documents it needs.
+model AgentBlueprint {
+  id              String   @id @default(cuid())
+  organizationId  String
+  /// The organization's default Space id, which keys row-level security.
+  spaceId         String?
+  name            String
+  description     String   @default("")
+  instructions    String
+  /// The reference documents each bot made from this blueprint asks for, by name.
+  referenceNames  String[] @default([])
+  createdByUserId String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([organizationId])
+  @@map("agent_blueprints")
 }
 
 /// A searchable section of an organization document. Content is encrypted with the default space key.
@@ -2448,9 +2475,12 @@ model OrganizationDocumentChunk {
   heading        String
   content        String
   searchTokens   Int[]    @default([])
+  /// Copied from the document, so a bot's reference sections are searched only by that bot.
+  botId          String?
   createdAt      DateTime @default(now())
 
   @@index([documentId])
   @@index([organizationId])
+  @@index([botId])
   @@map("organization_document_chunks")
 }

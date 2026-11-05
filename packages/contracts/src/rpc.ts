@@ -20,6 +20,13 @@ import {
 } from "./attachments.js";
 import { AuditEventListInputSchema, AuditEventPageSchema } from "./audit-events.js";
 import {
+  AgentBlueprintInputSchema,
+  AgentBlueprintSchema,
+  AgentBlueprintSummarySchema,
+  BotReferenceSchema,
+  BotReferenceUploadSchema,
+} from "./blueprints.js";
+import {
   BoardEventSchema,
   BoardSchema,
   CommentTicketInput,
@@ -406,6 +413,25 @@ export const appContract = {
       delete: oc.input(z.object({ id: Id })).output(z.object({ ok: z.literal(true) })),
       /** Tells every member's Legal chat about a ready document. */
       announce: oc.input(z.object({ id: Id })).output(z.object({ delivered: z.number().int() })),
+    },
+    /** Bot templates: fixed instructions and the reference documents each bot needs. */
+    blueprints: {
+      list: oc.output(z.array(AgentBlueprintSchema)),
+      create: oc.input(AgentBlueprintInputSchema).output(AgentBlueprintSchema),
+      update: oc.input(AgentBlueprintInputSchema.extend({ id: Id })).output(AgentBlueprintSchema),
+      delete: oc.input(z.object({ id: Id })).output(z.object({ ok: z.literal(true) })),
+    },
+  },
+  /** Members make bots from their organization's blueprints and give each its references. */
+  blueprints: {
+    list: oc.output(z.array(AgentBlueprintSummarySchema)),
+    createBot: oc
+      .input(z.object({ blueprintId: Id, name: z.string().trim().min(1).max(80) }))
+      .output(BotSchema),
+    references: {
+      list: oc.input(z.object({ botId: Id })).output(z.array(BotReferenceSchema)),
+      upload: oc.input(BotReferenceUploadSchema).output(BotReferenceSchema),
+      remove: oc.input(z.object({ botId: Id, id: Id })).output(z.object({ ok: z.literal(true) })),
     },
   },
   /** Admins only, on deployments that sell model credits. */

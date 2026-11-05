@@ -24,7 +24,17 @@ import type { GroupAvatarMember } from "@rakazo/ui-web";
 import { Button } from "@rakazo/ui-web";
 import { useIsMobile } from "@rakazo/ui-web/hooks/use-mobile";
 import { useQuery } from "@tanstack/react-query";
-import { Lock, Monitor, Moon, Plug, Plus, ScrollText, Sun, Users } from "lucide-react";
+import {
+  LayoutTemplate,
+  Lock,
+  Monitor,
+  Moon,
+  Plug,
+  Plus,
+  ScrollText,
+  Sun,
+  Users,
+} from "lucide-react";
 import {
   Suspense,
   useCallback,
@@ -76,6 +86,7 @@ import { HostComputerPrompt } from "./HostComputerPrompt";
 import { RoutineList } from "./RoutineEditor";
 import { useSettingsNavItems } from "./settings-nav";
 import { ArchivedChats } from "./shell/archived-chats";
+import { BlueprintBotDialog } from "./shell/blueprint-bot-dialog";
 import { ChatContextMenu } from "./shell/chat-context-menu";
 import { ChatHeader } from "./shell/chat-header";
 import { FALLBACK_BOT_COLOR } from "./shell/chat-shared";
@@ -132,6 +143,7 @@ function SpaceShell() {
   const userId = session.data?.user.id;
   // Held from the first render, so Cmd/Ctrl+N works before the sidebar has data.
   const [createMenuOpen, setCreateMenuOpen] = useState(false);
+  const [blueprintBotOpen, setBlueprintBotOpen] = useState(false);
   // A revisited space, or the shell reopened from another page, starts from what it showed
   // last time while its fresh bootstrap loads.
   const [{ seed, startChat }] = useState(() => {
@@ -205,6 +217,7 @@ function SpaceShell() {
     peerBotName: string;
   } | null>("peerConversation", null);
   const agentSkillsQuery = useQuery(queries.agentSkills.list.queryOptions());
+  const blueprints = useQuery(queries.blueprints.list.queryOptions());
   const agentSkills = agentSkillsQuery.data ?? NO_AGENT_SKILLS;
   const setAgentSkills = useCallback(
     (skills: AgentSkillCatalogEntry[]) =>
@@ -812,6 +825,16 @@ function SpaceShell() {
       icon: Users,
       onSelect: () => setPanel("create-group"),
     },
+    ...(blueprints.data?.length
+      ? [
+          {
+            id: "new-blueprint-bot",
+            label: t`New from blueprint`,
+            icon: LayoutTemplate,
+            onSelect: () => setBlueprintBotOpen(true),
+          },
+        ]
+      : []),
     {
       id: "new-space",
       label: t`New private space`,
@@ -880,6 +903,12 @@ function SpaceShell() {
     await refreshBots(true);
   }
 
+  async function createBlueprintBot(bot: Bot) {
+    setBlueprintBotOpen(false);
+    openCreatedBot(bot);
+    await refreshBots().catch(() => undefined);
+  }
+
   function openCreatedBot(bot: Bot) {
     roster.addCreatedBot(bot);
     navigate(`/app/${bot.id}`);
@@ -932,6 +961,13 @@ function SpaceShell() {
           if (active) void refreshThread(active.id);
         }}
       />
+      {blueprintBotOpen && blueprints.data?.length ? (
+        <BlueprintBotDialog
+          blueprints={blueprints.data}
+          onCancel={() => setBlueprintBotOpen(false)}
+          onCreated={createBlueprintBot}
+        />
+      ) : null}
       {bootstrapMe !== undefined ? (
         <HostComputerPrompt initialMe={bootstrapMe ?? undefined} onMeUpdated={setBootstrapMe} />
       ) : null}
@@ -953,6 +989,9 @@ function SpaceShell() {
         setPanel={setPanel}
         navigate={navigate}
         setNewSpaceOpen={dialogs.setNewSpaceOpen}
+        onCreateFromBlueprint={
+          blueprints.data?.length ? () => setBlueprintBotOpen(true) : undefined
+        }
         setCreateBotOpen={dialogs.setCreateBotOpen}
         roster={
           <SidebarRoster

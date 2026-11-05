@@ -623,6 +623,10 @@ msgstr "Add passkey"
 msgid "Add provider"
 msgstr "Add provider"
 
+#: src/pages/cms/blueprints-page.tsx
+msgid "Add reference"
+msgstr "Add reference"
+
 #: src/components/ApprovalRulesSettings.tsx
 msgid "Add rule"
 msgstr "Add rule"
@@ -1121,6 +1125,19 @@ msgstr "Block"
 msgid "Blocked"
 msgstr "Blocked"
 
+#: src/pages/shell/blueprint-bot-dialog.tsx
+msgid "Blueprint"
+msgstr "Blueprint"
+
+#: src/pages/cms/blueprints-page.tsx
+msgid "Blueprint actions"
+msgstr "Blueprint actions"
+
+#: src/pages/cms/blueprints-page.tsx
+#: src/pages/CmsPage.tsx
+msgid "Blueprints"
+msgstr "Blueprints"
+
 #: src/components/SidebarFooter.tsx
 #: src/pages/Board.tsx
 msgid "Board"
@@ -1260,6 +1277,7 @@ msgstr "Can't read images"
 #: src/components/vault/VaultItemDetail.tsx
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/Artifacts.tsx
+#: src/pages/cms/blueprints-page.tsx
 #: src/pages/cms/documents-page.tsx
 #: src/pages/cms/models-page.tsx
 #: src/pages/KnowledgeSection.tsx
@@ -1270,6 +1288,8 @@ msgstr "Can't read images"
 #: src/pages/OrganizationSettingsPanel.tsx
 #: src/pages/PaymentWalletSettingsPanel.tsx
 #: src/pages/PluginSubmissionsPanel.tsx
+#: src/pages/shell/blueprint-bot-dialog.tsx
+#: src/pages/shell/bot-references.tsx
 #: src/pages/shell/create-bot-dialog.tsx
 #: src/pages/shell/dialogs.tsx
 #: src/pages/SpaceSettingOverrides.tsx
@@ -2023,6 +2043,7 @@ msgid "Could not continue"
 msgstr "Could not continue"
 
 #: src/pages/shell/agent-import.tsx
+#: src/pages/shell/blueprint-bot-dialog.tsx
 #: src/pages/shell/create-bot-dialog.tsx
 msgid "Could not create bot"
 msgstr "Could not create bot"
@@ -2042,6 +2063,10 @@ msgstr "Could not create space"
 #: src/pages/Onboarding.tsx
 msgid "Could not create your bot"
 msgstr "Could not create your bot"
+
+#: src/pages/cms/blueprints-page.tsx
+msgid "Could not delete blueprint"
+msgstr "Could not delete blueprint"
 
 #: src/pages/shell/dialogs.tsx
 msgid "Could not delete bot"
@@ -2286,6 +2311,10 @@ msgstr "Could not remove skills"
 msgid "Could not remove the credential"
 msgstr "Could not remove the credential"
 
+#: src/pages/shell/bot-references.tsx
+msgid "Could not remove this file"
+msgstr "Could not remove this file"
+
 #: src/pages/model-settings/providers-section.tsx
 #: src/pages/PluginsOverlay.tsx
 msgid "Could not rename connection"
@@ -2340,6 +2369,10 @@ msgstr "Could not save allowed apps"
 #: src/components/ApprovalRulesSettings.tsx
 msgid "Could not save Auto Review"
 msgstr "Could not save Auto Review"
+
+#: src/pages/cms/blueprints-page.tsx
+msgid "Could not save blueprint"
+msgstr "Could not save blueprint"
 
 #: src/components/ComputerProviderSettings.tsx
 msgid "Could not save computer settings"
@@ -2473,6 +2506,7 @@ msgid "Could not update the default memory scope"
 msgstr "Could not update the default memory scope"
 
 #: src/pages/cms/documents-page.tsx
+#: src/pages/shell/bot-references.tsx
 msgid "Could not upload this file"
 msgstr "Could not upload this file"
 
@@ -2531,6 +2565,7 @@ msgstr "Country"
 #: src/components/CreateOrganizationDialog.tsx
 #: src/pages/Board.tsx
 #: src/pages/shell/agent-import.tsx
+#: src/pages/shell/blueprint-bot-dialog.tsx
 #: src/pages/shell/create-bot-dialog.tsx
 #: src/pages/shell/dialogs.tsx
 #: src/pages/shell/sidebar-header.tsx
@@ -2698,6 +2733,7 @@ msgstr "Default scope"
 #: src/components/PasskeySettings.tsx
 #: src/pages/Artifacts.tsx
 #: src/pages/BotContextMenu.tsx
+#: src/pages/cms/blueprints-page.tsx
 #: src/pages/cms/documents-page.tsx
 #: src/pages/KnowledgeSection.tsx
 #: src/pages/McpServersOverlay.tsx
@@ -2759,6 +2795,10 @@ msgstr "Delete section"
 msgid "Delete space"
 msgstr "Delete space"
 
+#: src/pages/cms/blueprints-page.tsx
+msgid "Delete this blueprint?"
+msgstr "Delete this blueprint?"
+
 #: src/pages/cms/documents-page.tsx
 msgid "Delete this document?"
 msgstr "Delete this document?"
@@ -2796,6 +2836,7 @@ msgid "Deployment default ({0})"
 msgstr "Deployment default ({0})"
 
 #: src/pages/Board.tsx
+#: src/pages/cms/blueprints-page.tsx
 #: src/pages/shell/agent-import.tsx
 msgid "Description"
 msgstr "Description"
@@ -3006,9 +3047,14 @@ msgstr "Each name can be used once."
 #: src/components/AskCard.tsx
 #: src/components/vault/VaultItemDetail.tsx
 #: src/pages/AccountSettingsOverlay.tsx
+#: src/pages/cms/blueprints-page.tsx
 #: src/pages/McpServersOverlay.tsx
 msgid "Edit"
 msgstr "Edit"
+
+#: src/pages/cms/blueprints-page.tsx
+msgid "Edit blueprint"
+msgstr "Edit blueprint"
 
 #: src/components/AskCard.tsx
 msgid "Edit first"
@@ -3233,6 +3279,7 @@ msgstr "failed"
 #: src/components/SubagentCard.tsx
 #: src/pages/ActivityList.tsx
 #: src/pages/cms/documents-page.tsx
+#: src/pages/shell/bot-references.tsx
 msgid "Failed"
 msgstr "Failed"
 
@@ -3655,6 +3702,7 @@ msgstr "Instruction history"
 
 #: src/components/AskCard.tsx
 #: src/components/InstructionSettings.tsx
+#: src/pages/cms/blueprints-page.tsx
 #: src/pages/shell/agent-import.tsx
 msgid "Instructions"
 msgstr "Instructions"
@@ -4179,6 +4227,10 @@ msgstr "minutes"
 msgid "Missed call"
 msgstr "Missed call"
 
+#: src/pages/shell/bot-references.tsx
+msgid "Missing"
+msgstr "Missing"
+
 #: src/components/ApprovalRulesSettings.tsx
 msgid "Mode"
 msgstr "Mode"
@@ -4298,6 +4350,7 @@ msgstr "My computers"
 #: src/components/vault/VaultItemEditor.tsx
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/Auth.tsx
+#: src/pages/cms/blueprints-page.tsx
 #: src/pages/GroupPanel.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/providers-section.tsx
@@ -4305,6 +4358,7 @@ msgstr "My computers"
 #: src/pages/PluginsOverlay.tsx
 #: src/pages/RoutineEditor.tsx
 #: src/pages/shell/agent-import.tsx
+#: src/pages/shell/blueprint-bot-dialog.tsx
 #: src/pages/shell/bot-panel.tsx
 #: src/pages/shell/create-bot-dialog.tsx
 #: src/pages/shell/dialogs.tsx
@@ -4377,6 +4431,10 @@ msgstr "New"
 msgid "New API key"
 msgstr "New API key"
 
+#: src/pages/cms/blueprints-page.tsx
+msgid "New blueprint"
+msgstr "New blueprint"
+
 #: src/pages/Shell.tsx
 #: src/pages/shell/bot-picker.tsx
 #: src/pages/shell/create-bot-dialog.tsx
@@ -4394,6 +4452,12 @@ msgstr "New computers run on"
 #: src/components/VaultSettings.tsx
 msgid "New contact"
 msgstr "New contact"
+
+#: src/pages/Shell.tsx
+#: src/pages/shell/blueprint-bot-dialog.tsx
+#: src/pages/shell/bot-picker.tsx
+msgid "New from blueprint"
+msgstr "New from blueprint"
 
 #: src/pages/GroupPanel.tsx
 msgid "New group"
@@ -5112,6 +5176,7 @@ msgid "Private workspace with its own bots and groups."
 msgstr "Private workspace with its own bots and groups."
 
 #: src/pages/cms/documents-page.tsx
+#: src/pages/shell/bot-references.tsx
 msgid "Processing"
 msgstr "Processing"
 
@@ -5176,6 +5241,7 @@ msgid "Read replies aloud"
 msgstr "Read replies aloud"
 
 #: src/pages/cms/documents-page.tsx
+#: src/pages/shell/bot-references.tsx
 #: src/pages/shell/import-status.ts
 msgid "Ready"
 msgstr "Ready"
@@ -5291,6 +5357,23 @@ msgstr "Recruiting & HR"
 msgid "Redirect URI"
 msgstr "Redirect URI"
 
+#: src/pages/shell/bot-references.tsx
+msgid "Reference actions"
+msgstr "Reference actions"
+
+#. placeholder {0}: index + 1
+#: src/pages/cms/blueprints-page.tsx
+msgid "Reference document {0}"
+msgstr "Reference document {0}"
+
+#: src/pages/cms/blueprints-page.tsx
+msgid "Reference documents"
+msgstr "Reference documents"
+
+#: src/pages/shell/bot-references.tsx
+msgid "References"
+msgstr "References"
+
 #: src/App.tsx
 #: src/components/ErrorBoundary.tsx
 #: src/components/ModelCredits.tsx
@@ -5352,6 +5435,7 @@ msgstr "Reload"
 #: src/pages/ModelRoleSettings.tsx
 #: src/pages/PluginsOverlay.tsx
 #: src/pages/ScratchpadSection.tsx
+#: src/pages/shell/bot-references.tsx
 msgid "Remove"
 msgstr "Remove"
 
@@ -5402,6 +5486,11 @@ msgstr "Remove header"
 msgid "Remove message trigger"
 msgstr "Remove message trigger"
 
+#. placeholder {0}: index + 1
+#: src/pages/cms/blueprints-page.tsx
+msgid "Remove reference document {0}"
+msgstr "Remove reference document {0}"
+
 #: src/pages/RoutineEditor.tsx
 msgid "Remove schedule"
 msgstr "Remove schedule"
@@ -5414,6 +5503,10 @@ msgstr "Remove skill {0}"
 #: src/components/integrations/plugin-marketplace.tsx
 msgid "Remove skills"
 msgstr "Remove skills"
+
+#: src/pages/shell/bot-references.tsx
+msgid "Remove this file?"
+msgstr "Remove this file?"
 
 #: src/pages/RoutineEditor.tsx
 msgid "Remove webhook"
@@ -5447,6 +5540,10 @@ msgstr "Renews {day}"
 #: src/pages/ScratchpadSection.tsx
 msgid "Reopen"
 msgstr "Reopen"
+
+#: src/pages/shell/bot-references.tsx
+msgid "Replace"
+msgstr "Replace"
 
 #: src/pages/model-settings/connection-controls.tsx
 msgid "Replace API key"
@@ -5697,6 +5794,7 @@ msgstr "Saturday"
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/Board.tsx
 #: src/pages/cms/apps-page.tsx
+#: src/pages/cms/blueprints-page.tsx
 #: src/pages/cms/models-page.tsx
 #: src/pages/ExternalConversationSettings.tsx
 #: src/pages/GroupPanel.tsx
@@ -6466,6 +6564,10 @@ msgstr "Testing…"
 msgid "The bot can use the file but won't see the picture."
 msgstr "The bot can use the file but won't see the picture."
 
+#: src/pages/shell/bot-references.tsx
+msgid "The bot stops reading it."
+msgstr "The bot stops reading it."
+
 #: src/lib/dictation.ts
 msgid "The browser keeps dropping the microphone. Start dictation again to retry."
 msgstr "The browser keeps dropping the microphone. Start dictation again to retry."
@@ -6589,6 +6691,7 @@ msgstr "This call is no longer ringing."
 msgid "This can't be undone."
 msgstr "This can't be undone."
 
+#: src/pages/cms/blueprints-page.tsx
 #: src/pages/OrganizationSettingsPanel.tsx
 #: src/pages/shell/dialogs.tsx
 msgid "This cannot be undone."
@@ -6960,6 +7063,7 @@ msgstr "Upgrade now"
 #: src/components/integrations/skills-dialog.tsx
 #: src/pages/cms/documents-page.tsx
 #: src/pages/shell/avatar-studio-popover.tsx
+#: src/pages/shell/bot-references.tsx
 msgid "Upload"
 msgstr "Upload"
 
@@ -6991,6 +7095,7 @@ msgid "Use a found model"
 msgstr "Use a found model"
 
 #: src/pages/cms/documents-page.tsx
+#: src/pages/shell/bot-references.tsx
 msgid "Use a PDF, TXT or Markdown file"
 msgstr "Use a PDF, TXT or Markdown file"
 
@@ -7029,6 +7134,10 @@ msgstr "Use Rakazo credits"
 #: src/pages/model-settings/space-bots-model.tsx
 msgid "Use space default"
 msgstr "Use space default"
+
+#: src/pages/cms/blueprints-page.tsx
+msgid "Use Spec template"
+msgstr "Use Spec template"
 
 #: src/pages/memory-providers/HonchoSettingsForm.tsx
 msgid "Use up to 512 letters, digits, _ or -."
