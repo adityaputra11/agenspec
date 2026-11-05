@@ -114,6 +114,8 @@ import { encryptionKeyWarning, signupPolicyFromEnv } from "@rakazo/core";
 import type { Pool, PrismaClient } from "@rakazo/db";
 import {
   backfillLegalBots,
+  backfillSupportBots,
+  backfillTriageBots,
   configureProviderTransactionPool,
   createBoardEvents,
   createDb,
@@ -335,6 +337,12 @@ async function buildApp(overrides: CreateAppOverrides): Promise<AppHandles> {
   if (!prismaOverride) {
     void backfillLegalBots(prisma).catch((error: unknown) => {
       logger.error("legal bot backfill", error);
+    });
+    void backfillTriageBots(prisma).catch((error: unknown) => {
+      logger.error("triage bot backfill", error);
+    });
+    void backfillSupportBots(prisma).catch((error: unknown) => {
+      logger.error("support bot backfill", error);
     });
   }
   const unreadableMasterKeys = await verifyContentKeys(prisma);
