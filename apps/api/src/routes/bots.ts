@@ -39,6 +39,7 @@ import {
   commitBotUpdate,
   ensureLegalBotForActor,
   expireComputerExecutionLeases,
+  GroupPeopleError,
   InstructionConflictError,
   IsolationError,
   recordComputerRunEnd,
@@ -753,6 +754,32 @@ export function botsRoutes(ctx: RouterContext) {
               getLogger().error("group artifact cleanup", result.reason);
           }
           await forgetPageShareSecrets(deps.secrets, removed.pageShareSecrets);
+        }
+        return { ok: true as const };
+      }),
+      people: {
+        candidates: authed.groups.people.candidates.handler(async ({ context, input }) =>
+          groupRepos.listGroupPeopleCandidates(context.actor, input.groupId),
+        ),
+        set: authed.groups.people.set.handler(async ({ context, input }) => {
+          try {
+            return await groupRepos.setGroupPeople(context.actor, input);
+          } catch (error) {
+            if (error instanceof GroupPeopleError) {
+              throw new ORPCError("BAD_REQUEST", { message: error.message });
+            }
+            throw error;
+          }
+        }),
+      },
+      leave: authed.groups.leave.handler(async ({ context, input }) => {
+        try {
+          await groupRepos.leaveGroup(context.actor, input.groupId);
+        } catch (error) {
+          if (error instanceof GroupPeopleError) {
+            throw new ORPCError("BAD_REQUEST", { message: error.message });
+          }
+          throw error;
         }
         return { ok: true as const };
       }),

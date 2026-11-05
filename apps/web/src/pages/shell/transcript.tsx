@@ -83,6 +83,7 @@ export const Transcript = memo(function Transcript({
   onJumpToMessage,
   onOpenPeerMessages,
   memberName,
+  currentUserId,
   peerBot,
   onRefresh,
   onBotChanged,
@@ -131,6 +132,8 @@ export const Transcript = memo(function Transcript({
   onJumpToMessage: (messageId: string) => void;
   onOpenPeerMessages: (peer: { peerBotId: string; peerBotName: string }) => void;
   memberName?: (botId: string | undefined) => string | undefined;
+  /** The signed-in person; a group message from someone else shows their name. */
+  currentUserId?: string;
   peerBot: (
     botId: string,
   ) => { name?: string; color: string; status?: string; avatarSet?: BotAvatarSet } | undefined;
@@ -591,6 +594,13 @@ export const Transcript = memo(function Transcript({
                           : message.role === "bot"
                             ? memberName?.(message.botId)
                             : undefined
+                      }
+                      senderName={
+                        message.role === "user" &&
+                        message.sender &&
+                        message.sender.userId !== currentUserId
+                          ? message.sender.name
+                          : undefined
                       }
                       memberName={memberName}
                       peerBot={peerBot}

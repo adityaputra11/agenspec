@@ -574,11 +574,17 @@ describe("listGroups archived", () => {
       include: { members: { where?: unknown } };
     };
     expect(query.where).toEqual({
-      spaceId: "space-1",
-      userId: "user-1",
-      OR: [
-        { archivedAt: { not: null } },
-        { members: { some: { bot: { archivedAt: { not: null } } } } },
+      AND: [
+        {
+          spaceId: "space-1",
+          OR: [{ userId: "user-1" }, { users: { some: { userId: "user-1" } } }],
+        },
+        {
+          OR: [
+            { archivedAt: { not: null } },
+            { members: { some: { bot: { archivedAt: { not: null } } } } },
+          ],
+        },
       ],
     });
     expect(query.include.members.where).toBeUndefined();
@@ -593,7 +599,7 @@ describe("listGroups archived", () => {
     expect(listed.map((item) => item.id)).toEqual(["openable"]);
     expect(findMany.mock.calls[0]![0].where).toEqual({
       spaceId: "space-1",
-      userId: "user-1",
+      OR: [{ userId: "user-1" }, { users: { some: { userId: "user-1" } } }],
       archivedAt: null,
     });
   });

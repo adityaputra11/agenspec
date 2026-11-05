@@ -76,12 +76,14 @@ class SavedSubmission extends Error {}
 /** A chat reply hands the screen back to the bot whose run it steers, in a group as in a DM. */
 export function takeoverReleaser(deps: RouterDeps, actor: Actor, target: ThreadTarget) {
   return async (runId: string) => {
+    // In a shared group the bot, its computer and its takeover belong to the bot's owner; another
+    // person's message never hands that control back.
     const botId =
       target.kind === "bot"
         ? target.botId
         : (
-            await deps.prisma.run.findUnique({
-              where: { id: runId, spaceId: actor.spaceId },
+            await deps.prisma.run.findFirst({
+              where: { id: runId, spaceId: actor.spaceId, userId: actor.userId },
               select: { botId: true },
             })
           )?.botId;

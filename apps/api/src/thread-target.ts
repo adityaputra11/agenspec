@@ -41,8 +41,9 @@ import {
   createThreadMessageInTransaction,
   eligibleWaitingTextAnswer,
   expireComputerExecutionLeases,
+  groupAccessWhere,
   IsolationError,
-  lockOwnedGroup,
+  lockAccessibleGroup,
   primaryActiveRun,
   retireWaitingQuestionInTransaction,
   touchGroupUpdatedAt,
@@ -288,19 +289,20 @@ async function lockAndLoadGroupMembers(
   actor: Actor,
   target: Extract<ThreadTarget, { kind: "group" }>,
 ) {
-  await lockOwnedGroup(tx, actor, target.groupId);
+  await lockAccessibleGroup(tx, actor, target.groupId);
   const group = await tx.chatGroup.findFirst({
     where: {
       id: target.groupId,
-      spaceId: actor.spaceId,
-      userId: actor.userId,
+      ...groupAccessWhere(actor),
       archivedAt: null,
       thread: { id: target.threadId },
     },
     include: {
       members: {
         where: { bot: { archivedAt: null } },
-        include: { bot: { select: { id: true, name: true, color: true, avatarSet: true } } },
+        include: {
+          bot: { select: { id: true, name: true, color: true, avatarSet: true, userId: true } },
+        },
         orderBy: [{ createdAt: "asc" }, { botId: "asc" }],
       },
     },
@@ -311,7 +313,36 @@ async function lockAndLoadGroupMembers(
     name: member.bot.name,
     color: member.bot.color,
     avatarSet: resolveBotAvatarSet(member.bot.avatarSet),
+    /** Runs a group send starts for this bot use its owner's model, memory and quota. */
+    ownerUserId: member.bot.userId,
   }));
+}
+
+function groupBotOwnerUserId(
+  members: Array<{ botId: string; ownerUserId: string }>,
+  botId: string,
+): string {
+  const member = members.find((candidate) => candidate.botId === botId);
+  if (!member) throw new IsolationError();
+  return member.ownerUserId;
+}
+
+/** A user message in a shared group records its writer; returns the sender the event carries. */
+async function recordGroupSender(
+  tx: Prisma.TransactionClient,
+  actor: Actor,
+  messageId: string,
+): Promise<{ userId: string; name: string }> {
+  await tx.message.update({ where: { id: messageId }, data: { senderUserId: actor.userId } });
+  const user = await tx.user.findUnique({ where: { id: actor.userId }, select: { name: true } });
+  return { userId: actor.userId, name: user?.name ?? "" };
+}
+
+/** A shared group's thread belongs to its owner; the target already proved this person may open it. */
+function threadAccessWhere(actor: Pick<Actor, "spaceId" | "userId">, target: ThreadTarget) {
+  return target.kind === "group"
+    ? { id: target.threadId, spaceId: actor.spaceId }
+    : { id: target.threadId, spaceId: actor.spaceId, userId: actor.userId };
 }
 
 /** The bots a send wakes: the bot itself, or the group members it names (else the first). */
@@ -1085,6 +1116,7 @@ export async function sendThreadMessage(
         replyQuote,
         clientNonce: input.clientNonce,
       });
+      const groupSender = await recordGroupSender(tx, actor, message.id);
       const activeByBotId = new Map<string, (typeof activeRuns)[number]>();
       const answeredByBotId = new Map<string, Array<(typeof activeRuns)[number]>>();
       for (const run of activeRuns) {
@@ -1146,12 +1178,14 @@ export async function sendThreadMessage(
           runs.push(active);
           continue;
         }
+        // A shared person's send runs under the bot owner, who pays for and remembers it.
+        const runUserId = groupBotOwnerUserId(members, botId);
         const task = await tx.task.create({
           data: {
             spaceId: actor.spaceId,
             botId,
             threadId: target.threadId,
-            userId: actor.userId,
+            userId: runUserId,
             prompt: buildSendPrompt(input.text, artifacts, connectorNames),
             status: "queued",
           },
@@ -1162,7 +1196,7 @@ export async function sendThreadMessage(
             botId,
             threadId: target.threadId,
             taskId: task.id,
-            userId: actor.userId,
+            userId: runUserId,
             status: "queued",
             trigger: "user",
             clientNonce: sendRunClientNonce(input.clientNonce, message.id, botId),
@@ -1204,6 +1238,7 @@ export async function sendThreadMessage(
           replyToMessageId,
           replyQuote,
           replyPreview,
+          sender: groupSender,
         },
       });
       return { message, runs, routineRuns, eventSeq: event.seq };
@@ -1308,11 +1343,22 @@ export async function reactToThreadMessage(
       replyToMessageId: parent.id,
       clientNonce: input.clientNonce,
     });
+    const sender = members ? await recordGroupSender(tx, actor, message.id) : undefined;
     const runs = replyBotId
-      ? await startReactionTurn(tx, actor, target.threadId, replyBotId, parent, message, {
-          ...input,
-          canReleaseTakeover: Boolean(releaseTakeover),
-        })
+      ? await startReactionTurn(
+          tx,
+          actor,
+          target.threadId,
+          replyBotId,
+          // A shared person's reaction turn runs under the bot owner, as a group send does.
+          members ? groupBotOwnerUserId(members, replyBotId) : actor.userId,
+          parent,
+          message,
+          {
+            ...input,
+            canReleaseTakeover: Boolean(releaseTakeover),
+          },
+        )
       : [];
     if (target.kind === "group") await touchGroupUpdatedAt(tx, target.groupId);
     const event = await appendEventInTransaction(tx, {
@@ -1327,6 +1373,7 @@ export async function reactToThreadMessage(
         blocks,
         replyToMessageId: parent.id,
         ...(runs.length ? { runIds: runs.map((run) => run.id) } : {}),
+        ...(sender ? { sender } : {}),
       },
     });
     return { eventSeq: event.seq, runs };
@@ -1372,6 +1419,7 @@ async function startReactionTurn(
   actor: Actor,
   threadId: string,
   botId: string,
+  runUserId: string,
   parent: { id: string; runId: string | null },
   message: { id: string; seq: number },
   input: { reaction: MessageReaction; clientNonce: string; canReleaseTakeover: boolean },
@@ -1441,7 +1489,7 @@ async function startReactionTurn(
       spaceId: actor.spaceId,
       botId,
       threadId,
-      userId: actor.userId,
+      userId: runUserId,
       prompt: input.reaction,
       status: "queued",
     },
@@ -1452,7 +1500,7 @@ async function startReactionTurn(
       botId,
       threadId,
       taskId: task.id,
-      userId: actor.userId,
+      userId: runUserId,
       status: "queued",
       trigger: "reaction",
       clientNonce: sendRunClientNonce(input.clientNonce, message.id),
@@ -1685,7 +1733,7 @@ export async function markThreadRead(
   actor: Actor,
   target: ThreadTarget,
 ): Promise<number | null> {
-  const where = { id: target.threadId, spaceId: actor.spaceId, userId: actor.userId };
+  const where = threadAccessWhere(actor, target);
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const thread = await prisma.thread.findFirst({
       where,
@@ -1741,7 +1789,7 @@ export async function markThreadUnreadFrom(
   });
   if (!message) throw new ORPCError("NOT_FOUND");
   const result = await prisma.thread.updateMany({
-    where: { id: target.threadId, spaceId: actor.spaceId, userId: actor.userId },
+    where: threadAccessWhere(actor, target),
     data: { unread: true, lastReadSeq: message.seq - 1 },
   });
   if (result.count > 1) throw new IsolationError();
@@ -1755,9 +1803,7 @@ export async function setThreadUnreadState(
 ) {
   const result = await prisma.thread.updateMany({
     where: {
-      id: target.threadId,
-      spaceId: actor.spaceId,
-      userId: actor.userId,
+      ...threadAccessWhere(actor, target),
       unread: { not: unread },
     },
     data: { unread },

@@ -526,6 +526,7 @@ msgid "Add"
 msgstr "新增"
 
 #. placeholder {0}: bot.name
+#. placeholder {0}: person.name
 #: src/pages/GroupPanel.tsx
 msgid "Add {0} to the group"
 msgstr "將 {0} 加入群組"
@@ -619,6 +620,10 @@ msgstr "新增待辦事項"
 #: src/components/PasskeySettings.tsx
 msgid "Add passkey"
 msgstr "新增通行金鑰"
+
+#: src/pages/GroupPanel.tsx
+msgid "Add people"
+msgstr ""
 
 #: src/pages/model-settings/providers-section.tsx
 msgid "Add provider"
@@ -1281,6 +1286,7 @@ msgstr "無法讀取影像"
 #: src/pages/cms/blueprints-page.tsx
 #: src/pages/cms/documents-page.tsx
 #: src/pages/cms/models-page.tsx
+#: src/pages/GroupPanel.tsx
 #: src/pages/KnowledgeSection.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/connection-controls.tsx
@@ -2162,6 +2168,10 @@ msgstr "無法安裝連接器"
 msgid "Could not install plugin"
 msgstr ""
 
+#: src/pages/GroupPanel.tsx
+msgid "Could not leave group"
+msgstr ""
+
 #: src/components/ErrorBoundary.tsx
 #: src/components/PasskeySettings.tsx
 #: src/lib/user-devices.ts
@@ -2209,6 +2219,10 @@ msgstr "無法載入 MCP 伺服器"
 #: src/pages/model-settings/use-model-settings.ts
 msgid "Could not load model settings"
 msgstr "無法載入模型設定"
+
+#: src/pages/GroupPanel.tsx
+msgid "Could not load people"
+msgstr ""
 
 #: src/pages/RoutineRunHistory.tsx
 msgid "Could not load run history"
@@ -2497,6 +2511,10 @@ msgstr "無法更新電腦"
 #: src/pages/AccountSettingsOverlay.tsx
 msgid "Could not update name"
 msgstr "無法更新姓名"
+
+#: src/pages/GroupPanel.tsx
+msgid "Could not update people"
+msgstr ""
 
 #: src/pages/shell/use-composer-actions.ts
 msgid "Could not update reaction"
@@ -3843,6 +3861,14 @@ msgstr "稍後"
 msgid "Leave"
 msgstr "退出"
 
+#: src/pages/GroupPanel.tsx
+msgid "Leave group"
+msgstr ""
+
+#: src/pages/GroupPanel.tsx
+msgid "Leave this group?"
+msgstr ""
+
 #: src/components/ComputerDeviceSettings.tsx
 msgid "Let bots use this computer"
 msgstr ""
@@ -4102,6 +4128,7 @@ msgstr ""
 msgid "Members"
 msgstr ""
 
+#. placeholder {0}: group.members.length
 #. placeholder {0}: selected.length
 #: src/pages/GroupPanel.tsx
 msgid "Members ({0})"
@@ -4593,6 +4620,10 @@ msgstr "找不到 OpenClaw、Hermes 或代理程式文件。"
 msgid "No pages match “{query}”."
 msgstr "沒有符合「{query}」的頁面。"
 
+#: src/pages/GroupPanel.tsx
+msgid "No people match"
+msgstr ""
+
 #: src/components/integrations/IntegrationSetup.tsx
 msgid "No remote MCP servers found"
 msgstr "找不到遠端 MCP 伺服器"
@@ -5050,6 +5081,10 @@ msgstr "已暫停"
 msgid "Pending"
 msgstr "待處理"
 
+#: src/pages/GroupPanel.tsx
+msgid "People"
+msgstr ""
+
 #: src/pages/shell/bot-panel.tsx
 msgid "Permissions"
 msgstr "權限"
@@ -5443,12 +5478,15 @@ msgstr "移除"
 
 #. placeholder {0}: attachment.file.name
 #. placeholder {0}: device.name
+#. placeholder {0}: person.name
 #: src/components/ComputerDeviceSettings.tsx
+#: src/pages/GroupPanel.tsx
 #: src/pages/shell/composer.tsx
 msgid "Remove {0}"
 msgstr "移除 {0}"
 
 #. placeholder {0}: bot.name
+#. placeholder {0}: person.name
 #: src/pages/GroupPanel.tsx
 msgid "Remove {0} from the group"
 msgstr "將 {0} 移出群組"
@@ -5920,6 +5958,10 @@ msgstr "搜尋 integrations.sh"
 #: src/pages/shell/chat-model-picker.tsx
 msgid "Search models"
 msgstr "搜尋模型"
+
+#: src/pages/GroupPanel.tsx
+msgid "Search people"
+msgstr ""
 
 #: src/pages/shell/shell-sidebar.tsx
 msgid "Search runs"
@@ -7427,6 +7469,10 @@ msgstr "對方用新卡開始試用後，你將獲得一個月免費。"
 #: src/pages/shell/computer-overlay.tsx
 msgid "You have control"
 msgstr "你已接管"
+
+#: src/pages/GroupPanel.tsx
+msgid "You stop seeing its messages."
+msgstr ""
 
 #. js-lingui-explicit-id
 #: src/lib/run-error.ts

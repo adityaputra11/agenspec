@@ -46,6 +46,7 @@ model User {
   accounts                    Account[]
   passkeys                    Passkey[]
   members                     Member[]
+  sharedGroups                ChatGroupUser[]
   accessGrants                AccessGrant[]
   invitations                 Invitation[]
   modelCredentials            UserModelCredential[]
@@ -853,6 +854,8 @@ model ChatGroup {
   createdAt  DateTime          @default(now())
   updatedAt  DateTime          @updatedAt
   members    ChatGroupMember[]
+  /// People the owner shared the group with; the owner (userId) is not listed.
+  users      ChatGroupUser[]
   thread     Thread?
   artifacts  Artifact[]
   pages      Page[]
@@ -860,6 +863,21 @@ model ChatGroup {
   @@index([spaceId, userId, archivedAt, pinned, updatedAt])
   @@index([sectionId])
   @@map("chat_groups")
+}
+
+/// A person, other than the owner, who can read and write in a shared group chat.
+model ChatGroupUser {
+  id            String    @id @default(cuid())
+  groupId       String
+  group         ChatGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  addedByUserId String
+  createdAt     DateTime  @default(now())
+
+  @@unique([groupId, userId])
+  @@index([userId])
+  @@map("chat_group_users")
 }
 
 model ChatGroupMember {
@@ -921,6 +939,8 @@ model Message {
   replyTo          Message?  @relation("MessageReplies", fields: [replyToMessageId], references: [id], onDelete: SetNull)
   replies          Message[] @relation("MessageReplies")
   runId            String?
+  /// The person who wrote a user message in a shared group; NULL elsewhere and before sharing.
+  senderUserId     String?
   clientNonce      String?
   /// Blind-index search tokens for the encrypted blocks; NULL until the row is encrypted.
   searchTokens     Int[]

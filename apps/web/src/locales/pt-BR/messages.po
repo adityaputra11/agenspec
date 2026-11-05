@@ -525,6 +525,7 @@ msgid "Add"
 msgstr "Adicionar"
 
 #. placeholder {0}: bot.name
+#. placeholder {0}: person.name
 #: src/pages/GroupPanel.tsx
 msgid "Add {0} to the group"
 msgstr ""
@@ -618,6 +619,10 @@ msgstr "Adicionar trabalho pendente"
 #: src/components/PasskeySettings.tsx
 msgid "Add passkey"
 msgstr "Adicionar chave de acesso"
+
+#: src/pages/GroupPanel.tsx
+msgid "Add people"
+msgstr ""
 
 #: src/pages/model-settings/providers-section.tsx
 msgid "Add provider"
@@ -1280,6 +1285,7 @@ msgstr "Não pode ler imagens"
 #: src/pages/cms/blueprints-page.tsx
 #: src/pages/cms/documents-page.tsx
 #: src/pages/cms/models-page.tsx
+#: src/pages/GroupPanel.tsx
 #: src/pages/KnowledgeSection.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/connection-controls.tsx
@@ -2161,6 +2167,10 @@ msgstr "Não foi possível instalar o conector"
 msgid "Could not install plugin"
 msgstr ""
 
+#: src/pages/GroupPanel.tsx
+msgid "Could not leave group"
+msgstr ""
+
 #: src/components/ErrorBoundary.tsx
 #: src/components/PasskeySettings.tsx
 #: src/lib/user-devices.ts
@@ -2208,6 +2218,10 @@ msgstr "Não foi possível carregar os servidores MCP"
 #: src/pages/model-settings/use-model-settings.ts
 msgid "Could not load model settings"
 msgstr "Não foi possível carregar as configurações do modelo"
+
+#: src/pages/GroupPanel.tsx
+msgid "Could not load people"
+msgstr ""
 
 #: src/pages/RoutineRunHistory.tsx
 msgid "Could not load run history"
@@ -2496,6 +2510,10 @@ msgstr "Não foi possível atualizar o computador"
 #: src/pages/AccountSettingsOverlay.tsx
 msgid "Could not update name"
 msgstr "Não foi possível atualizar o nome"
+
+#: src/pages/GroupPanel.tsx
+msgid "Could not update people"
+msgstr ""
 
 #: src/pages/shell/use-composer-actions.ts
 msgid "Could not update reaction"
@@ -3842,6 +3860,14 @@ msgstr ""
 msgid "Leave"
 msgstr ""
 
+#: src/pages/GroupPanel.tsx
+msgid "Leave group"
+msgstr ""
+
+#: src/pages/GroupPanel.tsx
+msgid "Leave this group?"
+msgstr ""
+
 #: src/components/ComputerDeviceSettings.tsx
 msgid "Let bots use this computer"
 msgstr ""
@@ -4101,6 +4127,7 @@ msgstr ""
 msgid "Members"
 msgstr ""
 
+#. placeholder {0}: group.members.length
 #. placeholder {0}: selected.length
 #: src/pages/GroupPanel.tsx
 msgid "Members ({0})"
@@ -4592,6 +4619,10 @@ msgstr "Nenhum arquivo do OpenClaw, Hermes ou documento de agente encontrado."
 msgid "No pages match “{query}”."
 msgstr "Nenhuma página corresponde a “{query}”."
 
+#: src/pages/GroupPanel.tsx
+msgid "No people match"
+msgstr ""
+
 #: src/components/integrations/IntegrationSetup.tsx
 msgid "No remote MCP servers found"
 msgstr ""
@@ -5049,6 +5080,10 @@ msgstr ""
 msgid "Pending"
 msgstr ""
 
+#: src/pages/GroupPanel.tsx
+msgid "People"
+msgstr ""
+
 #: src/pages/shell/bot-panel.tsx
 msgid "Permissions"
 msgstr "Permissões"
@@ -5442,12 +5477,15 @@ msgstr "Remover"
 
 #. placeholder {0}: attachment.file.name
 #. placeholder {0}: device.name
+#. placeholder {0}: person.name
 #: src/components/ComputerDeviceSettings.tsx
+#: src/pages/GroupPanel.tsx
 #: src/pages/shell/composer.tsx
 msgid "Remove {0}"
 msgstr "Remover {0}"
 
 #. placeholder {0}: bot.name
+#. placeholder {0}: person.name
 #: src/pages/GroupPanel.tsx
 msgid "Remove {0} from the group"
 msgstr ""
@@ -5918,6 +5956,10 @@ msgstr ""
 #: src/pages/model-settings/role-model-picker.tsx
 #: src/pages/shell/chat-model-picker.tsx
 msgid "Search models"
+msgstr ""
+
+#: src/pages/GroupPanel.tsx
+msgid "Search people"
 msgstr ""
 
 #: src/pages/shell/shell-sidebar.tsx
@@ -7426,6 +7468,10 @@ msgstr "Você ganha um mês grátis quando eles começarem o teste com um cartã
 #: src/pages/shell/computer-overlay.tsx
 msgid "You have control"
 msgstr "Você tem o controle"
+
+#: src/pages/GroupPanel.tsx
+msgid "You stop seeing its messages."
+msgstr ""
 
 #. js-lingui-explicit-id
 #: src/lib/run-error.ts

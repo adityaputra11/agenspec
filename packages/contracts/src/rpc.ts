@@ -107,7 +107,9 @@ import {
   DeploymentSettingsSchema,
   ExportManifestSchema,
   ExternalConversationPolicySchema,
+  GROUP_PEOPLE_MAX,
   GroupDetailSchema,
+  GroupPersonSchema,
   GroupSchema,
   IncomingBotCallSchema,
   IntegrationCatalogResultSchema,
@@ -668,6 +670,17 @@ export const appContract = {
     archive: oc.input(groupId).output(z.object({ ok: z.literal(true) })),
     restore: oc.input(groupId).output(z.object({ ok: z.literal(true) })),
     remove: oc.input(groupId).output(z.object({ ok: z.literal(true) })),
+    /** Sharing a group with other people in the organization. */
+    people: {
+      /** Members of the actor's organization the owner can add, without the owner. */
+      candidates: oc.input(groupId).output(z.array(GroupPersonSchema)),
+      /** Owner only: replaces the people the group is shared with. */
+      set: oc
+        .input(groupId.extend({ userIds: z.array(Id).max(GROUP_PEOPLE_MAX) }))
+        .output(GroupSchema),
+    },
+    /** A person the group was shared with stops seeing it. The owner deletes it instead. */
+    leave: oc.input(groupId).output(z.object({ ok: z.literal(true) })),
   },
   botSections: {
     list: oc.output(z.array(BotSectionSchema)),

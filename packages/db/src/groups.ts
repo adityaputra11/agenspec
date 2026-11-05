@@ -1,4 +1,4 @@
-import type { Actor, Group, GroupMember, SpaceGroup } from "@rakazo/contracts";
+import type { Actor, Group, GroupMember, GroupPerson, SpaceGroup } from "@rakazo/contracts";
 import { GROUP_MEMBER_MAX, GROUP_MEMBER_MIN, resolveBotAvatarSet } from "@rakazo/contracts";
 import { displayName } from "@rakazo/core";
 import { cancelRunsInTransaction } from "./cancel-runs.js";
@@ -43,7 +43,29 @@ type GroupRecord = {
       runs: Array<{ status: string }>;
     };
   }>;
+  users?: Array<{ userId: string; user: { name: string; email: string } }>;
 };
+
+/** A people change the owner asked for that the group can't take; the route answers BAD_REQUEST. */
+export class GroupPeopleError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "GroupPeopleError";
+  }
+}
+
+/**
+ * Who can open a group: its owner, or a person the owner shared it with, in the Space the group
+ * lives in. Owner-only actions keep their own `userId` checks.
+ */
+export function groupAccessWhere(
+  actor: Pick<Actor, "spaceId" | "userId">,
+): Prisma.ChatGroupWhereInput {
+  return {
+    spaceId: actor.spaceId,
+    OR: [{ userId: actor.userId }, { users: { some: { userId: actor.userId } } }],
+  };
+}
 
 type SpaceGroupRecord = Pick<
   GroupRecord,
@@ -82,6 +104,12 @@ function mapGroup(group: GroupRecord): Group {
     unread: group.thread.unread,
     updatedAt: group.updatedAt.toISOString(),
     createdAt: group.createdAt.toISOString(),
+    ownerUserId: group.userId,
+    people: (group.users ?? []).map((share) => ({
+      userId: share.userId,
+      name: share.user.name,
+      email: share.user.email,
+    })),
   };
 }
 
@@ -154,6 +182,11 @@ function memberRowsInOrder(groupId: string, botIds: string[], base = Date.now())
 
 const groupMemberOrder = [{ createdAt: "asc" as const }, { botId: "asc" as const }];
 
+const groupUsersInclude = {
+  select: { userId: true, user: { select: { name: true, email: true } } },
+  orderBy: { createdAt: "asc" },
+} as const;
+
 const groupInclude = {
   thread: true,
   members: {
@@ -171,6 +204,7 @@ const groupInclude = {
     },
     orderBy: groupMemberOrder,
   },
+  users: groupUsersInclude,
 } as const;
 
 // Every member, archived bots included, so a group that can't be opened still names its bots.
@@ -182,6 +216,7 @@ const archivedGroupInclude = {
     },
     orderBy: groupMemberOrder,
   },
+  users: groupUsersInclude,
 } as const;
 
 const groupTargetInclude = {
@@ -307,8 +342,11 @@ export function createGroupRepos(prisma: PrismaClient) {
       await prisma.chatGroup.findMany({
         where: {
           spaceId: { in: spaceIds },
-          userId: actor.userId,
           archivedAt: null,
+          OR: [
+            { userId: actor.userId },
+            { spaceId: actor.spaceId, users: { some: { userId: actor.userId } } },
+          ],
         },
         select: {
           id: true,
@@ -343,11 +381,14 @@ export function createGroupRepos(prisma: PrismaClient) {
       prisma,
       await prisma.chatGroup.findMany({
         where: {
-          spaceId: actor.spaceId,
-          userId: actor.userId,
-          OR: [
-            { archivedAt: { not: null } },
-            { members: { some: { bot: { archivedAt: { not: null } } } } },
+          AND: [
+            groupAccessWhere(actor),
+            {
+              OR: [
+                { archivedAt: { not: null } },
+                { members: { some: { bot: { archivedAt: { not: null } } } } },
+              ],
+            },
           ],
         },
         include: archivedGroupInclude,
@@ -371,8 +412,7 @@ export function createGroupRepos(prisma: PrismaClient) {
         prisma,
         await prisma.chatGroup.findMany({
           where: {
-            spaceId: actor.spaceId,
-            userId: actor.userId,
+            ...groupAccessWhere(actor),
             archivedAt: null,
           },
           include: groupInclude,
@@ -391,8 +431,7 @@ export function createGroupRepos(prisma: PrismaClient) {
       const group = await prisma.chatGroup.findFirst({
         where: {
           id: groupId,
-          spaceId: actor.spaceId,
-          userId: actor.userId,
+          ...groupAccessWhere(actor),
           ...(options.includeArchived ? {} : { archivedAt: null }),
         },
         include: groupInclude,
@@ -402,17 +441,110 @@ export function createGroupRepos(prisma: PrismaClient) {
     },
 
     async getGroupTarget(actor: Actor, groupId: string) {
-      const group = await prisma.chatGroup.findFirst({
-        where: {
-          id: groupId,
-          spaceId: actor.spaceId,
-          userId: actor.userId,
-          archivedAt: null,
-        },
-        include: groupTargetInclude,
-      });
+      // The owner's own group is the common case and resolves in one query; a shared one takes a second.
+      const group =
+        (await prisma.chatGroup.findFirst({
+          where: { id: groupId, spaceId: actor.spaceId, userId: actor.userId, archivedAt: null },
+          include: groupTargetInclude,
+        })) ??
+        (await prisma.chatGroup.findFirst({
+          where: {
+            id: groupId,
+            spaceId: actor.spaceId,
+            archivedAt: null,
+            users: { some: { userId: actor.userId } },
+          },
+          include: groupTargetInclude,
+        }));
       if (!group || !hasMinimumActiveMembers(group.members)) throw new IsolationError();
       return group;
+    },
+
+    /** Owner only. Members of the group's organization, the owner excluded. */
+    async listGroupPeopleCandidates(actor: Actor, groupId: string): Promise<GroupPerson[]> {
+      const group = await prisma.chatGroup.findFirst({
+        where: { id: groupId, spaceId: actor.spaceId, userId: actor.userId, archivedAt: null },
+        select: { space: { select: { organizationId: true } } },
+      });
+      if (!group) throw new IsolationError();
+      const members = await prisma.member.findMany({
+        where: { organizationId: group.space.organizationId, userId: { not: actor.userId } },
+        select: { userId: true, user: { select: { name: true, email: true } } },
+        orderBy: [{ createdAt: "asc" }, { userId: "asc" }],
+      });
+      return members.map((member) => ({
+        userId: member.userId,
+        name: member.user.name,
+        email: member.user.email,
+      }));
+    },
+
+    /**
+     * Owner only. Replaces who the group is shared with; every person must belong to the group's
+     * organization and must not be the owner.
+     */
+    async setGroupPeople(
+      actor: Actor,
+      input: { groupId: string; userIds: string[] },
+    ): Promise<Group> {
+      const userIds = [...new Set(input.userIds)];
+      const updated = await prisma.$transaction(async (tx) => {
+        await lockOwnedGroup(tx, actor, input.groupId);
+        const group = await tx.chatGroup.findFirst({
+          where: {
+            id: input.groupId,
+            spaceId: actor.spaceId,
+            userId: actor.userId,
+            archivedAt: null,
+          },
+          select: { space: { select: { organizationId: true } } },
+        });
+        if (!group) throw new IsolationError();
+        if (userIds.includes(actor.userId)) {
+          throw new GroupPeopleError("The owner is already in the group");
+        }
+        if (userIds.length) {
+          const members = await tx.member.findMany({
+            where: { organizationId: group.space.organizationId, userId: { in: userIds } },
+            select: { userId: true },
+          });
+          if (members.length !== userIds.length) {
+            throw new GroupPeopleError("People must be members of this organization");
+          }
+        }
+        await tx.chatGroupUser.deleteMany({ where: { groupId: input.groupId } });
+        if (userIds.length) {
+          await tx.chatGroupUser.createMany({
+            data: userIds.map((userId) => ({
+              groupId: input.groupId,
+              userId,
+              addedByUserId: actor.userId,
+            })),
+          });
+        }
+        const loaded = await tx.chatGroup.findFirstOrThrow({
+          where: { id: input.groupId },
+          include: groupInclude,
+        });
+        return attachNewestGroupMessage(tx, loaded);
+      });
+      return mapGroup(updated as GroupRecord);
+    },
+
+    /** A shared person drops the group; only that person's row goes. The owner can't leave. */
+    async leaveGroup(actor: Actor, groupId: string) {
+      const group = await prisma.chatGroup.findFirst({
+        where: { id: groupId, ...groupAccessWhere(actor) },
+        select: { userId: true },
+      });
+      if (!group) throw new IsolationError();
+      if (group.userId === actor.userId) {
+        throw new GroupPeopleError("The owner can't leave a group. Delete it instead.");
+      }
+      const removed = await prisma.chatGroupUser.deleteMany({
+        where: { groupId, userId: actor.userId },
+      });
+      if (removed.count !== 1) throw new IsolationError();
     },
 
     async createGroup(actor: Actor, input: { name: string; botIds: string[] }): Promise<Group> {
@@ -700,6 +832,29 @@ export async function lockOwnedGroup(
       AND "spaceId" = ${actor.spaceId}
       AND "userId" = ${actor.userId}
     FOR UPDATE
+  `;
+  if (locked.length !== 1) throw new IsolationError();
+}
+
+/** Locks a group a person may send to (its owner or a shared person) before a write to its thread. */
+export async function lockAccessibleGroup(
+  prisma: Pick<Prisma.TransactionClient, "$queryRaw">,
+  actor: Pick<Actor, "spaceId" | "userId">,
+  groupId: string,
+) {
+  const locked = await prisma.$queryRaw<Array<{ id: string }>>`
+    SELECT g.id
+    FROM chat_groups g
+    WHERE g.id = ${groupId}
+      AND g."spaceId" = ${actor.spaceId}
+      AND (
+        g."userId" = ${actor.userId}
+        OR EXISTS (
+          SELECT 1 FROM chat_group_users u
+          WHERE u."groupId" = g.id AND u."userId" = ${actor.userId}
+        )
+      )
+    FOR UPDATE OF g
   `;
   if (locked.length !== 1) throw new IsolationError();
 }
