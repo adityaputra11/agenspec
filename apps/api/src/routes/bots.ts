@@ -38,7 +38,9 @@ import {
   ComputerLimitError,
   commitBotUpdate,
   ensureLegalBotForActor,
+  ensureSupportBotForActor,
   ensureTimesheetBotForActor,
+  ensureTriageBotForActor,
   expireComputerExecutionLeases,
   GroupPeopleError,
   InstructionConflictError,
@@ -309,6 +311,12 @@ export function botsRoutes(ctx: RouterContext) {
         });
         await ensureTimesheetBotForActor(deps.prisma, context.actor).catch((error: unknown) => {
           getLogger().error("timesheet bot provisioning on list", error);
+        });
+        await ensureTriageBotForActor(deps.prisma, context.actor).catch((error: unknown) => {
+          getLogger().error("triage bot provisioning on list", error);
+        });
+        await ensureSupportBotForActor(deps.prisma, context.actor).catch((error: unknown) => {
+          getLogger().error("support bot provisioning on list", error);
         });
         return repos.listBots(context.actor);
       }),

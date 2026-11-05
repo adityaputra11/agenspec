@@ -1,6 +1,11 @@
 import { randomUUID } from "node:crypto";
 import type { Actor, OrganizationList } from "@rakazo/contracts";
-import { createOrganizationWithDefaultSpace, provisionLegalBot } from "./bootstrap-user.js";
+import {
+  createOrganizationWithDefaultSpace,
+  provisionLegalBot,
+  provisionSupportBot,
+  provisionTriageBot,
+} from "./bootstrap-user.js";
 import type { PrismaClient } from "./client.js";
 import { Prisma } from "./client.js";
 import { IsolationError } from "./scope.js";
@@ -71,6 +76,8 @@ export async function createOrganizationForUser(
     }),
   );
   await provisionLegalBot(prisma, { spaceId: orgId, userId: input.userId });
+  await provisionTriageBot(prisma, { spaceId: orgId, userId: input.userId });
+  await provisionSupportBot(prisma, { spaceId: orgId, userId: input.userId });
   return { id: orgId, name, defaultSpaceId: orgId };
 }
 

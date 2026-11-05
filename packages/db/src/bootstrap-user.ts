@@ -3,6 +3,8 @@ import { signupPolicyFromEnv } from "@rakazo/core";
 import { getLogger } from "@rakazo/logging";
 import type { PrismaClient } from "./client.js";
 import { ensureLegalBot } from "./locked-bots.js";
+import { ensureSupportBot } from "./support-bot.js";
+import { ensureTriageBot } from "./triage-bot.js";
 
 export interface SignupPolicyEnv {
   signupsEnabled: string | undefined;
@@ -140,5 +142,25 @@ export async function provisionLegalBot(
 ): Promise<void> {
   await ensureLegalBot(prisma, input).catch((error: unknown) => {
     getLogger().error("legal bot provisioning", { "space.id": input.spaceId, error });
+  });
+}
+
+/** Signup must not fail on the built-in bot; the startup backfill retries a missing one. */
+export async function provisionTriageBot(
+  prisma: PrismaClient,
+  input: { spaceId: string; userId: string },
+): Promise<void> {
+  await ensureTriageBot(prisma, input).catch((error: unknown) => {
+    getLogger().error("triage bot provisioning", { "space.id": input.spaceId, error });
+  });
+}
+
+/** Signup must not fail on the built-in bot; the startup backfill retries a missing one. */
+export async function provisionSupportBot(
+  prisma: PrismaClient,
+  input: { spaceId: string; userId: string },
+): Promise<void> {
+  await ensureSupportBot(prisma, input).catch((error: unknown) => {
+    getLogger().error("support bot provisioning", { "space.id": input.spaceId, error });
   });
 }
