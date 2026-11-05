@@ -65,6 +65,77 @@ const SKILLS: Array<{ name: string; description: string; body: string }> = [
 
 ${RAKAZO_DOCS.map(([topics, url]) => `- ${topics}: ${url}`).join("\n")}`,
   },
+  {
+    name: "Spec doc",
+    description: "Write and render spec docs (PRD, gap analysis) as PDF, DOCX, or XLSX.",
+    body: `One document, one pipeline: extract input, draft markdown, render, hand over the file. Every deliverable follows the house structure below so output looks the same every time.
+
+## 1. Get the input
+
+- Uploaded file: it is in the conversation attachments. Extract text first. PDF: pdftotext -layout input.pdf -. DOCX: pandoc -t plain input.docx.
+- From conversation: restate the goal in one line before drafting. Ask only if a decision is blocking (audience, version targets, priority order).
+
+## 2. House structure
+
+Mirror the classic PRD layout - numbered sections, lettered subsections, roman items, bracketed version markers, glossary at the end.
+
+1. Purpose - one paragraph, why this exists
+2. Scope - what is in, what is explicitly out
+3. Stakeholders - A) B) C) roles, each with numbered responsibilities
+4. Requirements - grouped; every item numbered and versioned [v0.2]
+5. Non-functional - performance, security, accessibility
+6. Glossary - [vX.Y] markers and domain terms
+
+Rules that make it read as structured:
+
+- Every requirement gets an ID (REQ-1, REQ-2.1) and, if phased, a version marker [v0.2]. Never reference "the feature above".
+- Requirements that fit a table go in a table - columns ID | Requirement | Priority | Version. Long prose lists do not.
+- Gap analysis uses its own skeleton: 1. Objective, 2. Current state, 3. Target state, 4. Gap table, 5. Recommendations. Gap table columns: Area | Current | Target | Gap | Action | Priority.
+- One term per concept, no bullet nested deeper than three levels.
+
+Draft the full content as markdown first. Show the section outline plus one sample requirement before rendering when the request is large (over 2 pages); for small ones, render directly.
+
+## 3. Render
+
+Work in the current working directory. Pick by extension, not by asking:
+
+- PDF (default for specs): styled HTML printed by chromium, recipe below.
+- DOCX: pandoc doc.md -o doc.docx
+- XLSX (matrices, traceability): python3 with openpyxl (preinstalled).
+- Read-only check: pdftotext out.pdf - then pdfinfo out.pdf.
+
+### PDF via chromium
+
+Write the content as one styled HTML file, then run:
+
+    chromium --headless --no-pdf-header-footer --print-to-pdf=spec-prd.pdf file.html
+
+HTML skeleton - A4, print margins, serif body, numbered headings:
+
+    <!doctype html><html><head><meta charset="utf-8"><style>
+      @page { size: A4; margin: 2cm; }
+      body { font: 11pt/1.5 Georgia, "Times New Roman", serif; color: #111; }
+      h1 { font-size: 18pt; text-align: center; border-bottom: 1px solid #111; padding-bottom: .3em; }
+      h2 { font-size: 13pt; margin-top: 1.4em; }
+      h3 { font-size: 11.5pt; margin-left: 1em; }
+      table { border-collapse: collapse; width: 100%; margin: .6em 0; }
+      th, td { border: 1px solid #999; padding: 4px 8px; font-size: 10pt; text-align: left; vertical-align: top; }
+      th { background: #eee; }
+      .meta { text-align: center; }
+    </style></head><body>
+      <p class="meta">2026-01-01</p>
+      <h1>Product - Product Requirements Document</h1>
+      <p class="meta">Version: 0.1 &middot; Author: Spec Agent</p>
+    </body></html>
+
+CSS does the structure - never fake tables with spaces, never use images for text. Version markers stay inline text: <b>[v0.2]</b>.
+
+If chromium fails (sandbox without it), fall back to: uv run --with reportlab python make_pdf.py with a Platypus script.
+
+## 4. Hand over
+
+Save outputs with a stable name (<project>-prd-v0.1.pdf) in the working directory, give the user the path plus a 3-line summary (sections, count of requirements, open questions). Offer the next format conversion in one short line, not a menu.`,
+  },
 ];
 
 export const BUILTIN_AGENT_SKILLS: Array<{
