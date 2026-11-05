@@ -23,7 +23,7 @@ import { ModelSettingsOverlay } from "./ModelSettingsOverlay";
 import { OrganizationSettingsPanel } from "./OrganizationSettingsPanel";
 import { PaymentWalletSettingsPanel } from "./PaymentWalletSettingsPanel";
 import { SpaceSettingsPanel } from "./SpaceSettingsPanel";
-import { useSettingsNavItems } from "./settings-nav";
+import { settingsNavItemClass, useSettingsNavItems } from "./settings-nav";
 import type { SettingsSpace } from "./shell/dialogs";
 import type { SettingsSection } from "./shell-overlay";
 import { VoiceSettingsOverlay } from "./VoiceSettingsOverlay";
@@ -280,11 +280,7 @@ export function SettingsOverlay({
                     aria-current={active ? "page" : undefined}
                     disabled={panelBusy}
                     onClick={() => onSectionChange(item.id)}
-                    className={`flex shrink-0 items-center gap-2.5 rounded-lg px-2.5 py-2 text-start text-[13.5px] transition-colors disabled:pointer-events-none disabled:opacity-50 ${
-                      active
-                        ? "bg-accent text-accent-foreground"
-                        : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                    }`}
+                    className={settingsNavItemClass(active)}
                   >
                     <Icon className="size-4 shrink-0" strokeWidth={1.75} />
                     <span className="whitespace-nowrap">{item.label}</span>

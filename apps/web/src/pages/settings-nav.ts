@@ -52,3 +52,12 @@ export function useSettingsNavItems(available: {
       : []),
   ];
 }
+
+/** The class of one settings nav item: the active one is filled, the others are muted until hovered. */
+export function settingsNavItemClass(active: boolean): string {
+  return `flex shrink-0 items-center gap-2.5 rounded-lg px-2.5 py-2 text-start text-[13.5px] transition-colors disabled:pointer-events-none disabled:opacity-50 ${
+    active
+      ? "bg-accent text-accent-foreground"
+      : "text-muted-foreground hover:bg-accent hover:text-foreground"
+  }`;
+}

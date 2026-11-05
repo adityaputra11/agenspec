@@ -16,6 +16,7 @@ import {
   runProviderTransaction,
 } from "@rakazo/db";
 import { getLogger } from "@rakazo/logging";
+import { isAppAllowed, orgAppPolicyFor } from "../org-admin.js";
 import { connectionCreatedEvent } from "../security-audit.js";
 import type { RouterContext } from "./context.js";
 
@@ -231,6 +232,7 @@ export function connectionsRoutes(ctx: RouterContext) {
               (provider): provider is NonNullable<typeof provider> => Boolean(provider),
             )
           : deps.connectors.managedProviders();
+        const policy = await orgAppPolicyFor(deps.prisma, context.actor);
         const catalogs = await Promise.all(
           providers.map(async (provider): Promise<ConnectorCatalogItem[]> => {
             try {
@@ -259,7 +261,7 @@ export function connectionsRoutes(ctx: RouterContext) {
             }
           }),
         );
-        return catalogs.flat();
+        return catalogs.flat().filter((item) => isAppAllowed(policy, item.slug));
       }),
       list: authed.connections.list.handler(async ({ context }) => {
         const rows = await deps.prisma.connection.findMany({
@@ -276,6 +278,12 @@ export function connectionsRoutes(ctx: RouterContext) {
         }));
       }),
       begin: authed.connections.begin.handler(async ({ context, input }) => {
+        const policy = await orgAppPolicyFor(deps.prisma, context.actor);
+        if (!isAppAllowed(policy, input.provider)) {
+          throw new ORPCError("FORBIDDEN", {
+            message: "Your organization does not allow this app",
+          });
+        }
         const connector =
           deps.integrationSettings &&
           (input.connectorId === "composio" || input.connectorId === "pipedream")

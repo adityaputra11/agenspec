@@ -2382,3 +2382,27 @@ model CapabilityInstallSpace {
   @@index([spaceId, userId])
   @@map("capability_install_spaces")
 }
+
+model OrganizationPolicy {
+  organizationId String   @id
+  restrictApps   Boolean  @default(false)
+  allowedApps    String[] @default([])
+  updatedAt      DateTime @updatedAt
+
+  @@map("organization_policies")
+}
+
+model OrganizationDocument {
+  id              String   @id @default(cuid())
+  organizationId  String
+  name            String
+  mimeType        String
+  sizeBytes       Int
+  content         String
+  createdByUserId String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([organizationId])
+  @@map("organization_documents")
+}

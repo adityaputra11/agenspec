@@ -81,3 +81,23 @@ describe("memory store contract shape", () => {
     });
   });
 });
+
+describe("organization documents", () => {
+  it("rejects edits and removal of company paths", async () => {
+    const transaction = vi.fn();
+    const deleteMany = vi.fn();
+    const store = new MarkdownMemoryStore({
+      $transaction: transaction,
+      memoryDocument: { deleteMany },
+    } as never);
+
+    await expect(
+      store.commit({ scope: "user", path: "company/doc-1.md", content: "x" }, context),
+    ).rejects.toThrow("This document is managed by your organization");
+    await expect(
+      store.remove({ scope: "user", path: "company/doc-1.md" }, context),
+    ).rejects.toThrow("This document is managed by your organization");
+    expect(transaction).not.toHaveBeenCalled();
+    expect(deleteMany).not.toHaveBeenCalled();
+  });
+});

@@ -66,6 +66,7 @@ const AdminPluginsPage = lazyComponent(() =>
 const AdminAccessPage = lazyComponent(() =>
   import("./pages/AdminAccessPage").then((module) => module.AdminAccessPage),
 );
+const CmsPage = lazyComponent(() => import("./pages/CmsPage").then((module) => module.CmsPage));
 const NavLinkPage = lazyComponent(() =>
   import("./pages/NavLinkPage").then((module) => module.NavLinkPage),
 );
@@ -116,6 +117,8 @@ function SessionApp() {
     next === "/integrations/setup" ||
     next === "/admin/plugins" ||
     next === "/admin/access" ||
+    next === "/cms" ||
+    next.startsWith("/cms/") ||
     next.startsWith(`${MCP_OAUTH_CALLBACK_PATH}?`) ||
     next.startsWith(`${SLACK_INSTALL_CALLBACK_PATH}?`)
       ? next
@@ -270,6 +273,10 @@ function SessionApp() {
                 element={
                   user ? <AdminAccessPage /> : <Navigate to="/sign-in?next=/admin/access" replace />
                 }
+              />
+              <Route
+                path="/cms/*"
+                element={user ? <CmsPage /> : <Navigate to="/sign-in?next=/cms" replace />}
               />
               <Route
                 element={

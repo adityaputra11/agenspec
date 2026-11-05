@@ -96,6 +96,11 @@ msgstr "{0} (más de {1})"
 msgid "{0} {unitLabel}"
 msgstr "{0} {unitLabel}"
 
+#. placeholder {0}: policy.data.allowedApps.length
+#: src/pages/cms/overview-page.tsx
+msgid "{0} allowed"
+msgstr ""
+
 #. placeholder {0}: block.name
 #: src/pages/shell/message-cards.tsx
 msgid "{0} connection"
@@ -507,6 +512,7 @@ msgstr "Actividad"
 
 #: src/components/integrations/plugin-marketplace.tsx
 #: src/components/SecretAskCard.tsx
+#: src/pages/cms/apps-page.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/PluginsOverlay.tsx
 #: src/pages/ScratchpadSection.tsx
@@ -566,6 +572,10 @@ msgstr "Agrega una URL de servidor HTTPS."
 #: src/pages/PluginsOverlay.tsx
 msgid "Add another"
 msgstr "Agregar otra"
+
+#: src/pages/cms/apps-page.tsx
+msgid "Add app"
+msgstr ""
 
 #: src/components/ModelCredits.tsx
 msgid "Add credits"
@@ -656,6 +666,11 @@ msgstr ""
 msgid "Address line 2"
 msgstr ""
 
+#: src/pages/cms/members-page.tsx
+#: src/pages/CmsPage.tsx
+msgid "Admin"
+msgstr ""
+
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
 #: src/pages/ModelSettingsOverlay.tsx
@@ -682,6 +697,10 @@ msgstr "Todas"
 #: src/components/ModelCredits.tsx
 msgid "All {credit} goes to model usage."
 msgstr "Los {credit} completos se destinan al uso de modelos."
+
+#: src/pages/cms/overview-page.tsx
+msgid "All apps"
+msgstr ""
 
 #: src/components/integrations/agent-access.tsx
 #: src/pages/Artifacts.tsx
@@ -724,6 +743,10 @@ msgstr "Permite que Rakazo use el reconocimiento de voz y el micrófono en Ajust
 #: src/pages/memory-providers/SerenitySettingsForm.tsx
 msgid "Allow writing"
 msgstr "Permitir escritura"
+
+#: src/pages/cms/apps-page.tsx
+msgid "Allowed apps"
+msgstr ""
 
 #: src/components/AskCard.tsx
 msgid "Allowed in this space"
@@ -854,6 +877,10 @@ msgstr ""
 msgid "API URL"
 msgstr ""
 
+#: src/pages/cms/apps-page.tsx
+msgid "App slug"
+msgstr ""
+
 #: src/pages/AccountSettingsOverlay.tsx
 msgid "Appearance"
 msgstr "Apariencia"
@@ -902,6 +929,8 @@ msgid "Approving…"
 msgstr "Aprobando…"
 
 #: src/components/integrations/plugin-marketplace.tsx
+#: src/pages/cms/overview-page.tsx
+#: src/pages/CmsPage.tsx
 #: src/pages/PluginsOverlay.tsx
 msgid "Apps"
 msgstr "Apps"
@@ -1021,6 +1050,7 @@ msgstr "Estudio de avatares"
 #: src/pages/AdminPluginsPage.tsx
 #: src/pages/Auth.tsx
 #: src/pages/Board.tsx
+#: src/pages/CmsPage.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/NavLinkPage.tsx
 #: src/pages/PluginsOverlay.tsx
@@ -1029,6 +1059,10 @@ msgstr "Estudio de avatares"
 #: src/pages/shell/agent-import.tsx
 msgid "Back"
 msgstr "Atrás"
+
+#: src/pages/CmsPage.tsx
+msgid "Back to app"
+msgstr ""
 
 #: src/components/pages/PageNotice.tsx
 msgid "Back to chat"
@@ -1143,6 +1177,10 @@ msgstr "Bots"
 msgid "Bots and browser automation"
 msgstr "Bots y automatización del navegador"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Bots stop reading it."
+msgstr ""
+
 #: src/pages/Paywall.tsx
 msgid "Bots with their own computer and browser"
 msgstr "Bots con su propia computadora y navegador"
@@ -1212,6 +1250,7 @@ msgstr "No puede leer imágenes"
 #: src/components/vault/VaultItemDetail.tsx
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/Artifacts.tsx
+#: src/pages/cms/documents-page.tsx
 #: src/pages/KnowledgeSection.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/connection-controls.tsx
@@ -2022,6 +2061,10 @@ msgstr "No se pudo eliminar el espacio"
 msgid "Could not delete this artifact."
 msgstr "No se pudo eliminar este artefacto."
 
+#: src/pages/cms/documents-page.tsx
+msgid "Could not delete this file"
+msgstr ""
+
 #: src/pages/MemorySettingsOverlay.tsx
 msgid "Could not disconnect memory provider"
 msgstr "No se pudo desconectar el proveedor de memoria"
@@ -2268,6 +2311,10 @@ msgstr "No se pudo ejecutar la rutina"
 msgid "Could not save"
 msgstr "No se pudo guardar"
 
+#: src/pages/cms/apps-page.tsx
+msgid "Could not save allowed apps"
+msgstr ""
+
 #: src/components/ApprovalRulesSettings.tsx
 msgid "Could not save Auto Review"
 msgstr "No se pudo guardar Auto Review"
@@ -2398,6 +2445,10 @@ msgstr "No se pudo actualizar la reacción"
 #: src/pages/MemorySettingsOverlay.tsx
 msgid "Could not update the default memory scope"
 msgstr "No se pudo actualizar el alcance de memoria predeterminado"
+
+#: src/pages/cms/documents-page.tsx
+msgid "Could not upload this file"
+msgstr ""
 
 #: src/components/ComputersUnavailableHint.tsx
 msgid "Could not verify computer setup ({failureMessage}). Fix the connection, then check again."
@@ -2621,6 +2672,7 @@ msgstr "Alcance predeterminado"
 #: src/components/PasskeySettings.tsx
 #: src/pages/Artifacts.tsx
 #: src/pages/BotContextMenu.tsx
+#: src/pages/cms/documents-page.tsx
 #: src/pages/KnowledgeSection.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/OrganizationSettingsPanel.tsx
@@ -2680,6 +2732,10 @@ msgstr "Eliminar sección"
 #: src/pages/SpaceSettingsPanel.tsx
 msgid "Delete space"
 msgstr "Eliminar espacio"
+
+#: src/pages/cms/documents-page.tsx
+msgid "Delete this document?"
+msgstr ""
 
 #: src/pages/SpaceSettingOverrides.tsx
 msgid "Delete this Space's credentials?"
@@ -2842,9 +2898,19 @@ msgstr "Docker limita el acceso a tu computadora para mayor seguridad. Usar {hos
 msgid "Docs"
 msgstr "Documentación"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Document actions"
+msgstr ""
+
 #: src/pages/KnowledgeSection.tsx
 msgid "Document changed. Reopen to edit the latest version."
 msgstr "El documento ha cambiado. Vuelve a abrirlo para editar la última versión."
+
+#: src/pages/cms/documents-page.tsx
+#: src/pages/cms/overview-page.tsx
+#: src/pages/CmsPage.tsx
+msgid "Documents"
+msgstr ""
 
 #: src/pages/Auth.tsx
 msgid "Don’t have an account?"
@@ -3937,8 +4003,14 @@ msgid "Medium"
 msgstr "Medio"
 
 #: src/lib/identity-display.ts
+#: src/pages/cms/members-page.tsx
 msgid "Member"
 msgstr "Miembro"
+
+#: src/pages/cms/overview-page.tsx
+#: src/pages/CmsPage.tsx
+msgid "Members"
+msgstr ""
 
 #. placeholder {0}: selected.length
 #: src/pages/GroupPanel.tsx
@@ -4574,6 +4646,10 @@ msgstr "Una vez"
 msgid "One-time purchase. Credits do not expire."
 msgstr "Compra única. Los créditos no vencen."
 
+#: src/pages/cms/apps-page.tsx
+msgid "Only allow listed apps"
+msgstr ""
+
 #: src/components/SecretAskCard.tsx
 msgid "Only enter a code {codeHost} sent you."
 msgstr ""
@@ -4708,9 +4784,14 @@ msgstr "Otro modelo…"
 msgid "Output"
 msgstr "Salida"
 
+#: src/pages/CmsPage.tsx
+msgid "Overview"
+msgstr ""
+
 #: src/components/pages/SharePopover.tsx
 #: src/lib/identity-display.ts
 #: src/pages/Board.tsx
+#: src/pages/cms/members-page.tsx
 msgid "Owner"
 msgstr "Propietario"
 
@@ -5061,6 +5142,10 @@ msgstr ""
 msgid "Recent"
 msgstr "Recientes"
 
+#: src/pages/cms/overview-page.tsx
+msgid "Recent documents"
+msgstr ""
+
 #: src/pages/PluginsOverlay.tsx
 msgid "Recommended"
 msgstr "Recomendadas"
@@ -5218,6 +5303,10 @@ msgstr "Quitar {0}"
 #: src/pages/GroupPanel.tsx
 msgid "Remove {0} from the group"
 msgstr "Quitar a {0} del grupo"
+
+#: src/pages/cms/apps-page.tsx
+msgid "Remove {app}"
+msgstr ""
 
 #: src/components/vault/VaultItemDetail.tsx
 msgid "Remove {secretName}? Bots will no longer be able to use it."
@@ -5544,6 +5633,7 @@ msgstr "sábado"
 #: src/components/vault/VaultItemEditor.tsx
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/Board.tsx
+#: src/pages/cms/apps-page.tsx
 #: src/pages/ExternalConversationSettings.tsx
 #: src/pages/GroupPanel.tsx
 #: src/pages/KnowledgeSection.tsx
@@ -6791,6 +6881,7 @@ msgstr "Mejorar plan"
 msgid "Upgrade now"
 msgstr "Aumentar ahora"
 
+#: src/pages/cms/documents-page.tsx
 #: src/pages/shell/avatar-studio-popover.tsx
 msgid "Upload"
 msgstr "Subir"
@@ -6822,6 +6913,10 @@ msgstr "Usa {oauthEnvReference} para el token de acceso."
 msgid "Use a found model"
 msgstr "Usar un modelo encontrado"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Use a PDF, TXT or Markdown file"
+msgstr ""
+
 #: src/lib/model-connection-preflight.ts
 msgid "Use Connect to verify the key."
 msgstr "Usa Conectar para verificar la clave."
@@ -6837,6 +6932,10 @@ msgstr "Usar predeterminados en {label}"
 #: src/components/integrations/plugin-marketplace.tsx
 msgid "Use in this bot"
 msgstr "Usar en este bot"
+
+#: src/pages/cms/apps-page.tsx
+msgid "Use letters, digits, dots, dashes and underscores"
+msgstr ""
 
 #: src/components/ModelCredits.tsx
 msgid "Use my subscription or API key"

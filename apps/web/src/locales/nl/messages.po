@@ -96,6 +96,11 @@ msgstr "{0} (meer dan {1})"
 msgid "{0} {unitLabel}"
 msgstr "{0} {unitLabel}"
 
+#. placeholder {0}: policy.data.allowedApps.length
+#: src/pages/cms/overview-page.tsx
+msgid "{0} allowed"
+msgstr ""
+
 #. placeholder {0}: block.name
 #: src/pages/shell/message-cards.tsx
 msgid "{0} connection"
@@ -507,6 +512,7 @@ msgstr "Activiteit"
 
 #: src/components/integrations/plugin-marketplace.tsx
 #: src/components/SecretAskCard.tsx
+#: src/pages/cms/apps-page.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/PluginsOverlay.tsx
 #: src/pages/ScratchpadSection.tsx
@@ -566,6 +572,10 @@ msgstr "Voeg een HTTPS-server-URL toe."
 #: src/pages/PluginsOverlay.tsx
 msgid "Add another"
 msgstr "Nog een toevoegen"
+
+#: src/pages/cms/apps-page.tsx
+msgid "Add app"
+msgstr ""
 
 #: src/components/ModelCredits.tsx
 msgid "Add credits"
@@ -656,6 +666,11 @@ msgstr ""
 msgid "Address line 2"
 msgstr ""
 
+#: src/pages/cms/members-page.tsx
+#: src/pages/CmsPage.tsx
+msgid "Admin"
+msgstr ""
+
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
 #: src/pages/ModelSettingsOverlay.tsx
@@ -682,6 +697,10 @@ msgstr ""
 #: src/components/ModelCredits.tsx
 msgid "All {credit} goes to model usage."
 msgstr "De volledige {credit} gaat naar modelgebruik."
+
+#: src/pages/cms/overview-page.tsx
+msgid "All apps"
+msgstr ""
 
 #: src/components/integrations/agent-access.tsx
 #: src/pages/Artifacts.tsx
@@ -724,6 +743,10 @@ msgstr ""
 #: src/pages/memory-providers/SerenitySettingsForm.tsx
 msgid "Allow writing"
 msgstr "Schrijven toestaan"
+
+#: src/pages/cms/apps-page.tsx
+msgid "Allowed apps"
+msgstr ""
 
 #: src/components/AskCard.tsx
 msgid "Allowed in this space"
@@ -854,6 +877,10 @@ msgstr ""
 msgid "API URL"
 msgstr ""
 
+#: src/pages/cms/apps-page.tsx
+msgid "App slug"
+msgstr ""
+
 #: src/pages/AccountSettingsOverlay.tsx
 msgid "Appearance"
 msgstr "Weergave"
@@ -902,6 +929,8 @@ msgid "Approving…"
 msgstr ""
 
 #: src/components/integrations/plugin-marketplace.tsx
+#: src/pages/cms/overview-page.tsx
+#: src/pages/CmsPage.tsx
 #: src/pages/PluginsOverlay.tsx
 msgid "Apps"
 msgstr ""
@@ -1021,6 +1050,7 @@ msgstr "Avatarstudio"
 #: src/pages/AdminPluginsPage.tsx
 #: src/pages/Auth.tsx
 #: src/pages/Board.tsx
+#: src/pages/CmsPage.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/NavLinkPage.tsx
 #: src/pages/PluginsOverlay.tsx
@@ -1029,6 +1059,10 @@ msgstr "Avatarstudio"
 #: src/pages/shell/agent-import.tsx
 msgid "Back"
 msgstr "Terug"
+
+#: src/pages/CmsPage.tsx
+msgid "Back to app"
+msgstr ""
 
 #: src/components/pages/PageNotice.tsx
 msgid "Back to chat"
@@ -1143,6 +1177,10 @@ msgstr "Bots"
 msgid "Bots and browser automation"
 msgstr ""
 
+#: src/pages/cms/documents-page.tsx
+msgid "Bots stop reading it."
+msgstr ""
+
 #: src/pages/Paywall.tsx
 msgid "Bots with their own computer and browser"
 msgstr "Bots met een eigen computer en browser"
@@ -1212,6 +1250,7 @@ msgstr "Kan afbeeldingen niet lezen"
 #: src/components/vault/VaultItemDetail.tsx
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/Artifacts.tsx
+#: src/pages/cms/documents-page.tsx
 #: src/pages/KnowledgeSection.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/connection-controls.tsx
@@ -2022,6 +2061,10 @@ msgstr "Space verwijderen mislukt"
 msgid "Could not delete this artifact."
 msgstr "Dit artefact verwijderen mislukt."
 
+#: src/pages/cms/documents-page.tsx
+msgid "Could not delete this file"
+msgstr ""
+
 #: src/pages/MemorySettingsOverlay.tsx
 msgid "Could not disconnect memory provider"
 msgstr "Geheugenaanbieder loskoppelen mislukt"
@@ -2268,6 +2311,10 @@ msgstr "Routine uitvoeren mislukt"
 msgid "Could not save"
 msgstr "Opslaan mislukt"
 
+#: src/pages/cms/apps-page.tsx
+msgid "Could not save allowed apps"
+msgstr ""
+
 #: src/components/ApprovalRulesSettings.tsx
 msgid "Could not save Auto Review"
 msgstr "Auto Review opslaan mislukt"
@@ -2398,6 +2445,10 @@ msgstr "Reactie bijwerken mislukt"
 #: src/pages/MemorySettingsOverlay.tsx
 msgid "Could not update the default memory scope"
 msgstr "Het standaardgeheugenbereik bijwerken mislukt"
+
+#: src/pages/cms/documents-page.tsx
+msgid "Could not upload this file"
+msgstr ""
 
 #: src/components/ComputersUnavailableHint.tsx
 msgid "Could not verify computer setup ({failureMessage}). Fix the connection, then check again."
@@ -2621,6 +2672,7 @@ msgstr "Standaardbereik"
 #: src/components/PasskeySettings.tsx
 #: src/pages/Artifacts.tsx
 #: src/pages/BotContextMenu.tsx
+#: src/pages/cms/documents-page.tsx
 #: src/pages/KnowledgeSection.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/OrganizationSettingsPanel.tsx
@@ -2680,6 +2732,10 @@ msgstr "Sectie verwijderen"
 #: src/pages/SpaceSettingsPanel.tsx
 msgid "Delete space"
 msgstr "Space verwijderen"
+
+#: src/pages/cms/documents-page.tsx
+msgid "Delete this document?"
+msgstr ""
 
 #: src/pages/SpaceSettingOverrides.tsx
 msgid "Delete this Space's credentials?"
@@ -2842,9 +2898,19 @@ msgstr "Docker beperkt de toegang tot je computer voor extra veiligheid. Met {ho
 msgid "Docs"
 msgstr "Documentatie"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Document actions"
+msgstr ""
+
 #: src/pages/KnowledgeSection.tsx
 msgid "Document changed. Reopen to edit the latest version."
 msgstr "Het document is gewijzigd. Open het opnieuw om de nieuwste versie te bewerken."
+
+#: src/pages/cms/documents-page.tsx
+#: src/pages/cms/overview-page.tsx
+#: src/pages/CmsPage.tsx
+msgid "Documents"
+msgstr ""
 
 #: src/pages/Auth.tsx
 msgid "Don’t have an account?"
@@ -3937,8 +4003,14 @@ msgid "Medium"
 msgstr "Gemiddeld"
 
 #: src/lib/identity-display.ts
+#: src/pages/cms/members-page.tsx
 msgid "Member"
 msgstr "Lid"
+
+#: src/pages/cms/overview-page.tsx
+#: src/pages/CmsPage.tsx
+msgid "Members"
+msgstr ""
 
 #. placeholder {0}: selected.length
 #: src/pages/GroupPanel.tsx
@@ -4574,6 +4646,10 @@ msgstr "Eenmalig"
 msgid "One-time purchase. Credits do not expire."
 msgstr ""
 
+#: src/pages/cms/apps-page.tsx
+msgid "Only allow listed apps"
+msgstr ""
+
 #: src/components/SecretAskCard.tsx
 msgid "Only enter a code {codeHost} sent you."
 msgstr ""
@@ -4708,9 +4784,14 @@ msgstr "Ander model…"
 msgid "Output"
 msgstr "Uitvoer"
 
+#: src/pages/CmsPage.tsx
+msgid "Overview"
+msgstr ""
+
 #: src/components/pages/SharePopover.tsx
 #: src/lib/identity-display.ts
 #: src/pages/Board.tsx
+#: src/pages/cms/members-page.tsx
 msgid "Owner"
 msgstr "Eigenaar"
 
@@ -5061,6 +5142,10 @@ msgstr ""
 msgid "Recent"
 msgstr "Recent"
 
+#: src/pages/cms/overview-page.tsx
+msgid "Recent documents"
+msgstr ""
+
 #: src/pages/PluginsOverlay.tsx
 msgid "Recommended"
 msgstr ""
@@ -5218,6 +5303,10 @@ msgstr "{0} verwijderen"
 #: src/pages/GroupPanel.tsx
 msgid "Remove {0} from the group"
 msgstr "{0} uit de groep verwijderen"
+
+#: src/pages/cms/apps-page.tsx
+msgid "Remove {app}"
+msgstr ""
 
 #: src/components/vault/VaultItemDetail.tsx
 msgid "Remove {secretName}? Bots will no longer be able to use it."
@@ -5544,6 +5633,7 @@ msgstr "zaterdag"
 #: src/components/vault/VaultItemEditor.tsx
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/Board.tsx
+#: src/pages/cms/apps-page.tsx
 #: src/pages/ExternalConversationSettings.tsx
 #: src/pages/GroupPanel.tsx
 #: src/pages/KnowledgeSection.tsx
@@ -6791,6 +6881,7 @@ msgstr "Upgraden"
 msgid "Upgrade now"
 msgstr ""
 
+#: src/pages/cms/documents-page.tsx
 #: src/pages/shell/avatar-studio-popover.tsx
 msgid "Upload"
 msgstr "Uploaden"
@@ -6822,6 +6913,10 @@ msgstr "Gebruik {oauthEnvReference} voor het toegangstoken."
 msgid "Use a found model"
 msgstr "Een gevonden model gebruiken"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Use a PDF, TXT or Markdown file"
+msgstr ""
+
 #: src/lib/model-connection-preflight.ts
 msgid "Use Connect to verify the key."
 msgstr "Gebruik Verbinden om de sleutel te verifiëren."
@@ -6836,6 +6931,10 @@ msgstr "Standaardinstellingen gebruiken voor {label}"
 
 #: src/components/integrations/plugin-marketplace.tsx
 msgid "Use in this bot"
+msgstr ""
+
+#: src/pages/cms/apps-page.tsx
+msgid "Use letters, digits, dots, dashes and underscores"
 msgstr ""
 
 #: src/components/ModelCredits.tsx

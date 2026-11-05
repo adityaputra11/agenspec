@@ -9,6 +9,7 @@ import {
 } from "@rakazo/adapters";
 import { isDeletableMemoryDocument } from "@rakazo/contracts";
 import { findSpaceMemoryConfig, IsolationError } from "@rakazo/db";
+import { isOrganizationDocumentPath } from "@rakazo/memory";
 import {
   disconnectMemoryProvider,
   persistMemoryProviderConfig,
@@ -62,6 +63,11 @@ export function memoryRoutes(ctx: RouterContext) {
           },
         });
         if (!doc) throw new IsolationError();
+        if (isOrganizationDocumentPath(doc.path)) {
+          throw new ORPCError("FORBIDDEN", {
+            message: "This document is managed by your organization",
+          });
+        }
         const updated = await deps.memory
           .commit(
             {
@@ -104,6 +110,11 @@ export function memoryRoutes(ctx: RouterContext) {
           },
         });
         if (!doc) throw new IsolationError();
+        if (isOrganizationDocumentPath(doc.path)) {
+          throw new ORPCError("FORBIDDEN", {
+            message: "This document is managed by your organization",
+          });
+        }
         if (!isDeletableMemoryDocument(doc.path)) {
           throw new ORPCError("BAD_REQUEST", {
             message: `${doc.path} cannot be deleted; edit its content instead.`,
