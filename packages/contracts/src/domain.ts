@@ -220,10 +220,14 @@ export function defaultGroupName(names: readonly string[]): string {
   return (last >= 0xd800 && last <= 0xdbff ? value.slice(0, -1) : value).trim();
 }
 
+export const GROUP_INSTRUCTIONS_MAX_LENGTH = 4000;
+
 export const GroupSchema = z.object({
   id: Id,
   spaceId: Id,
   name: z.string(),
+  /** What every bot follows in this group, on top of its own instructions. */
+  instructions: z.string().optional(),
   pinned: z.boolean(),
   sectionId: Id.nullable(),
   archivedAt: z.string().nullable(),
@@ -251,6 +255,7 @@ export type CreateGroupInput = z.infer<typeof CreateGroupInput>;
 export const UpdateGroupInput = z.object({
   groupId: Id,
   name: z.string().trim().min(1).max(GROUP_NAME_MAX_LENGTH).optional(),
+  instructions: z.string().trim().max(GROUP_INSTRUCTIONS_MAX_LENGTH).optional(),
   botIds: GroupBotIds.optional(),
   /** Reject a membership replacement when another client changed the active roster. */
   expectedBotIds: z.array(Id).max(GROUP_MEMBER_MAX).optional(),

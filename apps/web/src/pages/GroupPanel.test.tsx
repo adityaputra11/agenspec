@@ -22,6 +22,7 @@ vi.mock("@rakazo/ui-web", async (importOriginal) => {
     BotAvatar: () => <span />,
     Button: (props: ComponentProps<"button">) => <button {...props} />,
     Input: (props: ComponentProps<"input">) => <input {...props} />,
+    Textarea: (props: ComponentProps<"textarea">) => <textarea {...props} />,
     AlertDialog: ({
       children,
       onOpenChange,
@@ -245,6 +246,22 @@ describe("GroupSettings", () => {
     expect(onClose).not.toHaveBeenCalled();
     await act(async () => finishSave());
     expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it("saves group instructions only when they changed", async () => {
+    const onSave = vi.fn(async () => undefined);
+    await render({ onSave });
+    const textarea = container.querySelector("textarea");
+    if (!textarea) throw new Error("instructions field not found");
+    await act(async () => {
+      const setValue = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, "value")?.set;
+      setValue?.call(textarea, "  Only reply to greetings here.  ");
+      textarea.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await click("Save");
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({ instructions: "Only reply to greetings here." }),
+    );
   });
 
   it("stays open with the error when the save fails", async () => {

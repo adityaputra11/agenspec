@@ -22,6 +22,8 @@ type GroupRecord = {
   spaceId: string;
   userId: string;
   name: string;
+  /** Absent from older test fixtures; the column defaults to an empty string. */
+  instructions?: string;
   pinned: boolean;
   sectionId: string | null;
   archivedAt: Date | null;
@@ -70,6 +72,7 @@ function mapGroup(group: GroupRecord): Group {
     id: group.id,
     spaceId: group.spaceId,
     name: group.name,
+    instructions: group.instructions ?? "",
     pinned: group.pinned,
     sectionId: group.sectionId,
     archivedAt: group.archivedAt?.toISOString() ?? null,
@@ -453,6 +456,7 @@ export function createGroupRepos(prisma: PrismaClient) {
       input: {
         groupId: string;
         name?: string;
+        instructions?: string;
         botIds?: string[];
         expectedBotIds?: string[];
         pinned?: boolean;
@@ -538,6 +542,7 @@ export function createGroupRepos(prisma: PrismaClient) {
             updatedAt: new Date(),
             pinned: input.pinned,
             sectionId: input.sectionId,
+            instructions: input.instructions,
           },
         });
         const loaded = await tx.chatGroup.findFirstOrThrow({

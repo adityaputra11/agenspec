@@ -1,7 +1,12 @@
 import { Trans, useLingui } from "@lingui/react/macro";
 import type { Bot, Group } from "@rakazo/contracts";
-import { GROUP_MEMBER_MAX, GROUP_MEMBER_MIN, GROUP_NAME_MAX_LENGTH } from "@rakazo/contracts";
-import { BotAvatar, Button, Checkbox, Input, SectionHeading } from "@rakazo/ui-web";
+import {
+  GROUP_INSTRUCTIONS_MAX_LENGTH,
+  GROUP_MEMBER_MAX,
+  GROUP_MEMBER_MIN,
+  GROUP_NAME_MAX_LENGTH,
+} from "@rakazo/contracts";
+import { BotAvatar, Button, Checkbox, Input, SectionHeading, Textarea } from "@rakazo/ui-web";
 import { X } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
@@ -232,7 +237,7 @@ export function GroupSettings({
 }: {
   group: Group;
   bots: Bot[];
-  onSave: (input: { name?: string; botIds?: string[] }) => Promise<void>;
+  onSave: (input: { name?: string; instructions?: string; botIds?: string[] }) => Promise<void>;
   onRemove: () => Promise<void>;
   onClose: () => void;
   onOpenBot?: (botId: string) => void;
@@ -243,6 +248,8 @@ export function GroupSettings({
   const { t } = useLingui();
   const nameId = useId();
   const [name, setName] = useState(group.name);
+  const instructionsId = useId();
+  const [instructions, setInstructions] = useState(group.instructions ?? "");
   const [selected, setSelected] = useState(group.members.map((member) => member.botId));
   // The panel can open on a cached group. A refreshed one replaces whatever was not edited, so a
   // save does not send the cached name or members back as a change.
@@ -250,6 +257,7 @@ export function GroupSettings({
   if (group !== shownGroup) {
     setShownGroup(group);
     if (name === shownGroup.name) setName(group.name);
+    if (instructions === (shownGroup.instructions ?? "")) setInstructions(group.instructions ?? "");
     const shownMembers = shownGroup.members.map((member) => member.botId);
     if (sameMembers(selected, shownMembers)) {
       setSelected(group.members.map((member) => member.botId));
@@ -294,6 +302,10 @@ export function GroupSettings({
     try {
       await onSave({
         name: name.trim() !== group.name ? name.trim() : undefined,
+        instructions:
+          instructions.trim() !== (group.instructions ?? "").trim()
+            ? instructions.trim()
+            : undefined,
         botIds: sameMembers(
           selected,
           group.members.map((member) => member.botId),
@@ -341,6 +353,18 @@ export function GroupSettings({
           onChange={(e) => setName(e.target.value)}
           maxLength={GROUP_NAME_MAX_LENGTH}
           className="mt-2"
+        />
+      </label>
+      <label htmlFor={instructionsId} className="mt-4 block text-sm text-muted-foreground">
+        <Trans>Instructions</Trans>
+        <Textarea
+          id={instructionsId}
+          value={instructions}
+          onChange={(e) => setInstructions(e.target.value)}
+          maxLength={GROUP_INSTRUCTIONS_MAX_LENGTH}
+          placeholder={t`What every bot here should do`}
+          rows={3}
+          className="mt-2 max-h-60 resize-none field-sizing-content"
         />
       </label>
       <MemberPicker bots={bots} selected={selected} onChange={setSelected} onOpenBot={onOpenBot} />
