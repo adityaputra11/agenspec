@@ -1,12 +1,27 @@
 import { Trans, useLingui } from "@lingui/react/macro";
-import type { Bot, Group } from "@rakazo/contracts";
+import type { Bot, Group, GroupPerson } from "@rakazo/contracts";
 import {
   GROUP_INSTRUCTIONS_MAX_LENGTH,
   GROUP_MEMBER_MAX,
   GROUP_MEMBER_MIN,
   GROUP_NAME_MAX_LENGTH,
 } from "@rakazo/contracts";
-import { BotAvatar, Button, Checkbox, Input, SectionHeading, Textarea } from "@rakazo/ui-web";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  BotAvatar,
+  Button,
+  Checkbox,
+  Input,
+  SectionHeading,
+  Textarea,
+} from "@rakazo/ui-web";
 import { X } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
@@ -228,8 +243,12 @@ export function CreateGroupForm({
 export function GroupSettings({
   group,
   bots,
+  viewerId,
   onSave,
+  onSavePeople,
+  loadCandidates,
   onRemove,
+  onLeave,
   onClose,
   onOpenBot,
   covered = false,
@@ -237,8 +256,13 @@ export function GroupSettings({
 }: {
   group: Group;
   bots: Bot[];
+  /** The signed-in person. The owner is whoever made the group, or anyone when unknown. */
+  viewerId?: string;
   onSave: (input: { name?: string; instructions?: string; botIds?: string[] }) => Promise<void>;
+  onSavePeople: (userIds: string[]) => Promise<void>;
+  loadCandidates: () => Promise<GroupPerson[]>;
   onRemove: () => Promise<void>;
+  onLeave: () => Promise<void>;
   onClose: () => void;
   onOpenBot?: (botId: string) => void;
   /** A full-screen overlay is on top, so Escape belongs to it. */
@@ -251,6 +275,13 @@ export function GroupSettings({
   const instructionsId = useId();
   const [instructions, setInstructions] = useState(group.instructions ?? "");
   const [selected, setSelected] = useState(group.members.map((member) => member.botId));
+  const groupPeopleIds = (group.people ?? []).map((person) => person.userId);
+  const [peopleIds, setPeopleIds] = useState(groupPeopleIds);
+  const [candidates, setCandidates] = useState<GroupPerson[] | null>(null);
+  const [addingPeople, setAddingPeople] = useState(false);
+  const [peopleQuery, setPeopleQuery] = useState("");
+  const peopleListId = useId();
+  const isOwner = !group.ownerUserId || group.ownerUserId === viewerId;
   // The panel can open on a cached group. A refreshed one replaces whatever was not edited, so a
   // save does not send the cached name or members back as a change.
   const [shownGroup, setShownGroup] = useState(group);
@@ -262,9 +293,31 @@ export function GroupSettings({
     if (sameMembers(selected, shownMembers)) {
       setSelected(group.members.map((member) => member.botId));
     }
+    const shownPeopleIds = (shownGroup.people ?? []).map((person) => person.userId);
+    if (sameMembers(peopleIds, shownPeopleIds)) setPeopleIds(groupPeopleIds);
   }
+  const knownPeople = useMemo(
+    () =>
+      new Map(
+        [...(group.people ?? []), ...(candidates ?? [])].map((person) => [person.userId, person]),
+      ),
+    [group.people, candidates],
+  );
+  const shownPeople = peopleIds.flatMap((id) => {
+    const person = knownPeople.get(id);
+    return person ? [person] : [];
+  });
+  const peopleNeedle = peopleQuery.trim().toLowerCase();
+  const matchingCandidates = (candidates ?? []).filter(
+    (person) =>
+      !peopleNeedle ||
+      person.name.toLowerCase().includes(peopleNeedle) ||
+      (person.email ?? "").toLowerCase().includes(peopleNeedle),
+  );
+  const peopleChanged = !sameMembers(peopleIds, groupPeopleIds);
   const [saving, setSaving] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [confirmingLeave, setConfirmingLeave] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const mounted = useRef(false);
 
@@ -276,10 +329,10 @@ export function GroupSettings({
   }, []);
 
   // Closing while a save is in flight would let its completion close the panel
-  // again after a reopen. While the delete confirmation or an overlay is open,
+  // again after a reopen. While a confirmation or an overlay is open,
   // Escape belongs to it.
   useEffect(() => {
-    if (saving || confirmingDelete || covered) return;
+    if (saving || confirmingDelete || confirmingLeave || covered) return;
     const onKey = (event: KeyboardEvent) => {
       if (
         event.key === "Escape" &&
@@ -293,7 +346,24 @@ export function GroupSettings({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [saving, confirmingDelete, covered, onClose]);
+  }, [saving, confirmingDelete, confirmingLeave, covered, onClose]);
+
+  async function togglePeoplePicker() {
+    const opening = !addingPeople;
+    setAddingPeople(opening);
+    if (!opening || candidates) return;
+    try {
+      setCandidates(await loadCandidates());
+    } catch (cause) {
+      setError(errorText(cause, t`Could not load people`));
+    }
+  }
+
+  function togglePerson(userId: string) {
+    setPeopleIds((current) =>
+      current.includes(userId) ? current.filter((id) => id !== userId) : [...current, userId],
+    );
+  }
 
   async function save() {
     if (saving) return;
@@ -315,10 +385,19 @@ export function GroupSettings({
       });
     } catch (cause) {
       setError(errorText(cause, t`Could not save group`));
-      return;
-    } finally {
       setSaving(false);
+      return;
     }
+    if (peopleChanged) {
+      try {
+        await onSavePeople(peopleIds);
+      } catch (cause) {
+        setError(errorText(cause, t`Could not update people`));
+        setSaving(false);
+        return;
+      }
+    }
+    setSaving(false);
     // A save that finishes after the user switched chats must not close
     // whatever panel is open there.
     if (mounted.current) onClose();
@@ -352,6 +431,7 @@ export function GroupSettings({
           value={name}
           onChange={(e) => setName(e.target.value)}
           maxLength={GROUP_NAME_MAX_LENGTH}
+          disabled={!isOwner}
           className="mt-2"
         />
       </label>
@@ -364,17 +444,130 @@ export function GroupSettings({
           maxLength={GROUP_INSTRUCTIONS_MAX_LENGTH}
           placeholder={t`What every bot here should do`}
           rows={3}
+          disabled={!isOwner}
           className="mt-2 max-h-60 resize-none field-sizing-content"
         />
       </label>
-      <MemberPicker bots={bots} selected={selected} onChange={setSelected} onOpenBot={onOpenBot} />
-      <Button
-        className="mt-5 w-full"
-        disabled={saving || !validSelection(name, selected)}
-        onClick={() => void save()}
-      >
-        {saving ? <Trans>Saving…</Trans> : <Trans>Save</Trans>}
-      </Button>
+      {isOwner ? (
+        <MemberPicker
+          bots={bots}
+          selected={selected}
+          onChange={setSelected}
+          onOpenBot={onOpenBot}
+        />
+      ) : (
+        <div className="mt-5">
+          <span className="text-sm text-muted-foreground">
+            <Trans>Members ({group.members.length})</Trans>
+          </span>
+          <ul className="mt-2 space-y-1">
+            {group.members.map((member) => (
+              <li key={member.botId} className="px-2.5 py-2 text-[15px] text-foreground" dir="auto">
+                {member.name}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <section className="mt-5">
+        <div className="flex items-center justify-between">
+          <SectionHeading variant="label">
+            <Trans>People</Trans>
+          </SectionHeading>
+          {isOwner ? (
+            <Button
+              variant="text"
+              aria-expanded={addingPeople}
+              aria-controls={peopleListId}
+              onClick={() => void togglePeoplePicker()}
+              className="font-normal"
+            >
+              <Trans>Add people</Trans>
+            </Button>
+          ) : null}
+        </div>
+        <div id={peopleListId} className="mt-2 space-y-1">
+          {shownPeople.map((person) => (
+            <div key={person.userId} className="flex items-center gap-2 px-2.5 py-2">
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-[15px] text-foreground" dir="auto">
+                  {person.name}
+                </div>
+                {person.email ? (
+                  <div className="truncate text-sm text-muted-foreground">{person.email}</div>
+                ) : null}
+              </div>
+              {isOwner ? (
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label={t`Remove ${person.name}`}
+                  disabled={saving}
+                  onClick={() => togglePerson(person.userId)}
+                  className="text-muted-foreground"
+                >
+                  <X size={16} strokeWidth={1.8} />
+                </Button>
+              ) : null}
+            </div>
+          ))}
+        </div>
+        {isOwner && addingPeople ? (
+          <div className="mt-2">
+            <Input
+              value={peopleQuery}
+              onChange={(event) => setPeopleQuery(event.target.value)}
+              placeholder={t`Search people`}
+              aria-label={t`Search people`}
+            />
+            <div className="mt-2 max-h-60 space-y-1 overflow-y-auto">
+              {matchingCandidates.map((person) => {
+                const checked = peopleIds.includes(person.userId);
+                return (
+                  <div
+                    key={person.userId}
+                    className={`flex items-center gap-2 rounded-xl px-2.5 py-2 ${
+                      checked ? "bg-accent" : "hover:bg-accent"
+                    }`}
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-[15px] text-foreground" dir="auto">
+                        {person.name}
+                      </div>
+                      {person.email ? (
+                        <div className="truncate text-sm text-muted-foreground">{person.email}</div>
+                      ) : null}
+                    </div>
+                    <Checkbox
+                      checked={checked}
+                      aria-label={
+                        checked
+                          ? t`Remove ${person.name} from the group`
+                          : t`Add ${person.name} to the group`
+                      }
+                      onCheckedChange={() => togglePerson(person.userId)}
+                    />
+                  </div>
+                );
+              })}
+              {candidates && matchingCandidates.length === 0 ? (
+                <p className="px-2.5 py-2 text-sm text-muted-foreground">
+                  <Trans>No people match</Trans>
+                </p>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
+      </section>
+      {isOwner ? (
+        <Button
+          className="mt-5 w-full"
+          disabled={saving || !validSelection(name, selected)}
+          onClick={() => void save()}
+        >
+          {saving ? <Trans>Saving…</Trans> : <Trans>Save</Trans>}
+        </Button>
+      ) : null}
       {pages ? (
         <section className="mt-6">
           <SectionHeading variant="label" className="mb-2">
@@ -383,14 +576,25 @@ export function GroupSettings({
           {pages}
         </section>
       ) : null}
-      <Button
-        variant="destructive"
-        className="mt-4 w-full"
-        disabled={saving}
-        onClick={() => setConfirmingDelete(true)}
-      >
-        <Trans>Delete group</Trans>
-      </Button>
+      {isOwner ? (
+        <Button
+          variant="destructive"
+          className="mt-4 w-full"
+          disabled={saving}
+          onClick={() => setConfirmingDelete(true)}
+        >
+          <Trans>Delete group</Trans>
+        </Button>
+      ) : (
+        <Button
+          variant="destructive"
+          className="mt-4 w-full"
+          disabled={saving}
+          onClick={() => setConfirmingLeave(true)}
+        >
+          <Trans>Leave group</Trans>
+        </Button>
+      )}
       {confirmingDelete ? (
         <DeleteItemDialog
           item={group}
@@ -399,6 +603,65 @@ export function GroupSettings({
           onConfirm={onRemove}
         />
       ) : null}
+      {confirmingLeave ? (
+        <LeaveGroupDialog onCancel={() => setConfirmingLeave(false)} onConfirm={onLeave} />
+      ) : null}
     </div>
+  );
+}
+
+function LeaveGroupDialog({
+  onCancel,
+  onConfirm,
+}: {
+  onCancel: () => void;
+  onConfirm: () => Promise<void>;
+}) {
+  const { t } = useLingui();
+  const [leaving, setLeaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  return (
+    <AlertDialog
+      open
+      onOpenChange={(open) => {
+        if (!open && !leaving) onCancel();
+      }}
+    >
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            <Trans>Leave this group?</Trans>
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            <Trans>You stop seeing its messages.</Trans>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        {error ? (
+          <p role="alert" className="text-[13.5px] text-destructive">
+            {error}
+          </p>
+        ) : null}
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={leaving}>
+            <Trans>Cancel</Trans>
+          </AlertDialogCancel>
+          <AlertDialogAction
+            variant="destructive"
+            disabled={leaving}
+            onClick={() => {
+              setLeaving(true);
+              setError(null);
+              void onConfirm().catch((cause: unknown) => {
+                setError(errorText(cause, t`Could not leave group`));
+                setLeaving(false);
+              });
+            }}
+          >
+            <Trans>Leave group</Trans>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

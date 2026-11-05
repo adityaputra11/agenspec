@@ -1136,6 +1136,7 @@ function SpaceShell() {
               onJumpToMessage={jumpToReplyMessage}
               onOpenPeerMessages={openPeerMessages}
               memberName={resolveTranscriptMemberName}
+              currentUserId={userId}
               peerBot={resolveTranscriptBot}
               onRefresh={refreshActiveThread}
               onBotChanged={refreshBots}
@@ -1310,6 +1311,7 @@ function SpaceShell() {
         openSettings={openSettings}
         memoryProviderConfigured={memoryProviderConfig != null}
         setAgentSkills={setAgentSkills}
+        viewerId={userId}
         onClearBot={(bot) => dialogs.setClearTarget({ kind: "bot", chat: bot })}
       />
 

@@ -63,6 +63,7 @@ export const MessageView = memo(function MessageView({
   onOpenPeerMessages,
   peerExchange,
   speakerName,
+  senderName,
   memberName,
   peerBot,
   replyParent,
@@ -104,6 +105,8 @@ export const MessageView = memo(function MessageView({
   /** The adjacent receipts represented by this peer line. */
   peerExchange?: PeerExchange;
   speakerName?: string;
+  /** Who wrote a person's message in a shared group chat, when it is not you. */
+  senderName?: string;
   memberName?: (botId: string | undefined) => string | undefined;
   peerBot: (
     botId: string,
@@ -196,6 +199,11 @@ export const MessageView = memo(function MessageView({
             size={22}
           />
           {speakerName}
+        </div>
+      ) : null}
+      {senderName ? (
+        <div className="mb-1.5 text-end text-[13px] text-muted-foreground" dir="auto">
+          {senderName}
         </div>
       ) : null}
       <ReplyLine

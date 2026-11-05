@@ -51,6 +51,7 @@ export function ShellSidePanel({
   memoryProviderConfigured,
   setAgentSkills,
   onClearBot,
+  viewerId,
 }: {
   rpc: ReturnType<typeof createSpaceRpc>;
   panel: Panel;
@@ -78,6 +79,7 @@ export function ShellSidePanel({
   memoryProviderConfigured: boolean;
   setAgentSkills: (skills: AgentSkillCatalogEntry[]) => void;
   onClearBot: (bot: Bot) => void;
+  viewerId?: string;
 }) {
   const { t } = useLingui();
   const open = Boolean(panel && (active || activeGroup || panel === "import-agent"));
@@ -150,6 +152,7 @@ export function ShellSidePanel({
               key={activeGroup.id}
               group={activeGroup}
               bots={bots}
+              viewerId={viewerId}
               pages={<PagesList groupId={activeGroup.id} />}
               onSave={async (input) => {
                 const updated = await rpc.groups.update({ groupId: activeGroup.id, ...input });
@@ -159,6 +162,24 @@ export function ShellSidePanel({
                 void Promise.all([refreshBots(), refreshGroupThread(activeGroup.id)]).catch(
                   () => undefined,
                 );
+              }}
+              onSavePeople={async (userIds) => {
+                const updated = await rpc.groups.people.set({
+                  groupId: activeGroup.id,
+                  userIds,
+                });
+                setGroups((current) =>
+                  current.map((group) => (group.id === updated.id ? updated : group)),
+                );
+              }}
+              loadCandidates={() => rpc.groups.people.candidates({ groupId: activeGroup.id })}
+              onLeave={async () => {
+                await rpc.groups.leave({ groupId: activeGroup.id });
+                const remainingGroups = groups.filter((group) => group.id !== activeGroup.id);
+                setGroups(remainingGroups);
+                setPanel(null);
+                navigate(firstThreadRoute(bots, remainingGroups), { replace: true });
+                await refreshBots().catch(() => undefined);
               }}
               onRemove={async () => {
                 await rpc.groups.remove({ groupId: activeGroup.id });

@@ -525,6 +525,7 @@ msgid "Add"
 msgstr "追加"
 
 #. placeholder {0}: bot.name
+#. placeholder {0}: person.name
 #: src/pages/GroupPanel.tsx
 msgid "Add {0} to the group"
 msgstr "{0}をグループに追加"
@@ -618,6 +619,10 @@ msgstr "未完了の作業を追加"
 #: src/components/PasskeySettings.tsx
 msgid "Add passkey"
 msgstr "パスキーを追加"
+
+#: src/pages/GroupPanel.tsx
+msgid "Add people"
+msgstr ""
 
 #: src/pages/model-settings/providers-section.tsx
 msgid "Add provider"
@@ -1280,6 +1285,7 @@ msgstr "画像を読み取れません"
 #: src/pages/cms/blueprints-page.tsx
 #: src/pages/cms/documents-page.tsx
 #: src/pages/cms/models-page.tsx
+#: src/pages/GroupPanel.tsx
 #: src/pages/KnowledgeSection.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/connection-controls.tsx
@@ -2161,6 +2167,10 @@ msgstr "コネクタをインストールできませんでした"
 msgid "Could not install plugin"
 msgstr ""
 
+#: src/pages/GroupPanel.tsx
+msgid "Could not leave group"
+msgstr ""
+
 #: src/components/ErrorBoundary.tsx
 #: src/components/PasskeySettings.tsx
 #: src/lib/user-devices.ts
@@ -2208,6 +2218,10 @@ msgstr "MCPサーバーを読み込めませんでした"
 #: src/pages/model-settings/use-model-settings.ts
 msgid "Could not load model settings"
 msgstr "モデル設定を読み込めませんでした"
+
+#: src/pages/GroupPanel.tsx
+msgid "Could not load people"
+msgstr ""
 
 #: src/pages/RoutineRunHistory.tsx
 msgid "Could not load run history"
@@ -2496,6 +2510,10 @@ msgstr "コンピューターを更新できませんでした"
 #: src/pages/AccountSettingsOverlay.tsx
 msgid "Could not update name"
 msgstr "名前を更新できませんでした"
+
+#: src/pages/GroupPanel.tsx
+msgid "Could not update people"
+msgstr ""
 
 #: src/pages/shell/use-composer-actions.ts
 msgid "Could not update reaction"
@@ -3842,6 +3860,14 @@ msgstr "後で"
 msgid "Leave"
 msgstr "退出"
 
+#: src/pages/GroupPanel.tsx
+msgid "Leave group"
+msgstr ""
+
+#: src/pages/GroupPanel.tsx
+msgid "Leave this group?"
+msgstr ""
+
 #: src/components/ComputerDeviceSettings.tsx
 msgid "Let bots use this computer"
 msgstr ""
@@ -4101,6 +4127,7 @@ msgstr ""
 msgid "Members"
 msgstr ""
 
+#. placeholder {0}: group.members.length
 #. placeholder {0}: selected.length
 #: src/pages/GroupPanel.tsx
 msgid "Members ({0})"
@@ -4592,6 +4619,10 @@ msgstr "OpenClaw、Hermes、またはエージェントのドキュメントが�
 msgid "No pages match “{query}”."
 msgstr "「{query}」に一致するページはありません。"
 
+#: src/pages/GroupPanel.tsx
+msgid "No people match"
+msgstr ""
+
 #: src/components/integrations/IntegrationSetup.tsx
 msgid "No remote MCP servers found"
 msgstr "リモートMCPサーバーが見つかりません"
@@ -5049,6 +5080,10 @@ msgstr "一時停止中"
 msgid "Pending"
 msgstr ""
 
+#: src/pages/GroupPanel.tsx
+msgid "People"
+msgstr ""
+
 #: src/pages/shell/bot-panel.tsx
 msgid "Permissions"
 msgstr "権限"
@@ -5442,12 +5477,15 @@ msgstr "削除"
 
 #. placeholder {0}: attachment.file.name
 #. placeholder {0}: device.name
+#. placeholder {0}: person.name
 #: src/components/ComputerDeviceSettings.tsx
+#: src/pages/GroupPanel.tsx
 #: src/pages/shell/composer.tsx
 msgid "Remove {0}"
 msgstr "{0}を削除"
 
 #. placeholder {0}: bot.name
+#. placeholder {0}: person.name
 #: src/pages/GroupPanel.tsx
 msgid "Remove {0} from the group"
 msgstr "{0}をグループから外す"
@@ -5919,6 +5957,10 @@ msgstr "integrations.shを検索"
 #: src/pages/shell/chat-model-picker.tsx
 msgid "Search models"
 msgstr "モデルを検索"
+
+#: src/pages/GroupPanel.tsx
+msgid "Search people"
+msgstr ""
 
 #: src/pages/shell/shell-sidebar.tsx
 msgid "Search runs"
@@ -7426,6 +7468,10 @@ msgstr "友だちが新しいカードでトライアルを始めると、あな
 #: src/pages/shell/computer-overlay.tsx
 msgid "You have control"
 msgstr "あなたが操作中"
+
+#: src/pages/GroupPanel.tsx
+msgid "You stop seeing its messages."
+msgstr ""
 
 #. js-lingui-explicit-id
 #: src/lib/run-error.ts

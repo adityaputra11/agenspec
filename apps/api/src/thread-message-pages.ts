@@ -59,7 +59,7 @@ export async function loadMessagePage(
       const messages = includePeerRuns ? rows : await withoutPeerRunMessages(prisma, rows);
       return {
         threadId,
-        messages: messages.map(toThreadMessage),
+        messages: await toThreadMessages(prisma, messages),
         olderCursor: hasOlder ? (first?.seq ?? null) : null,
         coveredThroughSeq,
       };
@@ -88,7 +88,7 @@ export async function loadMessagePage(
     if (hasSubstantive || includePeerReceipts || !hasOlder || includePeerRuns) {
       return {
         threadId,
-        messages: visibleRows.map(toThreadMessage),
+        messages: await toThreadMessages(prisma, visibleRows),
         olderCursor: hasOlder ? (pageRows[0]?.seq ?? null) : null,
       };
     }
@@ -252,25 +252,52 @@ export function shouldForwardBackgroundThreadEvent(event: {
   return Array.isArray(blocks) && blocks.some(isBackgroundInputBlock);
 }
 
-function toThreadMessage(row: {
-  id: string;
-  threadId: string;
-  seq: number;
-  role: string;
-  blocks: Prisma.JsonValue;
-  botId: string | null;
-  replyToMessageId: string | null;
-  replyQuote: string | null;
-  replyTo?: {
+type MessageRow = Parameters<typeof toThreadMessage>[0];
+
+/** Maps rows with one user lookup for every shared-group sender on the page, not one per message. */
+async function toThreadMessages(prisma: MessageDb, rows: MessageRow[]): Promise<ThreadMessage[]> {
+  const senderIds = [
+    ...new Set(rows.flatMap((row) => (row.senderUserId ? [row.senderUserId] : []))),
+  ];
+  if (senderIds.length === 0) return rows.map((row) => toThreadMessage(row));
+  const users = await prisma.user.findMany({
+    where: { id: { in: senderIds } },
+    select: { id: true, name: true },
+  });
+  const nameById = new Map(users.map((user) => [user.id, user.name]));
+  return rows.map((row) =>
+    toThreadMessage(
+      row,
+      row.senderUserId
+        ? { userId: row.senderUserId, name: nameById.get(row.senderUserId) ?? "" }
+        : undefined,
+    ),
+  );
+}
+
+function toThreadMessage(
+  row: {
+    id: string;
     threadId: string;
+    seq: number;
     role: string;
-    botId: string | null;
     blocks: Prisma.JsonValue;
-  } | null;
-  runId: string | null;
-  clientNonce?: string | null;
-  createdAt: Date;
-}): ThreadMessage {
+    botId: string | null;
+    replyToMessageId: string | null;
+    replyQuote: string | null;
+    replyTo?: {
+      threadId: string;
+      role: string;
+      botId: string | null;
+      blocks: Prisma.JsonValue;
+    } | null;
+    runId: string | null;
+    senderUserId?: string | null;
+    clientNonce?: string | null;
+    createdAt: Date;
+  },
+  sender?: { userId: string; name: string },
+): ThreadMessage {
   const parent = row.replyTo?.threadId === row.threadId ? row.replyTo : null;
   const parsed = parent ? MessageBlockSchema.array().safeParse(parent.blocks) : undefined;
   const replyPreview =
@@ -295,6 +322,7 @@ function toThreadMessage(row: {
     replyPreview,
     runId: row.runId ?? undefined,
     callId: callIdFromClientNonce(row.clientNonce),
+    ...(sender ? { sender } : {}),
     createdAt: row.createdAt.toISOString(),
   };
 }

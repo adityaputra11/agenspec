@@ -688,6 +688,15 @@ export function createRunExecutor(executorDeps: ExecutorDeps) {
         // Team chat reaches people besides the owner, so their runs get a group channel's limits.
         const teamChatConversationId =
           run.trigger === "messaging" ? thread.externalConversationId : null;
+        // A shared group reaches people besides the owner: a run woken by someone else's message is
+        // non-owner too. Older messages have no senderUserId, which means the owner wrote them.
+        const groupSourceSender =
+          thread.groupId && run.sourceMessageId
+            ? await deps.prisma.message.findUnique({
+                where: { id: run.sourceMessageId },
+                select: { senderUserId: true },
+              })
+            : null;
         const nonOwnerChatRun =
           messagingChannelRun ||
           (teamChatConversationId
@@ -695,7 +704,8 @@ export function createRunExecutor(executorDeps: ExecutorDeps) {
                 externalConversationId: teamChatConversationId,
                 sourceClientNonce: messagingSource?.clientNonce,
               }))
-            : false);
+            : false) ||
+          Boolean(groupSourceSender?.senderUserId && groupSourceSender.senderUserId !== run.userId);
         const historySearchBeforeSeq =
           contextStrategy !== "current" && run.sourceMessageId
             ? (messages.find((message) => message.id === run.sourceMessageId)?.seq ??

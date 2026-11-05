@@ -315,3 +315,14 @@ it("sends a settings Undo through the chat's space client", async () => {
   await act(async () => undo?.click());
   expect(spaceRpc.bots.update).toHaveBeenCalledTimes(1);
 });
+
+it("names the person who wrote a user message in a shared group chat", () => {
+  renderView("user", [{ kind: "text", text: "Ready when you are" }], { senderName: "Dewi" });
+  expect(container.textContent).toContain("Dewi");
+  expect(container.textContent).toContain("Ready when you are");
+});
+
+it("leaves the name off a user message the viewer wrote", () => {
+  renderView("user", [{ kind: "text", text: "Ready when you are" }]);
+  expect(container.textContent).not.toContain("Dewi");
+});

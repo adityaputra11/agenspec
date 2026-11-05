@@ -242,11 +242,12 @@ describe("reaction turns", () => {
         })),
         update: vi.fn(),
       },
+      user: { findUnique: vi.fn().mockResolvedValue({ name: "Owner" }) },
       chatGroup: {
         update: vi.fn(),
         findFirst: vi.fn().mockResolvedValue({
           members: (options.groupMembers ?? []).map((id) => ({
-            bot: { id, name: id, color: null },
+            bot: { id, name: id, color: null, userId: "user" },
           })),
         }),
       },
@@ -1485,7 +1486,8 @@ function groupRunFindMany(input: { active?: unknown[]; terminals?: unknown[] }) 
 function groupPrisma(findManyRuns: ReturnType<typeof groupRunFindMany>) {
   const tx = {
     $queryRaw: vi.fn().mockResolvedValue([{ id: "thread-1" }]),
-    message: { findMany: vi.fn().mockResolvedValue([]) },
+    message: { findMany: vi.fn().mockResolvedValue([]), update: vi.fn() },
+    user: { findUnique: vi.fn().mockResolvedValue({ name: "Owner" }) },
     event: {
       findFirst: vi.fn().mockResolvedValue(null),
       findMany: vi.fn().mockResolvedValue([]),
@@ -1871,6 +1873,7 @@ describe("sendThreadMessage", () => {
       steeringMessage: { create: vi.fn() },
       event: { create: vi.fn().mockResolvedValue({ seq: 2, threadId: "thread-1" }) },
       task: { create: vi.fn(), updateMany: vi.fn().mockResolvedValue({ count: 1 }) },
+      user: { findUnique: vi.fn().mockResolvedValue({ name: "Owner" }) },
       chatGroup: {
         findFirst: vi.fn().mockResolvedValue({
           id: "group-1",
@@ -1998,6 +2001,7 @@ describe("sendThreadMessage", () => {
           task: { create: vi.fn().mockResolvedValue({ id: "task-new" }), updateMany: vi.fn() },
           steeringMessage: { create: vi.fn() },
           event: { create: vi.fn().mockResolvedValue({ seq: 4 }) },
+          user: { findUnique: vi.fn().mockResolvedValue({ name: "Owner" }) },
           chatGroup: {
             findFirst: vi.fn().mockResolvedValue({
               id: "group-1",
@@ -2360,12 +2364,13 @@ describe("sendThreadMessage", () => {
         create: vi.fn().mockResolvedValue({ id: "event-1", seq: 1, createdAt: new Date() }),
       },
       steeringMessage: { create: vi.fn() },
+      user: { findUnique: vi.fn().mockResolvedValue({ name: "Owner" }) },
       chatGroup: {
         findFirst: vi.fn().mockResolvedValue({
           id: "group-1",
           members: [
-            { bot: { id: "bot-a", name: "Alpha", color: null } },
-            { bot: { id: "bot-b", name: "Beta", color: null } },
+            { bot: { id: "bot-a", name: "Alpha", color: null, userId: "user-1" } },
+            { bot: { id: "bot-b", name: "Beta", color: null, userId: "user-1" } },
           ],
         }),
         update: vi.fn().mockResolvedValue({ id: "group-1" }),
@@ -2543,6 +2548,7 @@ describe("sendThreadMessage", () => {
       steeringMessage: { create: vi.fn() },
       event: { create: vi.fn().mockResolvedValue({ seq: 2, threadId: "thread-1" }) },
       task: { create: vi.fn(), updateMany: vi.fn().mockResolvedValue({ count: 1 }) },
+      user: { findUnique: vi.fn().mockResolvedValue({ name: "Owner" }) },
       chatGroup: {
         findFirst: vi.fn().mockResolvedValue({
           id: "group-1",
@@ -2749,6 +2755,7 @@ describe("sendThreadMessage", () => {
       event: {
         create: vi.fn().mockResolvedValue({ id: "event-1", seq: 1, createdAt: new Date() }),
       },
+      user: { findUnique: vi.fn().mockResolvedValue({ name: "Owner" }) },
       chatGroup: {
         findFirst: vi.fn().mockResolvedValue({
           id: "group-1",
@@ -3684,12 +3691,13 @@ describe("sendThreadMessage", () => {
         create: vi.fn().mockResolvedValue({ id: "event-1", seq: 1, createdAt: new Date() }),
       },
       steeringMessage: { create: vi.fn() },
+      user: { findUnique: vi.fn().mockResolvedValue({ name: "Owner" }) },
       chatGroup: {
         findFirst: vi.fn().mockResolvedValue({
           id: "group-1",
           members: [
-            { bot: { id: "bot-a", name: "Alpha", color: null } },
-            { bot: { id: "bot-b", name: "Beta", color: null } },
+            { bot: { id: "bot-a", name: "Alpha", color: null, userId: "user-1" } },
+            { bot: { id: "bot-b", name: "Beta", color: null, userId: "user-1" } },
           ],
         }),
         update: vi.fn().mockResolvedValue({ id: "group-1" }),
@@ -3737,6 +3745,105 @@ describe("sendThreadMessage", () => {
     expect(tx.event.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         payload: expect.objectContaining({ replyQuote: "just this span" }),
+      }),
+    });
+  });
+
+  it("runs a shared person's group send under the bot owner and records the sender", async () => {
+    let messageSeq = 0;
+    let eventSeq = 0;
+    const tx = {
+      $queryRaw: vi.fn().mockResolvedValue([{ id: "thread-1" }]),
+      thread: {
+        update: vi.fn(async ({ data }: { data: { nextMessageSeq?: unknown } }) =>
+          data.nextMessageSeq ? { nextMessageSeq: ++messageSeq } : { nextEventSeq: ++eventSeq },
+        ),
+      },
+      message: {
+        findFirst: vi.fn().mockResolvedValue(null),
+        update: vi.fn(),
+        create: vi.fn().mockResolvedValue({
+          id: "msg-1",
+          threadId: "thread-1",
+          seq: 1,
+          role: "user",
+          blocks: [{ kind: "text", text: "hello" }],
+          botId: null,
+          replyToMessageId: null,
+          runId: null,
+          createdAt: new Date(),
+        }),
+      },
+      run: {
+        findMany: vi.fn().mockResolvedValue([]),
+        findUnique: vi.fn().mockResolvedValue({
+          status: "queued",
+          startedAt: null,
+          firstResponseAt: null,
+          userId: "owner-1",
+          leaseOwner: null,
+          leaseFence: 0,
+        }),
+        create: vi
+          .fn()
+          .mockResolvedValue({ id: "run-1", taskId: "task-1", botId: "bot-a", status: "queued" }),
+      },
+      task: { create: vi.fn().mockResolvedValue({ id: "task-1" }) },
+      event: {
+        create: vi.fn().mockResolvedValue({ id: "event-1", seq: 1, createdAt: new Date() }),
+      },
+      user: { findUnique: vi.fn().mockResolvedValue({ name: "Sam" }) },
+      chatGroup: {
+        findFirst: vi.fn().mockResolvedValue({
+          id: "group-1",
+          members: [
+            { bot: { id: "bot-a", name: "Alpha", color: null, userId: "owner-1" } },
+            { bot: { id: "bot-b", name: "Beta", color: null, userId: "owner-1" } },
+          ],
+        }),
+        update: vi.fn().mockResolvedValue({ id: "group-1" }),
+      },
+    };
+    const prisma = {
+      message: { findUnique: vi.fn().mockResolvedValue(null) },
+      $transaction: vi.fn(async (callback: (client: typeof tx) => unknown) => callback(tx)),
+    } as unknown as PrismaClient;
+    // A person the owner shared the group with, not the owner of its bots.
+    const actor = { spaceId: "workspace-1", userId: "shared-2" } as Actor;
+    const target = {
+      kind: "group",
+      groupId: "group-1",
+      groupName: "Group",
+      threadId: "thread-1",
+      members: [],
+      memberBotIds: ["bot-a", "bot-b"],
+    } satisfies ThreadTarget;
+
+    await sendThreadMessage(
+      {
+        prisma,
+        sandbox: {} as never,
+        events: { notify: vi.fn().mockResolvedValue(undefined) } as never,
+        jobs: { enqueue: vi.fn().mockResolvedValue(undefined) } as never,
+      },
+      actor,
+      target,
+      { text: "hello", clientNonce: "nonce-shared" },
+    );
+
+    expect(tx.run.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({ botId: "bot-a", userId: "owner-1", trigger: "user" }),
+    });
+    expect(tx.task.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({ botId: "bot-a", userId: "owner-1" }),
+    });
+    expect(tx.message.update).toHaveBeenCalledWith({
+      where: { id: "msg-1" },
+      data: { senderUserId: "shared-2" },
+    });
+    expect(tx.event.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        payload: expect.objectContaining({ sender: { userId: "shared-2", name: "Sam" } }),
       }),
     });
   });

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import type { Bot, Group } from "@rakazo/contracts";
+import type { Bot, Group, GroupPerson } from "@rakazo/contracts";
 import type * as UiWeb from "@rakazo/ui-web";
 import type { ComponentProps, ReactNode } from "react";
 import { act } from "react";
@@ -20,6 +20,7 @@ vi.mock("@rakazo/ui-web", async (importOriginal) => {
   return {
     Checkbox,
     BotAvatar: () => <span />,
+    SectionHeading: ({ children }: { children: ReactNode }) => <h3>{children}</h3>,
     Button: (props: ComponentProps<"button">) => <button {...props} />,
     Input: (props: ComponentProps<"input">) => <input {...props} />,
     Textarea: (props: ComponentProps<"textarea">) => <textarea {...props} />,
@@ -118,11 +119,18 @@ const bots = [
   fakeBot("bot-3", "Runner"),
 ];
 
+const dewi: GroupPerson = { userId: "user-dewi", name: "Dewi", email: "dewi@example.com" };
+const budi: GroupPerson = { userId: "user-budi", name: "Budi", email: "budi@example.com" };
+
 async function render(
   options: {
     onSave?: ComponentProps<typeof GroupSettings>["onSave"];
+    onSavePeople?: (userIds: string[]) => Promise<void>;
+    loadCandidates?: () => Promise<GroupPerson[]>;
     group?: Group;
     onRemove?: () => Promise<void>;
+    onLeave?: () => Promise<void>;
+    viewerId?: string;
     covered?: boolean;
     instance?: string;
     bots?: ComponentProps<typeof GroupSettings>["bots"];
@@ -130,6 +138,8 @@ async function render(
   } = {},
 ) {
   const onRemove = vi.fn(options.onRemove ?? (async () => undefined));
+  const onLeave = vi.fn(options.onLeave ?? (async () => undefined));
+  const onSavePeople = vi.fn(options.onSavePeople ?? (async () => undefined));
   const onClose = vi.fn();
   await act(async () => {
     root.render(
@@ -137,15 +147,19 @@ async function render(
         key={options.instance}
         group={options.group ?? group}
         bots={options.bots ?? bots}
+        viewerId={options.viewerId}
         onSave={options.onSave ?? (async () => undefined)}
+        onSavePeople={onSavePeople}
+        loadCandidates={options.loadCandidates ?? (async () => [dewi, budi])}
         onRemove={onRemove}
+        onLeave={onLeave}
         onClose={onClose}
         onOpenBot={options.onOpenBot}
         covered={options.covered}
       />,
     );
   });
-  return { onRemove, onClose };
+  return { onRemove, onLeave, onSavePeople, onClose };
 }
 
 function button(name: string): HTMLButtonElement {
@@ -374,5 +388,71 @@ describe("GroupSettings", () => {
         .querySelector('[role="checkbox"][aria-label="Remove Researcher from the group"]')
         ?.getAttribute("aria-checked"),
     ).toBe("true");
+  });
+
+  it("lets the owner add people from the candidates and saves the full list", async () => {
+    const onSavePeople = vi.fn(async () => undefined);
+    const loadCandidates = vi.fn(async () => [dewi, budi]);
+    await render({ viewerId: "user-owner", onSavePeople, loadCandidates });
+    await click("Add people");
+    expect(loadCandidates).toHaveBeenCalledOnce();
+    await act(async () => {
+      container
+        .querySelector<HTMLElement>('[role="checkbox"][aria-label="Add Dewi to the group"]')!
+        .click();
+      await Promise.resolve();
+    });
+    await click("Save");
+    expect(onSavePeople).toHaveBeenCalledWith(["user-dewi"]);
+  });
+
+  it("removes a shared person from the owner's list before saving", async () => {
+    const onSavePeople = vi.fn(async () => undefined);
+    const shared = { ...group, ownerUserId: "user-owner", people: [dewi, budi] };
+    await render({ viewerId: "user-owner", group: shared, onSavePeople });
+    expect(container.textContent).toContain("dewi@example.com");
+    await click("Remove Dewi");
+    await click("Save");
+    expect(onSavePeople).toHaveBeenCalledWith(["user-budi"]);
+  });
+
+  it("does not call people save when the list did not change", async () => {
+    const onSavePeople = vi.fn(async () => undefined);
+    const onClose = vi.fn();
+    const shared = { ...group, ownerUserId: "user-owner", people: [dewi] };
+    await render({ viewerId: "user-owner", group: shared, onSavePeople });
+    await click("Save");
+    expect(onSavePeople).not.toHaveBeenCalled();
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it("shows a non-owner the group read-only with Leave group and no Save", async () => {
+    const shared = { ...group, ownerUserId: "user-owner", people: [dewi] };
+    const { onSavePeople } = await render({ viewerId: "user-dewi", group: shared });
+    expect(container.textContent).not.toContain("Save");
+    expect(container.textContent).not.toContain("Add people");
+    expect(container.querySelector<HTMLInputElement>("input")!.disabled).toBe(true);
+    expect(container.textContent).toContain("Researcher");
+    expect(container.querySelector('[aria-label^="Remove "]')).toBeNull();
+    expect(onSavePeople).not.toHaveBeenCalled();
+    expect(container.querySelector('[role="checkbox"]')).toBeNull();
+  });
+
+  it("confirms before leaving, then calls leave", async () => {
+    const shared = { ...group, ownerUserId: "user-owner" };
+    const { onLeave, onClose } = await render({ viewerId: "user-dewi", group: shared });
+    await click("Leave group");
+    const dialog = container.querySelector('[role="alertdialog"]');
+    expect(dialog?.textContent).toContain("Leave this group?");
+    expect(dialog?.textContent).toContain("You stop seeing its messages.");
+    expect(onLeave).not.toHaveBeenCalled();
+    await act(async () => {
+      [...dialog!.querySelectorAll("button")]
+        .find((el) => el.textContent === "Leave group")!
+        .click();
+      await Promise.resolve();
+    });
+    expect(onLeave).toHaveBeenCalledOnce();
+    expect(onClose).not.toHaveBeenCalled();
   });
 });
