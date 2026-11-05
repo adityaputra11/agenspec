@@ -13,11 +13,14 @@ import {
   FieldLabel,
   Input,
   Spinner,
+  toast,
 } from "@rakazo/ui-web";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, X } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useSpaceQueries } from "../../lib/query";
+import { rpc } from "../../lib/rpc";
+import { errorText } from "../../lib/user-error";
 import { AgentSkills } from "../../pages/KnowledgeSection";
 import type { PluginSelection } from "./plugin-marketplace";
 import {
@@ -46,6 +49,7 @@ export function SkillsDialog({ onClose }: { onClose: () => void }) {
   const [selection, setSelection] = useState<PluginSelection | null>(null);
   const [importing, setImporting] = useState(false);
   const [gitSource, setGitSource] = useState("");
+  const fileRef = useRef<HTMLInputElement>(null);
   const catalog = useQuery(
     queries.marketplace.catalog.queryOptions({ input: { query: "" }, staleTime: 60_000 }),
   );
@@ -70,6 +74,16 @@ export function SkillsDialog({ onClose }: { onClose: () => void }) {
       queryClient.invalidateQueries({ queryKey: queries.capabilities.key() }),
       queryClient.invalidateQueries({ queryKey: queries.agentSkills.key() }),
     ]);
+  }
+
+  /** A SKILL.md file becomes one of the owner's skills; its own front matter names it. */
+  async function uploadSkill(file: File) {
+    try {
+      await rpc.agentSkills.create({ content: await file.text() });
+      await refresh();
+    } catch (err) {
+      toast.error(errorText(err, t`Could not add this skill`));
+    }
   }
 
   function back(onBack: () => void) {
@@ -247,10 +261,27 @@ export function SkillsDialog({ onClose }: { onClose: () => void }) {
           </DialogTitle>
           <div className="flex items-center gap-2">
             {!selection && !importing ? (
-              <Button variant="ghost" size="sm" onClick={() => setImporting(true)}>
-                <Trans>From GitHub</Trans>
-              </Button>
+              <>
+                <Button variant="ghost" size="sm" onClick={() => fileRef.current?.click()}>
+                  <Trans>Upload</Trans>
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => setImporting(true)}>
+                  <Trans>From GitHub</Trans>
+                </Button>
+              </>
             ) : null}
+            <input
+              ref={fileRef}
+              type="file"
+              accept=".md,text/markdown"
+              className="hidden"
+              tabIndex={-1}
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                event.target.value = "";
+                if (file) void uploadSkill(file);
+              }}
+            />
             <DialogClose
               render={<Button variant="ghost" size="icon-sm" aria-label={t`Close skills`} />}
             >

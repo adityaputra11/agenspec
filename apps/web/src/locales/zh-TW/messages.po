@@ -1926,6 +1926,10 @@ msgstr "無法新增 MCP 伺服器"
 msgid "Could not add skills"
 msgstr ""
 
+#: src/components/integrations/skills-dialog.tsx
+msgid "Could not add this skill"
+msgstr ""
+
 #: src/pages/cms/documents-page.tsx
 msgid "Could not announce this file"
 msgstr ""
@@ -6954,6 +6958,7 @@ msgstr "升級"
 msgid "Upgrade now"
 msgstr "立即升級"
 
+#: src/components/integrations/skills-dialog.tsx
 #: src/pages/cms/documents-page.tsx
 #: src/pages/shell/avatar-studio-popover.tsx
 msgid "Upload"

@@ -1925,6 +1925,10 @@ msgstr "MCP सर्वर जोड़ा नहीं जा सका"
 msgid "Could not add skills"
 msgstr ""
 
+#: src/components/integrations/skills-dialog.tsx
+msgid "Could not add this skill"
+msgstr ""
+
 #: src/pages/cms/documents-page.tsx
 msgid "Could not announce this file"
 msgstr ""
@@ -6953,6 +6957,7 @@ msgstr "अपग्रेड करें"
 msgid "Upgrade now"
 msgstr ""
 
+#: src/components/integrations/skills-dialog.tsx
 #: src/pages/cms/documents-page.tsx
 #: src/pages/shell/avatar-studio-popover.tsx
 msgid "Upload"
