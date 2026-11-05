@@ -220,6 +220,17 @@ export function defaultGroupName(names: readonly string[]): string {
   return (last >= 0xd800 && last <= 0xdbff ? value.slice(0, -1) : value).trim();
 }
 
+/** People a group's owner can add besides themselves. */
+export const GROUP_PEOPLE_MAX = 20;
+
+/** A person in a shared group chat. */
+export const GroupPersonSchema = z.object({
+  userId: Id,
+  name: z.string(),
+  email: z.string().optional(),
+});
+export type GroupPerson = z.infer<typeof GroupPersonSchema>;
+
 export const GROUP_INSTRUCTIONS_MAX_LENGTH = 4000;
 
 export const GroupSchema = z.object({
@@ -228,6 +239,10 @@ export const GroupSchema = z.object({
   name: z.string(),
   /** What every bot follows in this group, on top of its own instructions. */
   instructions: z.string().optional(),
+  /** The person who made the group; only they change its settings, bots and people. */
+  ownerUserId: Id.optional(),
+  /** Everyone else the owner shared the group with. */
+  people: z.array(GroupPersonSchema).optional(),
   pinned: z.boolean(),
   sectionId: Id.nullable(),
   archivedAt: z.string().nullable(),
