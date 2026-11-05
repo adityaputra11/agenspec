@@ -25,7 +25,19 @@ const MAX_SKILL_DESCRIPTION_CHARS = 2000;
 type SkillOwner = {
   spaceId: string;
   userId: string;
+  /** Skill names the asking bot has turned off. */
+  disabledSkills?: readonly string[];
 };
+
+/** The skills a bot has not turned off; names compare without regard to case. */
+export function withoutDisabledSkills<T extends { name: string }>(
+  skills: T[],
+  disabled: readonly string[] | undefined,
+): T[] {
+  if (!disabled || disabled.length === 0) return skills;
+  const off = new Set(disabled.map((name) => name.toLowerCase()));
+  return skills.filter((skill) => !off.has(skill.name.toLowerCase()));
+}
 
 type AgentSkillRow = {
   id: string;
@@ -108,7 +120,10 @@ export async function listAgentSkillRecords(
     omit: { files: true },
     orderBy: [{ name: "asc" }, { id: "asc" }],
   });
-  return mergeBuiltinSkills(builtinAgentSkillRecords(), rows.map(toRecord));
+  return withoutDisabledSkills(
+    mergeBuiltinSkills(builtinAgentSkillRecords(), rows.map(toRecord)),
+    owner.disabledSkills,
+  );
 }
 
 async function findOwnedSkill(

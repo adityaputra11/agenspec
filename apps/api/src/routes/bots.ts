@@ -469,6 +469,9 @@ export function botsRoutes(ctx: RouterContext) {
             ...(input.disabledBuiltinTools !== undefined
               ? { disabledBuiltinTools: input.disabledBuiltinTools }
               : {}),
+            ...(input.disabledSkills !== undefined
+              ? { disabledSkills: [...new Set(input.disabledSkills)] }
+              : {}),
           },
         }).catch((error) => {
           if (input.expectedSettings && isRecordNotFound(error))

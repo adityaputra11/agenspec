@@ -144,6 +144,7 @@ export function BotSettings({
     modelId?: string | null;
     thinkingLevel?: ThinkingLevel | null;
     disabledBuiltinTools?: string[];
+    disabledSkills?: string[];
   }) => Promise<void>;
   onExport: () => Promise<void>;
   onClear: () => void;
@@ -240,6 +241,16 @@ export function BotSettings({
     advancedSnapshot !== savedAdvanced ||
     description.trim() !== savedDescriptionRef.current;
   const [error, setError] = useState<string | null>(null);
+  const agentSkills = useQuery(queries.agentSkills.list.queryOptions());
+  const [disabledSkills, setDisabledSkills] = useState<string[]>(bot.disabledSkills ?? []);
+  function saveDisabledSkills(next: string[]) {
+    setDisabledSkills(next);
+    setError(null);
+    onSave({ disabledSkills: next }).catch((err: unknown) => {
+      setDisabledSkills(bot.disabledSkills ?? []);
+      setError(errorText(err));
+    });
+  }
   const saveQueueRef = useRef(Promise.resolve());
   const executeSaveRef = useRef<
     (
@@ -849,6 +860,48 @@ export function BotSettings({
                     ))}
                   </div>
                 </section>
+                {(agentSkills.data ?? []).length > 0 ? (
+                  <section data-testid="bot-settings-skills" className="mt-3 space-y-2 [&>*]:mt-0">
+                    <NativeSelect
+                      aria-label={t`Turn off a skill`}
+                      value=""
+                      onChange={(event) => {
+                        const name = event.target.value;
+                        if (name && !disabledSkills.includes(name))
+                          saveDisabledSkills([...disabledSkills, name]);
+                      }}
+                      className="w-full"
+                    >
+                      <NativeSelectOption value="">{t`Turn off a skill`}</NativeSelectOption>
+                      {(agentSkills.data ?? [])
+                        .filter((skill) => !disabledSkills.includes(skill.name))
+                        .map((skill) => (
+                          <NativeSelectOption key={skill.id} value={skill.name}>
+                            {skill.name}
+                          </NativeSelectOption>
+                        ))}
+                    </NativeSelect>
+                    {disabledSkills.map((name) => (
+                      <div
+                        key={name}
+                        className="flex min-h-11 items-center justify-between gap-3 text-sm"
+                      >
+                        <span>{name}</span>
+                        <Button
+                          variant="ghost"
+                          size="icon-xs"
+                          aria-label={t`Turn on ${name}`}
+                          title={t`Turn on ${name}`}
+                          onClick={() =>
+                            saveDisabledSkills(disabledSkills.filter((n) => n !== name))
+                          }
+                        >
+                          <X className="size-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </section>
+                ) : null}
               </SettingsGroup>
               <div className="overflow-hidden rounded-xl bg-muted/50 px-4">
                 <button

@@ -250,13 +250,14 @@ export const taskTools: ToolHandlers = {
     return call.finish(cancelled);
   },
   async skill_read(ctx, call) {
-    const { deps, run } = ctx;
+    const { deps, run, bot } = ctx;
     const { args } = call;
     return skillReadFromTool(
       deps.prisma,
       {
         spaceId: run.spaceId,
         userId: run.userId,
+        disabledSkills: bot.disabledSkills,
       },
       {
         name: args.name ? String(args.name) : undefined,

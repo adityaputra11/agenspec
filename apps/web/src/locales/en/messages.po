@@ -6832,6 +6832,14 @@ msgstr "Try the test again."
 msgid "Tuesday"
 msgstr "Tuesday"
 
+#: src/pages/shell/bot-panel.tsx
+msgid "Turn off a skill"
+msgstr "Turn off a skill"
+
+#: src/pages/shell/bot-panel.tsx
+msgid "Turn on {name}"
+msgstr "Turn on {name}"
+
 #: src/components/vault/VaultItemDetail.tsx
 #: src/components/vault/VaultItemEditor.tsx
 msgid "Type"

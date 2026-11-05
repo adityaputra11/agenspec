@@ -209,7 +209,11 @@ import {
 } from "./run-turn-images.js";
 import { loadAgentScratchpadContext } from "./scratchpad-context.js";
 import { inferScript } from "./scripted-runtime.js";
-import { builtinAgentSkillRecords, listAgentSkillRecords } from "./skill-tools.js";
+import {
+  builtinAgentSkillRecords,
+  listAgentSkillRecords,
+  withoutDisabledSkills,
+} from "./skill-tools.js";
 import {
   filterStrategicInitiativeTools,
   isStrategicInitiativeRun,
@@ -1582,7 +1586,10 @@ export function createRunExecutor(executorDeps: ExecutorDeps) {
             ? `Connected plugins: ${connectedPlugins.map((row) => `${row.displayName} (${row.connectorId}:${row.provider})`).join(", ")}. Prefer those plugin tools over the computer browser or web search when reading app data (repos, releases, mail, calendar, and similar).`
             : "No plugins are connected yet.";
         const runSavedSkills = nonOwnerChatRun ? [] : savedSkills;
-        const runAgentSkills = nonOwnerChatRun ? builtinAgentSkillRecords() : agentSkills;
+        const runAgentSkills = withoutDisabledSkills(
+          nonOwnerChatRun ? builtinAgentSkillRecords() : agentSkills,
+          bot.disabledSkills,
+        );
         const taughtSkillIndex = runSavedSkills.slice(0, 20);
         const taughtSkillsLine =
           taughtSkillIndex.length > 0
