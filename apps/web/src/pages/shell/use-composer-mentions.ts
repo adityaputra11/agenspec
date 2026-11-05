@@ -38,6 +38,7 @@ export function useComposerMentions({
   groups,
   inGroup,
   groupId,
+  groupMembers = [],
   groupPeople,
   viewerUserId,
   integrationsOpen,
@@ -49,6 +50,8 @@ export function useComposerMentions({
   groups: Group[];
   inGroup: boolean;
   groupId: string | undefined;
+  /** The open group's member bots, including ones owned by another person. */
+  groupMembers?: Group["members"];
   /** The open group's people (shared group chats only); the viewer is left out here. */
   groupPeople: GroupPerson[];
   viewerUserId: string | undefined;
@@ -120,13 +123,32 @@ export function useComposerMentions({
     const { catalog, connections } = composerConnections.data ?? {};
     return bots.length === 0 ? [] : mentionConnectorsFrom(connections ?? [], catalog ?? []);
   }, [bots.length, composerConnections.data]);
+  // A shared group's bots belong to another person, so they are absent from the viewer's
+  // roster. Mentioning still needs them: chips wake the exact bot instead of the first one.
+  const mentionBots = useMemo(() => {
+    if (!inGroup) return bots;
+    const seen = new Set(bots.map((bot) => bot.id));
+    const missing = groupMembers.flatMap((member) =>
+      seen.has(member.botId)
+        ? []
+        : [
+            {
+              id: member.botId,
+              name: member.name,
+              color: member.color,
+              avatarSet: member.avatarSet,
+            },
+          ],
+    );
+    return missing.length === 0 ? bots : [...bots, ...missing];
+  }, [bots, groupMembers, inGroup]);
   const composerMentionTargets = useMemo(
     () =>
       buildComposerMentionOptions({
         query: "",
         includeEveryone: inGroup,
         currentGroupId: groupId,
-        bots: bots.map((bot) => ({
+        bots: mentionBots.map((bot) => ({
           id: bot.id,
           name: bot.name,
           color: bot.color,
@@ -147,12 +169,12 @@ export function useComposerMentions({
         cronLabels: cronLabels(i18n.locale),
       }),
     [
-      bots,
       groupId,
       groupPeople,
       groups,
       i18n.locale,
       inGroup,
+      mentionBots,
       mentionConnectors,
       mentionRoutines,
       viewerUserId,

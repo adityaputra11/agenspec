@@ -582,6 +582,7 @@ function SpaceShell() {
     groups,
     inGroup,
     groupId,
+    groupMembers: inGroup ? (activeGroup?.members ?? []) : [],
     groupPeople: inGroup ? (activeGroup?.people ?? []) : [],
     viewerUserId: userId,
     integrationsOpen: overlay?.kind === "integrations",

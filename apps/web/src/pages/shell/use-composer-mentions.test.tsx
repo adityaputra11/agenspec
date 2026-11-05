@@ -54,6 +54,7 @@ function fixture(space: string) {
     groups: [],
     inGroup: false,
     groupId: undefined,
+    groupMembers: [],
     groupPeople: [],
     viewerUserId: "me",
     integrationsOpen: false,
@@ -163,4 +164,37 @@ it("offers the group's people in a shared group chat, minus the viewer, and none
   expect(inGroup).toEqual([expect.objectContaining({ id: "sam", name: "Sam" })]);
   await render({ ...f.props, inGroup: false, groupPeople: people });
   expect(latest.composerMentionTargets.some((target) => target.kind === "user")).toBe(false);
+});
+
+it("offers the open group's member bots even when they belong to another person", async () => {
+  vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
+  const f = fixture("space-a");
+  const root = createRoot(document.createElement("div"));
+  const render = (props: Parameters<typeof useComposerMentions>[0]) =>
+    act(async () =>
+      root.render(
+        createElement(
+          QueryClientProvider,
+          { client: queryClient },
+          createElement(Probe, { props }),
+        ),
+      ),
+    );
+  const strangers = [
+    { botId: "mirror", name: "Mirror", color: "#000000" },
+    { botId: "bot-0", name: "Bot 0", color: "#000000" },
+  ];
+  await render({ ...f.props, inGroup: true, groupId: "g1", groupMembers: strangers });
+  const names = latest.composerMentionTargets
+    .filter((target) => target.kind === "bot")
+    .map((target) => target.name);
+  expect(names).toContain("Mirror");
+  expect(names.filter((name) => name === "Bot 0")).toHaveLength(1);
+  await render({ ...f.props, inGroup: false, groupMembers: strangers });
+  expect(
+    latest.composerMentionTargets.some(
+      (target) => target.kind === "bot" && target.name === "Mirror",
+    ),
+  ).toBe(false);
+  act(() => root.unmount());
 });
