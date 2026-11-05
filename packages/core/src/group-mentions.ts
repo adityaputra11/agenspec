@@ -40,6 +40,8 @@ export function resolveGroupTargetBotIds(input: {
   members: GroupMemberRef[];
   /** Bot ids from typed mention chips (non-members are ignored for wake). */
   explicitMentions?: string[];
+  /** A shared group wakes only the bots a message names; the first bot never answers by default. */
+  groupHasPeople?: boolean;
 }): string[] {
   const membersById = new Map(input.members.map((member) => [member.id, member]));
   const targetIds = new Set<string>();
@@ -69,7 +71,7 @@ export function resolveGroupTargetBotIds(input: {
     }
   }
 
-  if (targetIds.size === 0 && input.members[0]) {
+  if (targetIds.size === 0 && input.members[0] && !input.groupHasPeople) {
     targetIds.add(input.members[0].id);
   }
 

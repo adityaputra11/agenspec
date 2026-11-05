@@ -226,6 +226,8 @@ const structuredMentionTarget = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("group"), id: Id }),
   z.object({ kind: z.literal("routine"), id: Id }),
   z.object({ kind: z.literal("connector"), id: Id }),
+  /** A person in the shared group chat being sent to; never wakes a bot. */
+  z.object({ kind: z.literal("user"), id: Id }),
 ]);
 
 const threadSendFields = threadTarget.safeExtend({
@@ -264,8 +266,9 @@ const threadSendInput = threadSendFields.superRefine((input, ctx) => {
 });
 
 const threadSendOutput = z.object({
-  taskId: Id,
-  runId: Id,
+  /** Absent when the message woke no bot, as a message between people in a shared group. */
+  taskId: Id.optional(),
+  runId: Id.optional(),
   seq: z.number().int(),
   runIds: z.array(Id).optional(),
 });

@@ -236,6 +236,7 @@ const groupTargetInclude = {
     },
     orderBy: groupMemberOrder,
   },
+  users: { select: { userId: true }, take: 1 },
 } as const;
 
 type RunTeardownTarget = {

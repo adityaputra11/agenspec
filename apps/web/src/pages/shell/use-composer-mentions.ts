@@ -1,5 +1,12 @@
 import { useLingui } from "@lingui/react/macro";
-import type { Bot, Connection, ConnectionCatalogItem, Group, Routine } from "@rakazo/contracts";
+import type {
+  Bot,
+  Connection,
+  ConnectionCatalogItem,
+  Group,
+  GroupPerson,
+  Routine,
+} from "@rakazo/contracts";
 import {
   buildComposerMentionOptions,
   createRoutineMentionBatcher,
@@ -31,6 +38,9 @@ export function useComposerMentions({
   groups,
   inGroup,
   groupId,
+  groupMembers = [],
+  groupPeople,
+  viewerUserId,
   integrationsOpen,
   initialBotsLoaded,
 }: {
@@ -40,6 +50,11 @@ export function useComposerMentions({
   groups: Group[];
   inGroup: boolean;
   groupId: string | undefined;
+  /** The open group's member bots, including ones owned by another person. */
+  groupMembers?: Group["members"];
+  /** The open group's people (shared group chats only); the viewer is left out here. */
+  groupPeople: GroupPerson[];
+  viewerUserId: string | undefined;
   integrationsOpen: boolean;
   initialBotsLoaded: boolean;
 }) {
@@ -108,19 +123,41 @@ export function useComposerMentions({
     const { catalog, connections } = composerConnections.data ?? {};
     return bots.length === 0 ? [] : mentionConnectorsFrom(connections ?? [], catalog ?? []);
   }, [bots.length, composerConnections.data]);
+  // A shared group's bots belong to another person, so they are absent from the viewer's
+  // roster. Mentioning still needs them: chips wake the exact bot instead of the first one.
+  const mentionBots = useMemo(() => {
+    if (!inGroup) return bots;
+    const seen = new Set(bots.map((bot) => bot.id));
+    const missing = groupMembers.flatMap((member) =>
+      seen.has(member.botId)
+        ? []
+        : [
+            {
+              id: member.botId,
+              name: member.name,
+              color: member.color,
+              avatarSet: member.avatarSet,
+            },
+          ],
+    );
+    return missing.length === 0 ? bots : [...bots, ...missing];
+  }, [bots, groupMembers, inGroup]);
   const composerMentionTargets = useMemo(
     () =>
       buildComposerMentionOptions({
         query: "",
         includeEveryone: inGroup,
         currentGroupId: groupId,
-        bots: bots.map((bot) => ({
+        bots: mentionBots.map((bot) => ({
           id: bot.id,
           name: bot.name,
           color: bot.color,
           avatarSet: bot.avatarSet,
         })),
         groups: groups.map((group) => ({ id: group.id, name: group.name })),
+        people: (inGroup ? groupPeople : [])
+          .filter((person) => person.userId !== viewerUserId)
+          .map((person) => ({ userId: person.userId, name: person.name })),
         routines: mentionRoutines.map((routine) => ({
           id: routine.id,
           name: routine.name,
@@ -131,7 +168,17 @@ export function useComposerMentions({
         connectors: mentionConnectors,
         cronLabels: cronLabels(i18n.locale),
       }),
-    [bots, groupId, groups, i18n.locale, inGroup, mentionConnectors, mentionRoutines],
+    [
+      groupId,
+      groupPeople,
+      groups,
+      i18n.locale,
+      inGroup,
+      mentionBots,
+      mentionConnectors,
+      mentionRoutines,
+      viewerUserId,
+    ],
   );
   return { composerMentionTargets, footerLogos, setFooterLogos };
 }

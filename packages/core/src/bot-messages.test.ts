@@ -254,6 +254,19 @@ describe("group members roster", () => {
     ]);
   });
 
+  it("names the people sharing the chat, without making them bots", () => {
+    const context = renderGroupMembersContext(
+      "Ops",
+      [{ id: "b_1", name: "Anya" }],
+      { id: "b_1", name: "Anya" },
+      ["Owen", "Sam"],
+    );
+    expect(context).toContain("<group_people>\n- Owen\n- Sam\n</group_people>");
+    expect(
+      renderGroupMembersContext("Ops", [{ id: "b_1", name: "Anya" }], { id: "b_1", name: "Anya" }),
+    ).not.toContain("group_people");
+  });
+
   it("lists descriptions so group bots can pick a specialist", () => {
     const context = renderGroupMembersContext(
       "Launch desk",

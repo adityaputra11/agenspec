@@ -8,6 +8,7 @@ import type { ThreadTarget } from "./thread-target.js";
 import {
   cancelSupersededQueuedRuns,
   reactToThreadMessage,
+  sendTargetBotIds,
   sendThreadMessage,
   stopThreadRuns,
   threadHead,
@@ -1505,6 +1506,7 @@ function groupTarget() {
     groupId: "group-1",
     groupName: "Group",
     members: [],
+    shared: false,
     threadId: "thread-1",
   } as unknown as ThreadTarget;
 }
@@ -1897,6 +1899,7 @@ describe("sendThreadMessage", () => {
       threadId: "thread-1",
       members: [],
       memberBotIds: ["bot-a", "bot-b"],
+      shared: false,
     } satisfies ThreadTarget;
     const enqueue = vi.fn().mockResolvedValue(undefined);
 
@@ -2389,6 +2392,7 @@ describe("sendThreadMessage", () => {
       threadId: "thread-1",
       members: [],
       memberBotIds: ["bot-a", "bot-b"],
+      shared: false,
     } satisfies ThreadTarget;
 
     const result = await sendThreadMessage(
@@ -2572,6 +2576,7 @@ describe("sendThreadMessage", () => {
       threadId: "thread-1",
       members: [],
       memberBotIds: ["bot-a", "bot-b"],
+      shared: false,
     } satisfies ThreadTarget;
     const enqueue = vi.fn().mockResolvedValue(undefined);
 
@@ -2780,6 +2785,7 @@ describe("sendThreadMessage", () => {
       threadId: "thread-1",
       members: [],
       memberBotIds: ["bot-a", "bot-b"],
+      shared: false,
     } satisfies ThreadTarget;
     const enqueue = vi.fn().mockResolvedValue(undefined);
 
@@ -3716,6 +3722,7 @@ describe("sendThreadMessage", () => {
       threadId: "thread-1",
       members: [],
       memberBotIds: ["bot-a", "bot-b"],
+      shared: false,
     } satisfies ThreadTarget;
 
     const result = await sendThreadMessage(
@@ -3817,6 +3824,7 @@ describe("sendThreadMessage", () => {
       threadId: "thread-1",
       members: [],
       memberBotIds: ["bot-a", "bot-b"],
+      shared: false,
     } satisfies ThreadTarget;
 
     await sendThreadMessage(
@@ -3930,6 +3938,7 @@ describe("stopThreadRuns", () => {
       threadId: "thread-1",
       members: [],
       memberBotIds: ["bot-a", "bot-b"],
+      shared: false,
     } satisfies ThreadTarget;
 
     await stopThreadRuns(
@@ -4062,6 +4071,7 @@ describe("stopThreadRuns", () => {
       threadId: "thread-1",
       members: [],
       memberBotIds: ["bot-a", "bot-b"],
+      shared: false,
     } satisfies ThreadTarget;
 
     await stopThreadRuns(
@@ -4165,6 +4175,7 @@ describe("stopThreadRuns", () => {
       threadId: "thread-1",
       members: [],
       memberBotIds: ["bot-a", "bot-b"],
+      shared: false,
     } satisfies ThreadTarget;
 
     await stopThreadRuns(
@@ -4350,4 +4361,43 @@ describe("helper snapshot settlement", () => {
       });
     },
   );
+});
+
+describe("person mentions in a group send", () => {
+  const members = [
+    { botId: "bot-a", name: "Alpha" },
+    { botId: "bot-b", name: "Beta" },
+  ];
+
+  it("wakes no bot in a shared group unless a bot is named", () => {
+    expect(sendTargetBotIds({ kind: "group", members, shared: true }, { text: "anyone?" })).toEqual(
+      [],
+    );
+    expect(
+      sendTargetBotIds({ kind: "group", members, shared: false }, { text: "anyone?" }),
+    ).toEqual(["bot-a"]);
+  });
+
+  it("never adds a run for a person mention", () => {
+    const withPerson = sendTargetBotIds(
+      { kind: "group", members, shared: false },
+      { text: "@Sam what do you think", mentions: [{ kind: "user", id: "sam" }] },
+    );
+    const without = sendTargetBotIds(
+      { kind: "group", members, shared: false },
+      { text: "@Sam what do you think" },
+    );
+    expect(withPerson).toEqual(without);
+    const named = sendTargetBotIds(
+      { kind: "group", members, shared: true },
+      {
+        text: "@Beta and @Sam",
+        mentions: [
+          { kind: "bot", id: "bot-b" },
+          { kind: "user", id: "sam" },
+        ],
+      },
+    );
+    expect(named).toEqual(["bot-b"]);
+  });
 });

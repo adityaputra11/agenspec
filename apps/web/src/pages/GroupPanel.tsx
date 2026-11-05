@@ -48,12 +48,18 @@ function MemberPicker({
   onChange,
   onOpenBot,
   initiallyExpanded = false,
+  scrollable = true,
 }: {
   bots: Bot[];
   selected: string[];
   onChange: (selected: string[]) => void;
   onOpenBot?: (botId: string) => void;
   initiallyExpanded?: boolean;
+  /**
+   * A panel that already scrolls as a whole leaves the list at its natural height, so members
+   * never squeeze into a second scroll box above the sections below them.
+   */
+  scrollable?: boolean;
 }) {
   const { t } = useLingui();
   const listId = useId();
@@ -82,7 +88,7 @@ function MemberPicker({
   }
 
   return (
-    <div className="mt-5 flex min-h-0 flex-1 flex-col">
+    <div className={scrollable ? "mt-5 flex min-h-0 flex-1 flex-col" : "mt-5 flex flex-col"}>
       <div className="flex items-center justify-between">
         <span className="text-sm text-muted-foreground">
           <Trans>Members ({selected.length})</Trans>
@@ -113,7 +119,10 @@ function MemberPicker({
           </p>
         </>
       ) : null}
-      <div id={listId} className="mt-2 min-h-0 flex-1 space-y-1 overflow-y-auto">
+      <div
+        id={listId}
+        className={scrollable ? "mt-2 min-h-0 flex-1 space-y-1 overflow-y-auto" : "mt-2 space-y-1"}
+      >
         {visible.map((bot) => {
           const checked = selected.includes(bot.id);
           return (
@@ -454,6 +463,7 @@ export function GroupSettings({
           selected={selected}
           onChange={setSelected}
           onOpenBot={onOpenBot}
+          scrollable={false}
         />
       ) : (
         <div className="mt-5">

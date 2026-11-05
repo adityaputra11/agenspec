@@ -76,6 +76,8 @@ export type ThreadTarget =
       groupName: string;
       members: GroupMember[];
       memberBotIds: string[];
+      /** Someone besides the owner is in the group; then only named bots answer. */
+      shared: boolean;
     };
 
 const THREAD_MESSAGE_PAGE_SIZE = 100;
@@ -102,13 +104,16 @@ function steersUserMessage(run: { status: string; trigger?: string | null }) {
   return STEERABLE_RUN_STATUSES.has(run.status) && isConversationalRun(run.trigger);
 }
 
-type MentionTargetInput = string | { kind: "bot" | "group" | "routine" | "connector"; id: string };
+type MentionTargetInput =
+  | string
+  | { kind: "bot" | "group" | "routine" | "connector" | "user"; id: string };
 
 function splitMentionTargets(mentions: MentionTargetInput[] | undefined) {
   const botMentionIds = new Set<string>();
   const groupMentionIds = new Set<string>();
   const routineMentionIds = new Set<string>();
   const connectorMentionIds = new Set<string>();
+  const userMentionIds = new Set<string>();
   for (const mention of mentions ?? []) {
     if (typeof mention === "string") {
       botMentionIds.add(mention);
@@ -118,12 +123,14 @@ function splitMentionTargets(mentions: MentionTargetInput[] | undefined) {
     if (mention.kind === "group") groupMentionIds.add(mention.id);
     if (mention.kind === "routine") routineMentionIds.add(mention.id);
     if (mention.kind === "connector") connectorMentionIds.add(mention.id);
+    if (mention.kind === "user") userMentionIds.add(mention.id);
   }
   return {
     botMentionIds: [...botMentionIds],
     groupMentionIds: [...groupMentionIds],
     routineMentionIds: [...routineMentionIds],
     connectorMentionIds: [...connectorMentionIds],
+    userMentionIds: [...userMentionIds],
   };
 }
 
@@ -245,10 +252,9 @@ function sendEventRunIds(payload: Prisma.JsonValue | undefined): string[] {
 
 function sendResult(message: { seq: number }, runs: Array<{ id: string; taskId: string }>) {
   const first = runs[0];
-  if (!first) throw new IsolationError("Send did not create a run");
   return {
-    taskId: first.taskId,
-    runId: first.id,
+    taskId: first?.taskId,
+    runId: first?.id,
     seq: message.seq,
     runIds: runs.map((run) => run.id),
   };
@@ -349,7 +355,7 @@ function threadAccessWhere(actor: Pick<Actor, "spaceId" | "userId">, target: Thr
 export function sendTargetBotIds(
   target:
     | { kind: "bot"; botId: string }
-    | { kind: "group"; members: Array<{ botId: string; name: string }> },
+    | { kind: "group"; members: Array<{ botId: string; name: string }>; shared: boolean },
   input: { text?: string; mentions?: MentionTargetInput[] },
 ): string[] {
   if (target.kind === "bot") return [target.botId];
@@ -357,6 +363,7 @@ export function sendTargetBotIds(
     text: input.text ?? "",
     members: target.members.map((member) => ({ id: member.botId, name: member.name })),
     explicitMentions: splitMentionTargets(input.mentions).botMentionIds,
+    groupHasPeople: target.shared,
   });
 }
 
@@ -395,6 +402,7 @@ export async function resolveThreadTarget(
       groupName: group.name,
       members,
       memberBotIds: members.map((member) => member.botId),
+      shared: group.users.length > 0,
     };
   }
   throw new IsolationError();
@@ -1061,7 +1069,11 @@ export async function sendThreadMessage(
       const members = await lockAndLoadGroupMembers(tx, actor, target);
       const memberBotIds = members.map((member) => member.botId);
       const mentionTargets = splitMentionTargets(input.mentions);
-      const targetBotIds = sendTargetBotIds({ kind: "group", members }, input);
+
+      const targetBotIds = sendTargetBotIds(
+        { kind: "group", members, shared: target.shared },
+        input,
+      );
       const { blocks: attachmentBlocks, artifacts } = await resolveGroupSendAttachments(
         { prisma: tx, maxAttachmentsPerMessage: deps.maxAttachmentsPerMessage },
         actor,
@@ -1206,7 +1218,8 @@ export async function sendThreadMessage(
         runs.push(run);
       }
       const firstRun = runs[0];
-      const eventBotId = firstRun?.botId ?? targetBotIds[0];
+      // A message that wakes no bot is still attributed to a member, so the event has a home.
+      const eventBotId = firstRun?.botId ?? targetBotIds[0] ?? members[0]?.botId;
       if (!eventBotId) throw new IsolationError("Group send did not resolve a target");
       if (firstRun) {
         await tx.message.update({ where: { id: message.id }, data: { runId: firstRun.id } });

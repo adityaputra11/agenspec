@@ -265,3 +265,27 @@ describe("memberName", () => {
     expect(memberName(undefined, "b1")).toBeUndefined();
   });
 });
+
+describe("shared group wake", () => {
+  it("wakes no bot for a plain message in a shared group", () => {
+    expect(
+      resolveGroupTargetBotIds({ text: "what should we do?", members, groupHasPeople: true }),
+    ).toEqual([]);
+  });
+
+  it("wakes no bot for a person mention alone in a shared group", () => {
+    expect(
+      resolveGroupTargetBotIds({
+        text: "@Sam can you look?",
+        members,
+        groupHasPeople: true,
+      }),
+    ).toEqual([]);
+  });
+
+  it("keeps the first bot as the default for a group with no people", () => {
+    expect(resolveGroupTargetBotIds({ text: "hello", members, groupHasPeople: false })).toEqual([
+      "a",
+    ]);
+  });
+});

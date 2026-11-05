@@ -268,14 +268,24 @@ export async function loadGroupContext(
         },
         orderBy: { createdAt: "asc" },
       },
+      users: { select: { user: { select: { name: true } } }, orderBy: { createdAt: "asc" } },
     },
   });
   if (!group) return undefined;
+  // Names only: the owner and the people shared into the group, so a bot never calls one a stranger.
+  const people = group.users.length
+    ? [
+        (await prisma.user.findUnique({ where: { id: group.userId }, select: { name: true } }))
+          ?.name ?? "",
+        ...group.users.map((share) => share.user.name),
+      ].filter(Boolean)
+    : [];
   return [
     renderGroupMembersContext(
       group.name,
       group.members.map((member) => member.bot),
       self,
+      people,
     ),
     groupInstructionsBlock(group.instructions),
   ]

@@ -146,6 +146,8 @@ export function renderGroupMembersContext(
   groupName: string,
   members: readonly BotAddress[],
   self: Pick<BotAddress, "id" | "name">,
+  /** Names of the people sharing this chat (owner included); empty when it is not shared. */
+  people: readonly string[] = [],
 ): string {
   const name = escapeDirectoryField(groupName.trim());
   const selfName = escapeDirectoryField(self.name.trim());
@@ -157,6 +159,14 @@ export function renderGroupMembersContext(
     "<group_members>",
     ...formatBotRosterLines(members),
     "</group_members>",
+    ...(people.length
+      ? [
+          "These people share this chat with you. They are not bots: refer to them by name, never hand work to them.",
+          "<group_people>",
+          ...people.map((person) => `- ${escapeDirectoryField(person.trim())}`),
+          "</group_people>",
+        ]
+      : []),
     'In the conversation so far, messages from other members start with "[Name]:", messages from the user start with "[User]:", and your own earlier messages carry no label. Never begin your replies with a label.',
     "Post in this shared thread. When another teammate is genuinely needed for a distinct next stage, use handoff_to_bot instead of telling the user to switch chats.",
     "A handoff transfers ownership. Complete a stage handed to you yourself, then post its result here. Do not hand it back merely to report or ask the previous bot to do the same work. Never bounce a stage between members. One bot owns each stage.",
