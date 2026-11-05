@@ -96,6 +96,11 @@ msgstr "{0} (plus de {1})"
 msgid "{0} {unitLabel}"
 msgstr "{0} {unitLabel}"
 
+#. placeholder {0}: policy.data.allowedApps.length
+#: src/pages/cms/overview-page.tsx
+msgid "{0} allowed"
+msgstr ""
+
 #. placeholder {0}: block.name
 #: src/pages/shell/message-cards.tsx
 msgid "{0} connection"
@@ -507,6 +512,7 @@ msgstr "Activité"
 
 #: src/components/integrations/plugin-marketplace.tsx
 #: src/components/SecretAskCard.tsx
+#: src/pages/cms/apps-page.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/PluginsOverlay.tsx
 #: src/pages/ScratchpadSection.tsx
@@ -566,6 +572,10 @@ msgstr "Ajoutez une URL de serveur HTTPS."
 #: src/pages/PluginsOverlay.tsx
 msgid "Add another"
 msgstr "En ajouter un autre"
+
+#: src/pages/cms/apps-page.tsx
+msgid "Add app"
+msgstr ""
 
 #: src/components/ModelCredits.tsx
 msgid "Add credits"
@@ -656,6 +666,11 @@ msgstr ""
 msgid "Address line 2"
 msgstr ""
 
+#: src/pages/cms/members-page.tsx
+#: src/pages/CmsPage.tsx
+msgid "Admin"
+msgstr ""
+
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
 #: src/pages/ModelSettingsOverlay.tsx
@@ -682,6 +697,10 @@ msgstr ""
 #: src/components/ModelCredits.tsx
 msgid "All {credit} goes to model usage."
 msgstr "La totalité des {credit} sert à l’utilisation des modèles."
+
+#: src/pages/cms/overview-page.tsx
+msgid "All apps"
+msgstr ""
 
 #: src/components/integrations/agent-access.tsx
 #: src/pages/Artifacts.tsx
@@ -724,6 +743,10 @@ msgstr ""
 #: src/pages/memory-providers/SerenitySettingsForm.tsx
 msgid "Allow writing"
 msgstr "Autoriser l'écriture"
+
+#: src/pages/cms/apps-page.tsx
+msgid "Allowed apps"
+msgstr ""
 
 #: src/components/AskCard.tsx
 msgid "Allowed in this space"
@@ -854,6 +877,10 @@ msgstr ""
 msgid "API URL"
 msgstr ""
 
+#: src/pages/cms/apps-page.tsx
+msgid "App slug"
+msgstr ""
+
 #: src/pages/AccountSettingsOverlay.tsx
 msgid "Appearance"
 msgstr "Apparence"
@@ -902,6 +929,8 @@ msgid "Approving…"
 msgstr ""
 
 #: src/components/integrations/plugin-marketplace.tsx
+#: src/pages/cms/overview-page.tsx
+#: src/pages/CmsPage.tsx
 #: src/pages/PluginsOverlay.tsx
 msgid "Apps"
 msgstr ""
@@ -1021,6 +1050,7 @@ msgstr "Studio d'avatars"
 #: src/pages/AdminPluginsPage.tsx
 #: src/pages/Auth.tsx
 #: src/pages/Board.tsx
+#: src/pages/CmsPage.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/NavLinkPage.tsx
 #: src/pages/PluginsOverlay.tsx
@@ -1029,6 +1059,10 @@ msgstr "Studio d'avatars"
 #: src/pages/shell/agent-import.tsx
 msgid "Back"
 msgstr "Retour"
+
+#: src/pages/CmsPage.tsx
+msgid "Back to app"
+msgstr ""
 
 #: src/components/pages/PageNotice.tsx
 msgid "Back to chat"
@@ -1143,6 +1177,10 @@ msgstr "Bots"
 msgid "Bots and browser automation"
 msgstr ""
 
+#: src/pages/cms/documents-page.tsx
+msgid "Bots stop reading it."
+msgstr ""
+
 #: src/pages/Paywall.tsx
 msgid "Bots with their own computer and browser"
 msgstr ""
@@ -1212,6 +1250,7 @@ msgstr "Ne peut pas lire les images"
 #: src/components/vault/VaultItemDetail.tsx
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/Artifacts.tsx
+#: src/pages/cms/documents-page.tsx
 #: src/pages/KnowledgeSection.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/connection-controls.tsx
@@ -2022,6 +2061,10 @@ msgstr "Impossible de supprimer l'espace"
 msgid "Could not delete this artifact."
 msgstr "Impossible de supprimer cet artefact."
 
+#: src/pages/cms/documents-page.tsx
+msgid "Could not delete this file"
+msgstr ""
+
 #: src/pages/MemorySettingsOverlay.tsx
 msgid "Could not disconnect memory provider"
 msgstr "Impossible de déconnecter le fournisseur de mémoire"
@@ -2268,6 +2311,10 @@ msgstr "Impossible d'exécuter la routine"
 msgid "Could not save"
 msgstr "Impossible d'enregistrer"
 
+#: src/pages/cms/apps-page.tsx
+msgid "Could not save allowed apps"
+msgstr ""
+
 #: src/components/ApprovalRulesSettings.tsx
 msgid "Could not save Auto Review"
 msgstr "Impossible d'enregistrer la révision automatique"
@@ -2398,6 +2445,10 @@ msgstr "Impossible de mettre à jour la réaction"
 #: src/pages/MemorySettingsOverlay.tsx
 msgid "Could not update the default memory scope"
 msgstr "Impossible de mettre à jour la portée de mémoire par défaut"
+
+#: src/pages/cms/documents-page.tsx
+msgid "Could not upload this file"
+msgstr ""
 
 #: src/components/ComputersUnavailableHint.tsx
 msgid "Could not verify computer setup ({failureMessage}). Fix the connection, then check again."
@@ -2621,6 +2672,7 @@ msgstr "Portée par défaut"
 #: src/components/PasskeySettings.tsx
 #: src/pages/Artifacts.tsx
 #: src/pages/BotContextMenu.tsx
+#: src/pages/cms/documents-page.tsx
 #: src/pages/KnowledgeSection.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/OrganizationSettingsPanel.tsx
@@ -2680,6 +2732,10 @@ msgstr "Supprimer la section"
 #: src/pages/SpaceSettingsPanel.tsx
 msgid "Delete space"
 msgstr "Supprimer l'espace"
+
+#: src/pages/cms/documents-page.tsx
+msgid "Delete this document?"
+msgstr ""
 
 #: src/pages/SpaceSettingOverrides.tsx
 msgid "Delete this Space's credentials?"
@@ -2842,9 +2898,19 @@ msgstr "Docker limite l'accès à votre ordinateur pour une sécurité renforcé
 msgid "Docs"
 msgstr "Documentation"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Document actions"
+msgstr ""
+
 #: src/pages/KnowledgeSection.tsx
 msgid "Document changed. Reopen to edit the latest version."
 msgstr "Le document a changé. Rouvrez-le pour modifier la dernière version."
+
+#: src/pages/cms/documents-page.tsx
+#: src/pages/cms/overview-page.tsx
+#: src/pages/CmsPage.tsx
+msgid "Documents"
+msgstr ""
 
 #: src/pages/Auth.tsx
 msgid "Don’t have an account?"
@@ -3937,8 +4003,14 @@ msgid "Medium"
 msgstr "Moyen"
 
 #: src/lib/identity-display.ts
+#: src/pages/cms/members-page.tsx
 msgid "Member"
 msgstr "Membre"
+
+#: src/pages/cms/overview-page.tsx
+#: src/pages/CmsPage.tsx
+msgid "Members"
+msgstr ""
 
 #. placeholder {0}: selected.length
 #: src/pages/GroupPanel.tsx
@@ -4574,6 +4646,10 @@ msgstr "Ponctuel"
 msgid "One-time purchase. Credits do not expire."
 msgstr ""
 
+#: src/pages/cms/apps-page.tsx
+msgid "Only allow listed apps"
+msgstr ""
+
 #: src/components/SecretAskCard.tsx
 msgid "Only enter a code {codeHost} sent you."
 msgstr ""
@@ -4708,9 +4784,14 @@ msgstr "Autre modèle…"
 msgid "Output"
 msgstr "Sortie"
 
+#: src/pages/CmsPage.tsx
+msgid "Overview"
+msgstr ""
+
 #: src/components/pages/SharePopover.tsx
 #: src/lib/identity-display.ts
 #: src/pages/Board.tsx
+#: src/pages/cms/members-page.tsx
 msgid "Owner"
 msgstr "Propriétaire"
 
@@ -5061,6 +5142,10 @@ msgstr ""
 msgid "Recent"
 msgstr "Récent"
 
+#: src/pages/cms/overview-page.tsx
+msgid "Recent documents"
+msgstr ""
+
 #: src/pages/PluginsOverlay.tsx
 msgid "Recommended"
 msgstr ""
@@ -5217,6 +5302,10 @@ msgstr "Retirer {0}"
 #. placeholder {0}: bot.name
 #: src/pages/GroupPanel.tsx
 msgid "Remove {0} from the group"
+msgstr ""
+
+#: src/pages/cms/apps-page.tsx
+msgid "Remove {app}"
 msgstr ""
 
 #: src/components/vault/VaultItemDetail.tsx
@@ -5544,6 +5633,7 @@ msgstr "samedi"
 #: src/components/vault/VaultItemEditor.tsx
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/Board.tsx
+#: src/pages/cms/apps-page.tsx
 #: src/pages/ExternalConversationSettings.tsx
 #: src/pages/GroupPanel.tsx
 #: src/pages/KnowledgeSection.tsx
@@ -6791,6 +6881,7 @@ msgstr "Passer à l’offre payante"
 msgid "Upgrade now"
 msgstr ""
 
+#: src/pages/cms/documents-page.tsx
 #: src/pages/shell/avatar-studio-popover.tsx
 msgid "Upload"
 msgstr "Télécharger"
@@ -6822,6 +6913,10 @@ msgstr "Utilisez {oauthEnvReference} pour le jeton d'accès."
 msgid "Use a found model"
 msgstr "Utiliser un modèle trouvé"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Use a PDF, TXT or Markdown file"
+msgstr ""
+
 #: src/lib/model-connection-preflight.ts
 msgid "Use Connect to verify the key."
 msgstr "Utilisez Connecter pour vérifier la clé."
@@ -6836,6 +6931,10 @@ msgstr "Utiliser vos paramètres par défaut pour {label}"
 
 #: src/components/integrations/plugin-marketplace.tsx
 msgid "Use in this bot"
+msgstr ""
+
+#: src/pages/cms/apps-page.tsx
+msgid "Use letters, digits, dots, dashes and underscores"
 msgstr ""
 
 #: src/components/ModelCredits.tsx

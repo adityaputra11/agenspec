@@ -45,6 +45,13 @@ import {
   VaultRevealInput,
 } from "./bot-secrets.js";
 import {
+  OrganizationDocumentMimeTypeSchema,
+  OrganizationDocumentSchema,
+  OrganizationMemberSchema,
+  OrganizationPolicyInputSchema,
+  OrganizationPolicySchema,
+} from "./cms.js";
+import {
   AccessGrantInputSchema,
   AccessGrantSchema,
   AccountItemSchema,
@@ -348,6 +355,37 @@ export const appContract = {
     claimReferral: oc
       .input(z.object({ code: z.string().min(1).max(64) }))
       .output(z.object({ ok: z.literal(true) })),
+  },
+  /** Organization owners and admins manage company documents and the allowed apps. */
+  cms: {
+    /** Whether the signed-in user may open the admin page; never throws. */
+    status: oc.output(
+      z.object({
+        isOrgAdmin: z.boolean(),
+        organizationName: z.string().nullable(),
+        role: z.string().nullable(),
+      }),
+    ),
+    policy: {
+      get: oc.output(OrganizationPolicySchema),
+      update: oc.input(OrganizationPolicyInputSchema).output(OrganizationPolicySchema),
+    },
+    members: {
+      list: oc.output(z.array(OrganizationMemberSchema)),
+    },
+    documents: {
+      list: oc.output(z.array(OrganizationDocumentSchema)),
+      upload: oc
+        .input(
+          z.object({
+            name: z.string().min(1).max(200),
+            mimeType: OrganizationDocumentMimeTypeSchema,
+            contentBase64: z.string().min(1),
+          }),
+        )
+        .output(OrganizationDocumentSchema),
+      delete: oc.input(z.object({ id: Id })).output(z.object({ ok: z.literal(true) })),
+    },
   },
   /** Admins only, on deployments that sell model credits. */
   accessGrants: {

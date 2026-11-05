@@ -2955,6 +2955,7 @@ describe("connections.begin", () => {
         };
         return fn(tx);
       }),
+      space: { findUnique: vi.fn().mockResolvedValue(null) },
     } as unknown as PrismaClient;
     const deps = {
       prisma,
@@ -3048,6 +3049,7 @@ describe("connections.begin", () => {
     const prisma = {
       connection: { updateMany: rootUpdateMany },
       $transaction: vi.fn(async (fn: (tx: unknown) => Promise<unknown>) => fn(tx)),
+      space: { findUnique: vi.fn().mockResolvedValue(null) },
     } as unknown as PrismaClient;
     const handler = new RPCHandler(
       createRouter({
@@ -3119,6 +3121,7 @@ describe("connections.begin", () => {
     const prisma = {
       connection: { updateMany: rootUpdateMany },
       $transaction: vi.fn(async (fn: (tx: unknown) => Promise<unknown>) => fn(tx)),
+      space: { findUnique: vi.fn().mockResolvedValue(null) },
     } as unknown as PrismaClient;
     const handler = new RPCHandler(
       createRouter({
@@ -3345,6 +3348,7 @@ describe("connections.complete", () => {
         };
         return fn(tx);
       }),
+      space: { findUnique: vi.fn().mockResolvedValue(null) },
     } as unknown as PrismaClient;
     const deps = {
       prisma,
@@ -3538,6 +3542,7 @@ describe("connections.complete", () => {
         ),
       },
       $transaction: vi.fn(async (fn: (tx: unknown) => Promise<unknown>) => fn(tx)),
+      space: { findUnique: vi.fn().mockResolvedValue(null) },
     } as unknown as PrismaClient;
     const handler = new RPCHandler(
       createRouter({
@@ -3636,6 +3641,7 @@ describe("connections.complete", () => {
     const prisma = {
       ...client,
       $transaction: vi.fn(async (fn: (tx: typeof client) => Promise<unknown>) => fn(client)),
+      space: { findUnique: vi.fn().mockResolvedValue(null) },
     } as unknown as PrismaClient;
     const connector = {
       complete: vi.fn(),
@@ -3830,6 +3836,7 @@ describe("connections.complete", () => {
     };
     const prisma = {
       connection,
+      space: { findUnique: vi.fn().mockResolvedValue(null) },
       $transaction: vi.fn(async (fn: (tx: unknown) => Promise<unknown>) => fn({ connection })),
     } as unknown as PrismaClient;
     const provider = {

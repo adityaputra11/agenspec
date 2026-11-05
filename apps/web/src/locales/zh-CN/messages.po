@@ -96,6 +96,11 @@ msgstr "{0}（超过 {1}）"
 msgid "{0} {unitLabel}"
 msgstr "{0} {unitLabel}"
 
+#. placeholder {0}: policy.data.allowedApps.length
+#: src/pages/cms/overview-page.tsx
+msgid "{0} allowed"
+msgstr ""
+
 #. placeholder {0}: block.name
 #: src/pages/shell/message-cards.tsx
 msgid "{0} connection"
@@ -507,6 +512,7 @@ msgstr "动态"
 
 #: src/components/integrations/plugin-marketplace.tsx
 #: src/components/SecretAskCard.tsx
+#: src/pages/cms/apps-page.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/PluginsOverlay.tsx
 #: src/pages/ScratchpadSection.tsx
@@ -566,6 +572,10 @@ msgstr "请填写 HTTPS 服务器 URL。"
 #: src/pages/PluginsOverlay.tsx
 msgid "Add another"
 msgstr "再添加一个"
+
+#: src/pages/cms/apps-page.tsx
+msgid "Add app"
+msgstr ""
 
 #: src/components/ModelCredits.tsx
 msgid "Add credits"
@@ -656,6 +666,11 @@ msgstr ""
 msgid "Address line 2"
 msgstr ""
 
+#: src/pages/cms/members-page.tsx
+#: src/pages/CmsPage.tsx
+msgid "Admin"
+msgstr ""
+
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
 #: src/pages/ModelSettingsOverlay.tsx
@@ -682,6 +697,10 @@ msgstr "全部"
 #: src/components/ModelCredits.tsx
 msgid "All {credit} goes to model usage."
 msgstr "全部 {credit} 都用于模型用量。"
+
+#: src/pages/cms/overview-page.tsx
+msgid "All apps"
+msgstr ""
 
 #: src/components/integrations/agent-access.tsx
 #: src/pages/Artifacts.tsx
@@ -724,6 +743,10 @@ msgstr ""
 #: src/pages/memory-providers/SerenitySettingsForm.tsx
 msgid "Allow writing"
 msgstr "允许写入"
+
+#: src/pages/cms/apps-page.tsx
+msgid "Allowed apps"
+msgstr ""
 
 #: src/components/AskCard.tsx
 msgid "Allowed in this space"
@@ -854,6 +877,10 @@ msgstr ""
 msgid "API URL"
 msgstr ""
 
+#: src/pages/cms/apps-page.tsx
+msgid "App slug"
+msgstr ""
+
 #: src/pages/AccountSettingsOverlay.tsx
 msgid "Appearance"
 msgstr "外观"
@@ -902,6 +929,8 @@ msgid "Approving…"
 msgstr "正在批准…"
 
 #: src/components/integrations/plugin-marketplace.tsx
+#: src/pages/cms/overview-page.tsx
+#: src/pages/CmsPage.tsx
 #: src/pages/PluginsOverlay.tsx
 msgid "Apps"
 msgstr "应用"
@@ -1021,6 +1050,7 @@ msgstr "头像工作室"
 #: src/pages/AdminPluginsPage.tsx
 #: src/pages/Auth.tsx
 #: src/pages/Board.tsx
+#: src/pages/CmsPage.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/NavLinkPage.tsx
 #: src/pages/PluginsOverlay.tsx
@@ -1029,6 +1059,10 @@ msgstr "头像工作室"
 #: src/pages/shell/agent-import.tsx
 msgid "Back"
 msgstr "返回"
+
+#: src/pages/CmsPage.tsx
+msgid "Back to app"
+msgstr ""
 
 #: src/components/pages/PageNotice.tsx
 msgid "Back to chat"
@@ -1143,6 +1177,10 @@ msgstr "机器人"
 msgid "Bots and browser automation"
 msgstr "Bot 和浏览器自动化"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Bots stop reading it."
+msgstr ""
+
 #: src/pages/Paywall.tsx
 msgid "Bots with their own computer and browser"
 msgstr "每个 Bot 都有自己的电脑和浏览器"
@@ -1212,6 +1250,7 @@ msgstr "无法读取图像"
 #: src/components/vault/VaultItemDetail.tsx
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/Artifacts.tsx
+#: src/pages/cms/documents-page.tsx
 #: src/pages/KnowledgeSection.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/connection-controls.tsx
@@ -2022,6 +2061,10 @@ msgstr "无法删除工作区"
 msgid "Could not delete this artifact."
 msgstr "无法删除此产物。"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Could not delete this file"
+msgstr ""
+
 #: src/pages/MemorySettingsOverlay.tsx
 msgid "Could not disconnect memory provider"
 msgstr "无法断开记忆提供方"
@@ -2268,6 +2311,10 @@ msgstr "无法运行例行任务"
 msgid "Could not save"
 msgstr "无法保存"
 
+#: src/pages/cms/apps-page.tsx
+msgid "Could not save allowed apps"
+msgstr ""
+
 #: src/components/ApprovalRulesSettings.tsx
 msgid "Could not save Auto Review"
 msgstr "无法保存自动审核"
@@ -2398,6 +2445,10 @@ msgstr "无法更新反应"
 #: src/pages/MemorySettingsOverlay.tsx
 msgid "Could not update the default memory scope"
 msgstr "无法更新默认记忆范围"
+
+#: src/pages/cms/documents-page.tsx
+msgid "Could not upload this file"
+msgstr ""
 
 #: src/components/ComputersUnavailableHint.tsx
 msgid "Could not verify computer setup ({failureMessage}). Fix the connection, then check again."
@@ -2621,6 +2672,7 @@ msgstr "默认范围"
 #: src/components/PasskeySettings.tsx
 #: src/pages/Artifacts.tsx
 #: src/pages/BotContextMenu.tsx
+#: src/pages/cms/documents-page.tsx
 #: src/pages/KnowledgeSection.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/OrganizationSettingsPanel.tsx
@@ -2680,6 +2732,10 @@ msgstr "删除分组"
 #: src/pages/SpaceSettingsPanel.tsx
 msgid "Delete space"
 msgstr "删除工作区"
+
+#: src/pages/cms/documents-page.tsx
+msgid "Delete this document?"
+msgstr ""
 
 #: src/pages/SpaceSettingOverrides.tsx
 msgid "Delete this Space's credentials?"
@@ -2842,9 +2898,19 @@ msgstr "Docker 限制对你电脑的访问，以提高安全性。使用{hostLab
 msgid "Docs"
 msgstr "文档"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Document actions"
+msgstr ""
+
 #: src/pages/KnowledgeSection.tsx
 msgid "Document changed. Reopen to edit the latest version."
 msgstr "文档已更改。请重新打开以编辑最新版本。"
+
+#: src/pages/cms/documents-page.tsx
+#: src/pages/cms/overview-page.tsx
+#: src/pages/CmsPage.tsx
+msgid "Documents"
+msgstr ""
 
 #: src/pages/Auth.tsx
 msgid "Don’t have an account?"
@@ -3937,8 +4003,14 @@ msgid "Medium"
 msgstr "中"
 
 #: src/lib/identity-display.ts
+#: src/pages/cms/members-page.tsx
 msgid "Member"
 msgstr "成员"
+
+#: src/pages/cms/overview-page.tsx
+#: src/pages/CmsPage.tsx
+msgid "Members"
+msgstr ""
 
 #. placeholder {0}: selected.length
 #: src/pages/GroupPanel.tsx
@@ -4574,6 +4646,10 @@ msgstr "一次性"
 msgid "One-time purchase. Credits do not expire."
 msgstr "单次购买，额度不会过期。"
 
+#: src/pages/cms/apps-page.tsx
+msgid "Only allow listed apps"
+msgstr ""
+
 #: src/components/SecretAskCard.tsx
 msgid "Only enter a code {codeHost} sent you."
 msgstr ""
@@ -4708,9 +4784,14 @@ msgstr "其他模型…"
 msgid "Output"
 msgstr "输出"
 
+#: src/pages/CmsPage.tsx
+msgid "Overview"
+msgstr ""
+
 #: src/components/pages/SharePopover.tsx
 #: src/lib/identity-display.ts
 #: src/pages/Board.tsx
+#: src/pages/cms/members-page.tsx
 msgid "Owner"
 msgstr "所有者"
 
@@ -5061,6 +5142,10 @@ msgstr ""
 msgid "Recent"
 msgstr "最近"
 
+#: src/pages/cms/overview-page.tsx
+msgid "Recent documents"
+msgstr ""
+
 #: src/pages/PluginsOverlay.tsx
 msgid "Recommended"
 msgstr "推荐"
@@ -5218,6 +5303,10 @@ msgstr "移除 {0}"
 #: src/pages/GroupPanel.tsx
 msgid "Remove {0} from the group"
 msgstr "把 {0} 移出群组"
+
+#: src/pages/cms/apps-page.tsx
+msgid "Remove {app}"
+msgstr ""
 
 #: src/components/vault/VaultItemDetail.tsx
 msgid "Remove {secretName}? Bots will no longer be able to use it."
@@ -5544,6 +5633,7 @@ msgstr "周六"
 #: src/components/vault/VaultItemEditor.tsx
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/Board.tsx
+#: src/pages/cms/apps-page.tsx
 #: src/pages/ExternalConversationSettings.tsx
 #: src/pages/GroupPanel.tsx
 #: src/pages/KnowledgeSection.tsx
@@ -6791,6 +6881,7 @@ msgstr "升级"
 msgid "Upgrade now"
 msgstr "立即升级"
 
+#: src/pages/cms/documents-page.tsx
 #: src/pages/shell/avatar-studio-popover.tsx
 msgid "Upload"
 msgstr "上传"
@@ -6822,6 +6913,10 @@ msgstr "访问令牌请使用 {oauthEnvReference}。"
 msgid "Use a found model"
 msgstr "使用找到的模型"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Use a PDF, TXT or Markdown file"
+msgstr ""
+
 #: src/lib/model-connection-preflight.ts
 msgid "Use Connect to verify the key."
 msgstr "请使用“连接”验证密钥。"
@@ -6837,6 +6932,10 @@ msgstr "{label}使用默认设置"
 #: src/components/integrations/plugin-marketplace.tsx
 msgid "Use in this bot"
 msgstr "用于此 Bot"
+
+#: src/pages/cms/apps-page.tsx
+msgid "Use letters, digits, dots, dashes and underscores"
+msgstr ""
 
 #: src/components/ModelCredits.tsx
 msgid "Use my subscription or API key"
