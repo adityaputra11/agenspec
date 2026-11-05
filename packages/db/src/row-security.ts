@@ -109,6 +109,7 @@ export const ROW_SECURITY_MODELS: ReadonlySet<string> = new Set([
   "OrganizationDocument",
   "OrganizationDocumentChunk",
   "OrganizationModelSettings",
+  "AgentBlueprint",
   "Event",
   "MemoryDocument",
   "MemoryRevision",

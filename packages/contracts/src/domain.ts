@@ -138,6 +138,8 @@ export const BotSchema = z.object({
   fleetManagement: z.boolean().default(true),
   disabledBuiltinTools: z.array(z.string()).default([]),
   disabledSkills: z.array(z.string()).optional(),
+  /** The organization blueprint this bot was made from, if any. */
+  blueprintId: z.string().nullable().optional(),
   webhookConfigured: z.boolean(),
   /** Present when created with an idempotency key (e.g. onboarding:first). */
   spawnKey: z.string().nullable(),
