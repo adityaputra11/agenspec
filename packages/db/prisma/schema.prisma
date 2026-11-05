@@ -2416,6 +2416,8 @@ model OrganizationPolicy {
   organizationId String   @id
   restrictApps   Boolean  @default(false)
   allowedApps    String[] @default([])
+  /// The remote Timesheet MCP endpoint every member's Timesheet bot connects to; null when off.
+  timesheetServerUrl String?
   updatedAt      DateTime @updatedAt
 
   @@map("organization_policies")
