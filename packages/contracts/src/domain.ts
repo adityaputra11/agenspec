@@ -228,6 +228,8 @@ export const GroupPersonSchema = z.object({
   userId: Id,
   name: z.string(),
   email: z.string().optional(),
+  /** Identity color shown in the shared chat; absent until the account has one. */
+  color: z.string().optional(),
 });
 export type GroupPerson = z.infer<typeof GroupPersonSchema>;
 

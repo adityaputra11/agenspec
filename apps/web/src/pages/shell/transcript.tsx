@@ -543,6 +543,13 @@ export const Transcript = memo(function Transcript({
           const message = item.message;
           if (!messageHasVisibleBlocks(message.blocks, showToolActivity)) return null;
           const peerReceipt = isPeerReceiptBlocks(message.blocks);
+          // Another person's message also carries the user role: only mine goes right.
+          const isOwn =
+            message.role === "user" && (!message.sender || message.sender.userId === currentUserId);
+          const otherSender =
+            message.role === "user" && message.sender && message.sender.userId !== currentUserId
+              ? message.sender
+              : undefined;
           const messageReactions = reactionView.reactions.get(message.id);
           return (
             <Fragment key={message.id}>
@@ -560,7 +567,7 @@ export const Transcript = memo(function Transcript({
                   className={
                     peerReceipt
                       ? undefined
-                      : `relative flex ${message.role === "user" ? "justify-end" : "justify-start"}`
+                      : `relative flex ${isOwn ? "justify-end" : "justify-start"}`
                   }
                 >
                   <div
@@ -595,13 +602,9 @@ export const Transcript = memo(function Transcript({
                             ? memberName?.(message.botId)
                             : undefined
                       }
-                      senderName={
-                        message.role === "user" &&
-                        message.sender &&
-                        message.sender.userId !== currentUserId
-                          ? message.sender.name
-                          : undefined
-                      }
+                      isOwn={isOwn}
+                      senderName={otherSender?.name}
+                      senderColor={otherSender?.color}
                       memberName={memberName}
                       peerBot={peerBot}
                       replyParent={
@@ -629,10 +632,7 @@ export const Transcript = memo(function Transcript({
                 {!peerReceipt && messageReactions ? (
                   <div
                     data-testid="message-reactions"
-                    className={cn(
-                      "mt-1 flex flex-wrap gap-1",
-                      message.role === "user" && "justify-end",
-                    )}
+                    className={cn("mt-1 flex flex-wrap gap-1", isOwn && "justify-end")}
                   >
                     {[...messageReactions].map(([emoji, count]) => (
                       <span

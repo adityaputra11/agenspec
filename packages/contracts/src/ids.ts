@@ -22,6 +22,36 @@ export const BOT_COLORS = [
   "#D9508A",
 ] as const;
 
+/**
+ * Identity colors for people in shared group chats. Mid-tone hues stay readable as names on
+ * both light and dark surfaces; the viewer's own messages keep the default ink color.
+ */
+export const PEOPLE_COLORS = [
+  "#0E9F8A",
+  "#C2620A",
+  "#4F46E5",
+  "#9333EA",
+  "#2563EB",
+  "#DC2626",
+  "#DB2777",
+  "#0891B2",
+] as const;
+
+/** Picks the color a new account gets at signup; inject the random source in tests. */
+export function pickPeopleColor(random: () => number = Math.random): string {
+  return PEOPLE_COLORS[Math.floor(random() * PEOPLE_COLORS.length)] ?? PEOPLE_COLORS[0];
+}
+
+/** Stable fallback for accounts that predate stored colors. */
+export function colorForUserId(userId: string): string {
+  let hash = 0x811c9dc5;
+  for (let index = 0; index < userId.length; index++) {
+    hash ^= userId.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return PEOPLE_COLORS[(hash >>> 0) % PEOPLE_COLORS.length] ?? PEOPLE_COLORS[0];
+}
+
 export const RunStatus = z.enum([
   "queued",
   "leased",

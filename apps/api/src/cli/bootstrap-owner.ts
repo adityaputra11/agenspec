@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { contentKeyProviderFromEnv, unwrapEnvFromKeyManager } from "@rakazo/adapters";
 import { createAuth } from "@rakazo/auth";
+import { pickPeopleColor } from "@rakazo/contracts";
 import { bootstrapUserSpace, createDb, runAsSystem } from "@rakazo/db";
 
 function required(name: string): string {
@@ -56,6 +57,7 @@ async function bootstrap() {
           name: "Account",
           email,
           emailVerified: true,
+          color: pickPeopleColor(),
           accounts: {
             create: {
               id: randomUUID(),

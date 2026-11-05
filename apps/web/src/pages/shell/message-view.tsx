@@ -64,6 +64,8 @@ export const MessageView = memo(function MessageView({
   peerExchange,
   speakerName,
   senderName,
+  senderColor,
+  isOwn,
   memberName,
   peerBot,
   replyParent,
@@ -107,6 +109,13 @@ export const MessageView = memo(function MessageView({
   speakerName?: string;
   /** Who wrote a person's message in a shared group chat, when it is not you. */
   senderName?: string;
+  /** Identity color for that name; the viewer's own messages keep the default ink. */
+  senderColor?: string;
+  /**
+   * Whether this is the viewer's own message. Defaults to the user role, which is wrong for
+   * shared groups where another person's message also carries the user role.
+   */
+  isOwn?: boolean;
   memberName?: (botId: string | undefined) => string | undefined;
   peerBot: (
     botId: string,
@@ -184,6 +193,9 @@ export const MessageView = memo(function MessageView({
     () => resolvePersonaColorDef(message.botId ?? "bot", speakerBot?.color),
     [message.botId, speakerBot?.color],
   );
+  // Another person's message also carries the user role, so alignment and bubbles follow
+  // this flag instead of the role. Private chats pass nothing and keep the role behavior.
+  const ownUserMessage = isOwn ?? message.role === "user";
   const messageContext = (
     <>
       {speakerName ? (
@@ -202,7 +214,14 @@ export const MessageView = memo(function MessageView({
         </div>
       ) : null}
       {senderName ? (
-        <div className="mb-1.5 text-end text-[13px] text-muted-foreground" dir="auto">
+        <div
+          className={cn(
+            "mb-1.5 text-start text-[13px] font-semibold tracking-tight",
+            !senderColor && "text-muted-foreground",
+          )}
+          dir="auto"
+          style={senderColor ? { color: senderColor } : undefined}
+        >
           {senderName}
         </div>
       ) : null}
@@ -232,7 +251,7 @@ export const MessageView = memo(function MessageView({
   const hoverActions = peerReceipt ? null : (
     <MessageHoverActions
       message={message}
-      side={message.role === "user" ? "start" : "end"}
+      side={ownUserMessage ? "start" : "end"}
       onReply={onReply}
       onMarkUnread={onMarkUnread}
       markedUnread={markedUnread}
@@ -322,7 +341,7 @@ export const MessageView = memo(function MessageView({
       <div
         className={cn(
           "relative flex flex-col gap-2",
-          message.role === "user" && !peerReceipt && "items-end",
+          ownUserMessage && !peerReceipt && "items-end",
         )}
       >
         {blocks.map((block, i) => {
@@ -504,10 +523,7 @@ export const MessageView = memo(function MessageView({
           }
           if (block.kind === "image") {
             return (
-              <div
-                key={i}
-                className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
-              >
+              <div key={i} className={`flex ${ownUserMessage ? "justify-end" : "justify-start"}`}>
                 <ArtifactImage
                   target={artifactTarget}
                   artifactId={block.artifactId}
@@ -518,10 +534,7 @@ export const MessageView = memo(function MessageView({
           }
           if (block.kind === "file") {
             return (
-              <div
-                key={i}
-                className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
-              >
+              <div key={i} className={`flex ${ownUserMessage ? "justify-end" : "justify-start"}`}>
                 <ArtifactFileCard
                   target={artifactTarget}
                   artifactId={block.artifactId}
@@ -532,7 +545,7 @@ export const MessageView = memo(function MessageView({
               </div>
             );
           }
-          if (block.kind === "text" && message.role === "user") {
+          if (block.kind === "text" && ownUserMessage) {
             // User bubbles stay literal text on web and mobile. Only explicit URLs,
             // email addresses and page links are links, so a sent address is tappable
             // without formatting bold or headings.

@@ -1,3 +1,4 @@
+import { colorForUserId } from "@rakazo/contracts";
 import { describe, expect, it, vi } from "vitest";
 import type { PrismaClient } from "./client.js";
 import { createGroupRepos, GroupPeopleError } from "./groups.js";
@@ -117,7 +118,12 @@ describe("group access for a shared person", () => {
 
     expect(mapped.ownerUserId).toBe("owner-1");
     expect(mapped.people).toEqual([
-      { userId: "shared-1", name: "Sam", email: "shared@example.test" },
+      {
+        userId: "shared-1",
+        name: "Sam",
+        email: "shared@example.test",
+        color: colorForUserId("shared-1"),
+      },
     ]);
   });
 });
@@ -146,7 +152,12 @@ describe("setGroupPeople", () => {
       data: [{ groupId: "group-1", userId: "shared-1", addedByUserId: "owner-1" }],
     });
     expect(group.people).toEqual([
-      { userId: "shared-1", name: "Sam", email: "shared@example.test" },
+      {
+        userId: "shared-1",
+        name: "Sam",
+        email: "shared@example.test",
+        color: colorForUserId("shared-1"),
+      },
     ]);
   });
 
@@ -199,7 +210,14 @@ describe("listGroupPeopleCandidates", () => {
         where: { organizationId: "org-1", userId: { not: "owner-1" } },
       }),
     );
-    expect(candidates).toEqual([{ userId: "shared-1", name: "Sam", email: "shared@example.test" }]);
+    expect(candidates).toEqual([
+      {
+        userId: "shared-1",
+        name: "Sam",
+        email: "shared@example.test",
+        color: colorForUserId("shared-1"),
+      },
+    ]);
   });
 
   it("is owner only", async () => {

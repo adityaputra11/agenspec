@@ -1,5 +1,6 @@
 import type { SandboxProvider } from "@rakazo/adapter-kit";
 import type { Actor, MessageBlock } from "@rakazo/contracts";
+import { colorForUserId } from "@rakazo/contracts";
 import { callClientNonce } from "@rakazo/core";
 import type * as MessageQuoteModule from "@rakazo/core/message-quote";
 import type { PrismaClient } from "@rakazo/db";
@@ -3851,7 +3852,9 @@ describe("sendThreadMessage", () => {
     });
     expect(tx.event.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
-        payload: expect.objectContaining({ sender: { userId: "shared-2", name: "Sam" } }),
+        payload: expect.objectContaining({
+          sender: { userId: "shared-2", name: "Sam", color: colorForUserId("shared-2") },
+        }),
       }),
     });
   });

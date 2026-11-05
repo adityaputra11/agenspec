@@ -29,6 +29,8 @@ model User {
   email                       String
   emailVerified               Boolean                      @default(false)
   image                       String?
+  /// Identity color shown in shared group chats; NULL for accounts before this release.
+  color                       String?
   createdAt                   DateTime                     @default(now())
   updatedAt                   DateTime                     @updatedAt
   avatarStyle                 String                       @default("organic")
