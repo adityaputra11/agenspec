@@ -30,6 +30,7 @@ import type { ExpoPushProvider } from "./expo-push.js";
 import { compactHistory } from "./history-compaction.js";
 import type { MemoryProviderResolver } from "./memory-provider-factory.js";
 import { deliverMessagingOutbound, mirrorMessagingOutbound } from "./messaging-delivery.js";
+import { processOrganizationDocument } from "./organization-documents.js";
 import { pollPurchase } from "./purchase-poll.js";
 import { expireTaughtSkillTeaching } from "./teaching-session.js";
 
@@ -150,6 +151,12 @@ export function createBackgroundJobHandlers(deps: {
           signal: AbortSignal.timeout(10_000),
         });
       });
+    },
+    "organization_document.process": async ({ documentId }) => {
+      await processOrganizationDocument(
+        { prisma: deps.prisma, artifacts: deps.artifacts },
+        documentId,
+      );
     },
     "messaging.deliver": async ({ runId }) => {
       if (runId && messagingDeps) {

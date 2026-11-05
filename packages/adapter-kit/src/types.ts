@@ -774,6 +774,8 @@ export interface BackgroundJobPayloads {
   "call.expire": { threadId: string; callId: string };
   "history.compact": { threadId: string };
   "messaging.deliver": { runId?: string };
+  /** Extract, chunk and index an uploaded organization document. */
+  "organization_document.process": { documentId: string };
   "messaging.credential-cleanup": { installationId: string; ref: string };
   /** Reconcile durable remote-agent intent; scope is loaded from the database. */
   "cloud_agent.poll": { agentId: string };

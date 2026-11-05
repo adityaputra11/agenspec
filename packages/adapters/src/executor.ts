@@ -127,6 +127,7 @@ import {
 } from "./model-selection.js";
 import { modelAcceptsImageInput } from "./model-vision.js";
 import { usesNativeShell } from "./native-shell.js";
+import { organizationHasReadyDocumentsForSpace } from "./organization-documents.js";
 import { paymentWalletConnected } from "./payment-wallets.js";
 import { isRetiredModelCredentialError } from "./pi-oauth.js";
 import { restoreComputerModels } from "./pi-runtime-computer-mode.js";
@@ -1343,6 +1344,10 @@ export function createRunExecutor(executorDeps: ExecutorDeps) {
             fleetManagement: bot.fleetManagement,
             followUpFromUser: sourceMessage?.role === "user",
             userComputer: userComputer === "connected",
+            companyDocumentsReady: await organizationHasReadyDocumentsForSpace(
+              deps.prisma,
+              run.spaceId,
+            ),
             userComputerScreen,
           }),
           // Cross-owner agent connections only exist for chat-linked bots.

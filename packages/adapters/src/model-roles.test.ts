@@ -7,6 +7,7 @@ import {
   resolveMemberMainModel,
   selectConfiguredModel,
 } from "./model-roles.js";
+import { memberMayUseProvider } from "./organization-model.js";
 
 type SelectionInput = Parameters<typeof selectConfiguredModel>[0];
 
@@ -72,6 +73,7 @@ describe("configured model selection", () => {
       name: "uses the bot's model with its own credential",
       input: { override: bot, overrideCredential },
       expected: {
+        source: "override",
         provider: "bot-provider",
         id: "bot-model",
         credential: overrideCredential,
@@ -82,6 +84,7 @@ describe("configured model selection", () => {
       name: "drops override thinking when its provider has no credential",
       input: { override: bot },
       expected: {
+        source: "main",
         provider: "space-provider",
         id: "space-model",
         credential: spaceCredential,
@@ -92,6 +95,7 @@ describe("configured model selection", () => {
       name: "keeps bot thinking with the main model",
       input: { override: { modelProvider: null, modelId: null, thinkingLevel: "high" } },
       expected: {
+        source: "main",
         provider: "space-provider",
         id: "space-model",
         credential: spaceCredential,
@@ -102,6 +106,7 @@ describe("configured model selection", () => {
       name: "does not select an incomplete or sentinel bot override",
       input: { override: { ...bot, modelId: "null" }, overrideCredential },
       expected: {
+        source: "main",
         provider: "space-provider",
         id: "space-model",
         credential: spaceCredential,
@@ -112,6 +117,7 @@ describe("configured model selection", () => {
       name: "uses the owner's saved default before the environment's",
       input: { main: null },
       expected: {
+        source: "deployment",
         provider: "settings-provider",
         id: "settings-model",
         credential: null,
@@ -122,6 +128,7 @@ describe("configured model selection", () => {
       name: "uses the environment's model when nothing is saved",
       input: { main: null, defaults: { ...deploymentDefaults, settings: null } },
       expected: {
+        source: "deployment",
         provider: "deployment-provider",
         id: "deployment-model",
         credential: null,
@@ -131,12 +138,19 @@ describe("configured model selection", () => {
     {
       name: "leaves missing configuration for the caller's runtime fallback or failure path",
       input: { main: null, defaults: {} },
-      expected: { provider: undefined, id: null, credential: null, thinkingLevel: null },
+      expected: {
+        provider: undefined,
+        id: null,
+        credential: null,
+        thinkingLevel: null,
+        source: null,
+      },
     },
     {
       name: "falls back to the deployment when the main model's connection is gone",
       input: { main: { ...main, credential: null } },
       expected: {
+        source: "deployment",
         provider: "settings-provider",
         id: "settings-model",
         credential: null,
@@ -150,6 +164,7 @@ describe("configured model selection", () => {
         hostedProvider: "deployment-provider",
       },
       expected: {
+        source: "main",
         provider: "deployment-provider",
         id: "managed-model",
         credential: null,
@@ -160,6 +175,7 @@ describe("configured model selection", () => {
       name: "applies the main model's own thinking level",
       input: { main: { ...main, thinkingLevel: "low" } },
       expected: {
+        source: "main",
         provider: "space-provider",
         id: "space-model",
         credential: spaceCredential,
@@ -173,6 +189,7 @@ describe("configured model selection", () => {
         main: { ...main, thinkingLevel: "low" },
       },
       expected: {
+        source: "main",
         provider: "space-provider",
         id: "space-model",
         credential: spaceCredential,
@@ -187,6 +204,7 @@ describe("configured model selection", () => {
         main: { ...main, thinkingLevel: "xhigh" },
       },
       expected: {
+        source: "override",
         provider: "bot-provider",
         id: "other-model",
         credential: overrideCredential,
@@ -201,6 +219,7 @@ describe("configured model selection", () => {
         main: { ...main, thinkingLevel: "xhigh" },
       },
       expected: {
+        source: "override",
         provider: "space-provider",
         id: "space-model",
         credential: spaceCredential,
@@ -209,6 +228,78 @@ describe("configured model selection", () => {
     },
   ])("$name", ({ input, expected }) => {
     expect(selectConfiguredModel({ ...defaults, ...input })).toEqual(expected);
+  });
+});
+
+describe("organization model in selection", () => {
+  const organization = {
+    provider: "org-provider",
+    modelId: "org-model",
+    restrictMemberProviders: false,
+    allowedProviders: [] as string[],
+  };
+  const restricted = (allowedProviders: string[]) => ({
+    ...organization,
+    restrictMemberProviders: true,
+    allowedProviders,
+  });
+
+  it("runs a member's own allowed main model ahead of the organization model", () => {
+    const selected = selectConfiguredModel({
+      ...defaults,
+      organization: restricted(["space-provider"]),
+    });
+    expect(selected).toMatchObject({ provider: "space-provider", source: "main" });
+  });
+
+  it("falls through to the organization model when the member's provider is not listed", () => {
+    const selected = selectConfiguredModel({ ...defaults, organization: restricted([]) });
+    expect(selected).toMatchObject({
+      provider: "org-provider",
+      id: "org-model",
+      credential: null,
+      source: "organization",
+    });
+  });
+
+  it("falls through when a bot's override provider is not listed", () => {
+    const selected = selectConfiguredModel({
+      ...defaults,
+      override: bot,
+      overrideCredential,
+      organization: restricted(["space-provider"]),
+    });
+    expect(selected).toMatchObject({ provider: "space-provider", source: "main" });
+    const withoutOverrideListed = selectConfiguredModel({
+      ...defaults,
+      override: bot,
+      overrideCredential,
+      organization,
+    });
+    expect(withoutOverrideListed).toMatchObject({ provider: "bot-provider", source: "override" });
+  });
+
+  it("uses the organization model for a member who chose nothing", () => {
+    const selected = selectConfiguredModel({
+      ...defaults,
+      main: null,
+      organization,
+      defaults: deploymentDefaults,
+    });
+    expect(selected).toMatchObject({ provider: "org-provider", source: "organization" });
+  });
+
+  it("treats an alias of a listed provider as that provider", () => {
+    expect(memberMayUseProvider(restricted(["azure"]), "azure-openai-responses")).toBe(true);
+    expect(memberMayUseProvider(restricted(["azure"]), "openai")).toBe(false);
+    expect(
+      memberMayUseProvider({ restrictMemberProviders: false, allowedProviders: [] }, "x"),
+    ).toBe(true);
+  });
+
+  it("keeps the deployment's model when no organization model is connected", () => {
+    const selected = selectConfiguredModel({ ...defaults, main: null, organization: null });
+    expect(selected).toMatchObject({ provider: "settings-provider", source: "deployment" });
   });
 });
 

@@ -98,10 +98,13 @@ describePostgres("listBots sidebar previews (PostgreSQL)", () => {
     owner = provisioned;
     const actor = actorFor(owner);
     const repos = createRepos(prisma);
-    // The messaging fixture's own bot is not one of the three seeded chats.
+    // The messaging fixture's own bot and the built-in Legal bot are not among the three seeded
+    // chats; archive them directly (the Legal bot refuses archiving through the app).
     await runAsSystem("test fixture", () =>
-      prisma.bot.update({
-        where: { id: provisioned.botId },
+      prisma.bot.updateMany({
+        where: {
+          OR: [{ id: provisioned.botId }, { spaceId: owner.spaceId, locked: true }],
+        },
         data: { archivedAt: new Date("2026-01-01T00:00:00.000Z") },
       }),
     );

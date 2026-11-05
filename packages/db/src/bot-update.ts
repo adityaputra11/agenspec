@@ -3,6 +3,7 @@ import { getLogger } from "@rakazo/logging";
 import { writeBotInstructions } from "./bot-instructions.js";
 import type { Bot, Prisma, PrismaClient } from "./client.js";
 import { appendEventInTransaction } from "./events.js";
+import { assertBotIdUnlocked, isLayoutOnlyBotChange } from "./locked-bots.js";
 
 type AppendEvent = typeof appendEventInTransaction;
 
@@ -33,6 +34,10 @@ export async function commitBotUpdate(
   },
   appendEvent: AppendEvent = appendEventInTransaction,
 ): Promise<{ id: string; name: string; description: string }> {
+  // A locked bot keeps its profile, instructions and settings; only its sidebar placement moves.
+  if (options.instructionRestore || !isLayoutOnlyBotChange(options.data)) {
+    await assertBotIdUnlocked(options.prisma, options.botId);
+  }
   if (typeof options.data.name === "string") {
     options = {
       ...options,

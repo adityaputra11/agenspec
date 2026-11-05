@@ -1,6 +1,7 @@
 import { destroyBot } from "@rakazo/adapters";
 import type { Actor } from "@rakazo/contracts";
 import type { createRepos } from "@rakazo/db";
+import { assertBotUnlocked } from "@rakazo/db";
 import type { RouterDeps } from "./router.js";
 
 export function createBotRemoval(deps: RouterDeps, repos: ReturnType<typeof createRepos>) {
@@ -10,6 +11,8 @@ export function createBotRemoval(deps: RouterDeps, repos: ReturnType<typeof crea
     options: Parameters<typeof destroyBot>[3],
   ) => {
     const bot = await repos.getBot(actor, botId, { includeArchived: true });
+    // Only explicit deletes stop here; space and account deletion cascade through destroyBot.
+    assertBotUnlocked(bot);
     await destroyBot(
       {
         prisma: deps.prisma,

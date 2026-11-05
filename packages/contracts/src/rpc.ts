@@ -48,6 +48,10 @@ import {
   OrganizationDocumentMimeTypeSchema,
   OrganizationDocumentSchema,
   OrganizationMemberSchema,
+  OrganizationModelConnectSchema,
+  OrganizationModelPolicyInputSchema,
+  OrganizationModelProbeSchema,
+  OrganizationModelSettingsSchema,
   OrganizationPolicyInputSchema,
   OrganizationPolicySchema,
 } from "./cms.js";
@@ -372,6 +376,21 @@ export const appContract = {
     },
     members: {
       list: oc.output(z.array(OrganizationMemberSchema)),
+    },
+    models: {
+      get: oc.output(OrganizationModelSettingsSchema),
+      /** The full provider catalog, ignoring the member allowlist, for choosing the organization model. */
+      catalog: oc.output(z.array(ModelCatalogEntrySchema)),
+      /** Lists models for a provider key, or for an OpenAI-compatible server address, before saving. */
+      probe: oc
+        .input(OrganizationModelProbeSchema)
+        .output(z.object({ models: z.array(z.string()) })),
+      /** Verifies the connection, then keeps it for the organization. */
+      connect: oc.input(OrganizationModelConnectSchema).output(OrganizationModelSettingsSchema),
+      disconnect: oc.output(z.object({ ok: z.literal(true) })),
+      setPolicy: oc
+        .input(OrganizationModelPolicyInputSchema)
+        .output(OrganizationModelSettingsSchema),
     },
     documents: {
       list: oc.output(z.array(OrganizationDocumentSchema)),

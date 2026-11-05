@@ -11,7 +11,11 @@ vi.mock("./model-selection.js", async (importOriginal) => ({
 it("validates live-only models against the caller's account catalog before reading credentials", async () => {
   const catalog = { read: vi.fn() };
   const deps = {
-    prisma: {},
+    // A Space with no organization model: the organization check passes through.
+    prisma: {
+      space: { findUnique: async () => null },
+      organizationModelSettings: { findUnique: async () => null },
+    },
     secretStore: {},
     billingEnabled: false,
     codexCatalog: catalog,

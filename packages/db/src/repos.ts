@@ -111,6 +111,7 @@ function mapBot(
     disabledBuiltinTools?: string[];
     webhookSecretId?: string | null;
     spawnKey?: string | null;
+    locked?: boolean;
   },
   preview = "",
   status = "idle",
@@ -159,6 +160,7 @@ function mapBot(
     disabledBuiltinTools: [...disabledBuiltinToolSet(bot.disabledBuiltinTools)],
     webhookConfigured: Boolean(bot.webhookSecretId),
     spawnKey: bot.spawnKey ?? null,
+    locked: bot.locked ?? false,
     incomingCall,
   };
 }

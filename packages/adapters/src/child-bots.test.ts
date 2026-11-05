@@ -2134,6 +2134,7 @@ describe("archiveBot", () => {
         userId: "user-1",
         name: "Researcher",
         archivedAt: null,
+        locked: false,
       },
       context,
     );
@@ -2214,7 +2215,14 @@ describe("archiveBot", () => {
           home,
           jobs: { cancel: vi.fn() } as unknown as JobPublisher,
         },
-        { id: "bot-1", spaceId: "workspace-1", userId: "user-1", name: "Researcher", archivedAt },
+        {
+          id: "bot-1",
+          spaceId: "workspace-1",
+          userId: "user-1",
+          name: "Researcher",
+          locked: false,
+          archivedAt,
+        },
         context,
       ),
     ).rejects.toThrow("stop failed");
@@ -2278,6 +2286,7 @@ describe("archiveBot", () => {
         userId: "user-1",
         name: "Researcher",
         archivedAt: null,
+        locked: false,
       },
       context,
     );
@@ -2315,7 +2324,14 @@ describe("archiveBot", () => {
       };
       const sandbox = { exportWorkspace, stop } as unknown as SandboxProvider;
       const jobs = { cancel: vi.fn() } as unknown as JobPublisher;
-      const bot = { id: "bot-1", spaceId: "s-1", userId: "u-1", name: "R", archivedAt: null };
+      const bot = {
+        id: "bot-1",
+        spaceId: "s-1",
+        userId: "u-1",
+        name: "R",
+        archivedAt: null,
+        locked: false,
+      };
 
       await archiveBot({ prisma, sandbox, home: {} as AgentHomeStore, jobs }, bot, context);
       expect(updates.updateMany).toHaveBeenCalledWith(
@@ -2382,6 +2398,7 @@ describe("archiveBot", () => {
           userId: "user-1",
           name: "Scout",
           archivedAt: null,
+          locked: false,
           computerId: team.id,
         },
         { ...context, botId: "parent-1", screenLeaseId: "run-parent:4" },

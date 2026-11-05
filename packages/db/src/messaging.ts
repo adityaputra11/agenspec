@@ -100,9 +100,10 @@ export async function provisionMessagingIdentity(
 
   // A previous attempt may have died between createBot and the identity row;
   // messaging users only ever get bots here, so an existing bot is theirs.
+  // Built-in locked bots (Legal) are provisioned for everyone and never become the chat's bot.
   let botId = (
     await prisma.bot.findFirst({
-      where: { spaceId, userId: user.id, archivedAt: null },
+      where: { spaceId, userId: user.id, archivedAt: null, locked: false },
       select: { id: true },
     })
   )?.id;

@@ -51,6 +51,8 @@ describe("disabled ticket board", () => {
 it("rejects an out-of-range ticket reference before querying tickets", async () => {
   const findFirst = vi.fn(async () => null);
   const prisma = {
+    space: { findUnique: vi.fn(async () => null) },
+    organizationModelSettings: { findUnique: vi.fn(async () => null) },
     board: { findUnique: vi.fn(async () => ({ id: "board-1", ticketPrefix: "RAK" })) },
     ticket: { findFirst },
   };
@@ -81,6 +83,8 @@ it("refuses a signed-out caller before querying the board", async () => {
 
 it.each([false, true])("includes the board capability in me (%s)", async (ticketBoardEnabled) => {
   const prisma = {
+    space: { findUnique: vi.fn(async () => null) },
+    organizationModelSettings: { findUnique: vi.fn(async () => null) },
     user: {
       findUniqueOrThrow: vi.fn(async () => ({
         email: "user@rakazo.test",

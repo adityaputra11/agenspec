@@ -22,7 +22,7 @@ import {
   Trash2,
 } from "lucide-react";
 
-type ChatMenuTarget = Pick<Bot, "name" | "pinned" | "sectionId" | "unread">;
+type ChatMenuTarget = Pick<Bot, "name" | "pinned" | "sectionId" | "unread"> & { locked?: boolean };
 
 /** A roster row's context menu content; `onClose` serves the lazy-load error fallback. */
 export function BotContextMenu({
@@ -113,14 +113,18 @@ export function BotContextMenu({
         <Eraser />
         {t`Clear conversation`}
       </ContextMenuItem>
-      <ContextMenuItem onClick={onArchive}>
-        <Archive />
-        {t`Archive`}
-      </ContextMenuItem>
-      <ContextMenuItem variant="destructive" onClick={onDelete}>
-        <Trash2 />
-        {t`Delete`}
-      </ContextMenuItem>
+      {bot.locked ? null : (
+        <>
+          <ContextMenuItem onClick={onArchive}>
+            <Archive />
+            {t`Archive`}
+          </ContextMenuItem>
+          <ContextMenuItem variant="destructive" onClick={onDelete}>
+            <Trash2 />
+            {t`Delete`}
+          </ContextMenuItem>
+        </>
+      )}
     </ContextMenuContent>
   );
 }

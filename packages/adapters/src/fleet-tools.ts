@@ -17,11 +17,13 @@ import {
 import { CARD_TITLE_ESCAPED_CHARACTERS, ONCE_ROUTINE_CRON, redactSecrets } from "@rakazo/core";
 import type { Prisma, PrismaClient, ThreadEvents } from "@rakazo/db";
 import {
+  assertBotIdUnlocked,
   commitBotUpdate,
   createGroupRepos,
   createRepos,
   InstructionConflictError,
   IsolationError,
+  LockedBotError,
   SpaceDeletionInProgressError,
 } from "@rakazo/db";
 import { getLogger } from "@rakazo/logging";
@@ -846,15 +848,20 @@ export async function updateChildBot(
       error: "Provide at least one of name, description, notify_on_finish, or color.",
     };
   }
-  await commitBotUpdate({
-    prisma: deps.prisma,
-    notify: (threadId, seq) => deps.events.notify(threadId, seq),
-    spaceId: run.spaceId,
-    threadId: child.thread.id,
-    botId: child.id,
-    emitBotUpdated: true,
-    data: patch,
-  });
+  try {
+    await commitBotUpdate({
+      prisma: deps.prisma,
+      notify: (threadId, seq) => deps.events.notify(threadId, seq),
+      spaceId: run.spaceId,
+      threadId: child.thread.id,
+      botId: child.id,
+      emitBotUpdated: true,
+      data: patch,
+    });
+  } catch (error) {
+    if (error instanceof LockedBotError) return { error: error.message };
+    throw error;
+  }
   return { ok: true };
 }
 
@@ -897,6 +904,7 @@ export async function setChildInstructions(
     });
   } catch (error) {
     if (error instanceof InstructionConflictError) return { error: CHILD_CHANGED };
+    if (error instanceof LockedBotError) return { error: error.message };
     throw error;
   }
   return { ok: true, botId: child.id, name: singleLine(child.name), length: instructions.length };
@@ -977,6 +985,7 @@ export async function setChildBotModel(
   } catch (error) {
     if (error && typeof error === "object" && "code" in error && error.code === "P2025")
       return { error: "That bot's model changed since you approved; ask again." };
+    if (error instanceof LockedBotError) return { error: error.message };
     throw error;
   }
   return {
@@ -1304,6 +1313,12 @@ export async function updateOwnBotFromTool(
   const parsed = parseUpdateBotPatch(args);
   if ("error" in parsed) return parsed;
   const patch = parsed.patch;
+  try {
+    await assertBotIdUnlocked(deps.prisma, bot.id);
+  } catch (error) {
+    if (error instanceof LockedBotError) return { error: error.message };
+    throw error;
+  }
   const wantsImage = args.artifact_id !== undefined || args.use_attached_image === true;
   let sourceImageArtifactIds: string[] = [];
   if (wantsImage && run.sourceMessageId) {

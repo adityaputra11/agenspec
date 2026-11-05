@@ -1,3 +1,6 @@
+import { providerDisplayName } from "../../lib/localized-provider-hint";
+import type { ModelCatalogEntry } from "../../lib/model-auth";
+
 export const DOCUMENT_MIME_TYPES: Record<
   string,
   "application/pdf" | "text/plain" | "text/markdown"
@@ -54,4 +57,10 @@ export function readBase64(file: File): Promise<string> {
     };
     reader.readAsDataURL(file);
   });
+}
+
+/** The shared catalog's name for a provider, with the same subscription labels as onboarding. */
+export function providerLabel(catalog: ModelCatalogEntry[], provider: string): string {
+  const entry = catalog.find((item) => item.provider === provider);
+  return providerDisplayName(provider, entry?.providerName ?? provider);
 }

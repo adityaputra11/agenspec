@@ -329,8 +329,9 @@ describe("prepareOwnBotSettings voice", () => {
 it("update_bot persists a daily check-in opt-out and returns the saved value", async () => {
   const update = vi.fn(async ({ data }) => ({ id: "bot-1", ...bot, ...data }));
   const append = vi.fn();
+  const findUnique = vi.fn(async () => ({ locked: false }));
   const result = await updateOwnBotFromTool(
-    { prisma: { bot: { update } }, events: { append } } as never,
+    { prisma: { bot: { findUnique, update } }, events: { append } } as never,
     { id: "run-1", userId: "user-1", spaceId: "space-1", sourceMessageId: null },
     "thread-1",
     { id: "bot-1", name: "Scout" },

@@ -66,6 +66,7 @@ export * from "./model-probe.js";
 export * from "./model-providers.js";
 export * from "./model-role-settings.js";
 export * from "./notification-avatar.js";
+export * from "./organization-document-chunks.js";
 export * from "./organizations.js";
 export * from "./page-links.js";
 export * from "./passkey-offer.js";

@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { BOT_INSTRUCTIONS_MAX_LENGTH, InstructionVersionSchema } from "@rakazo/contracts";
 import type { Prisma } from "./client.js";
+import { LockedBotError } from "./locked-bots.js";
 
 export class InstructionConflictError extends Error {
   constructor(message: string) {
@@ -23,6 +24,7 @@ export async function writeBotInstructions(
 ) {
   await tx.$queryRaw`SELECT id FROM bots WHERE id = ${input.botId} FOR UPDATE`;
   const bot = await tx.bot.findUniqueOrThrow({ where: { id: input.botId } });
+  if (bot.locked) throw new LockedBotError();
   if (input.versionId && input.expectedInstructions === undefined) {
     throw new InstructionConflictError("Review the current instructions before restoring.");
   }
