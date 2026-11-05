@@ -11,6 +11,8 @@ import { appliedModelRole } from "@rakazo/db";
 import { resolveAutoReviewChecker } from "./auto-review.js";
 import type { ModelChoice, ModelCredential } from "./model-selection.js";
 import { findConnectedModelCredential } from "./model-selection.js";
+import type { OrganizationProviderPolicy } from "./organization-model.js";
+import { memberMayUseProvider } from "./organization-model.js";
 
 /** The deployment's configuration that stands in for a member who chose nothing. */
 export type DeploymentModelDefaults = {
@@ -90,6 +92,9 @@ export async function resolveMemberMainModel(
   return { ...primary, credential };
 }
 
+/** Where the selected model comes from; an organization model runs on the organization's connection. */
+export type ModelSource = "override" | "main" | "organization" | "deployment";
+
 /** Select configuration without loading secrets or applying a runtime-specific fallback. */
 export function selectConfiguredModel(input: {
   /** The bot's or the run's own model; null follows the main model. */
@@ -97,29 +102,60 @@ export function selectConfiguredModel(input: {
   hostedProvider?: string;
   overrideCredential: ModelCredential;
   main: MemberMainModel | null;
+  /** The organization's model, which runs after a member's own and before the deployment's. */
+  organization?: (OrganizationProviderPolicy & { provider: string; modelId: string }) | null;
   defaults: DeploymentModelDefaults;
 }) {
-  const { override: bot, overrideCredential, main } = input;
+  const { override: bot, overrideCredential, main, organization } = input;
   const hasOverride = Boolean(bot?.modelProvider && usableModelId(bot.modelId));
   // A model runs on its own connection, or on the deployment's for its funded provider.
   const runnable = (provider: string | null | undefined, credential: ModelCredential) =>
     Boolean(credential || (provider && provider === input.hostedProvider));
+  // When the organization restricts providers, a member's connection to an unlisted one never runs.
+  const memberAllowed = (provider: string | null | undefined) =>
+    memberMayUseProvider(organization, provider ?? "");
   // The override provider, model and credential must win together.
-  const useOverride = hasOverride && runnable(bot?.modelProvider, overrideCredential);
-  const useMain = !useOverride && main !== null && runnable(main.provider, main.credential);
+  const useOverride =
+    hasOverride &&
+    memberAllowed(bot?.modelProvider) &&
+    runnable(bot?.modelProvider, overrideCredential);
+  const useMain =
+    !useOverride &&
+    main !== null &&
+    memberAllowed(main.provider) &&
+    runnable(main.provider, main.credential);
   const fallback = deploymentModelRole("main", input.defaults).primary;
-  const selected = useOverride
+  const selected: {
+    provider: string | null | undefined;
+    id: string | null;
+    credential: ModelCredential;
+    source: ModelSource | null;
+  } = useOverride
     ? {
         provider: bot!.modelProvider!,
         id: usableModelId(bot!.modelId),
         credential: overrideCredential,
+        source: "override",
       }
     : useMain
-      ? { provider: main.provider, id: main.modelId, credential: main.credential }
-      : { provider: fallback?.provider, id: fallback?.modelId ?? null, credential: null };
+      ? { provider: main.provider, id: main.modelId, credential: main.credential, source: "main" }
+      : organization
+        ? {
+            provider: organization.provider,
+            id: organization.modelId,
+            credential: null,
+            source: "organization",
+          }
+        : {
+            provider: fallback?.provider,
+            id: fallback?.modelId ?? null,
+            credential: null,
+            source: fallback ? "deployment" : null,
+          };
   // The main model's effort belongs to that model, so an override of the same model keeps it.
   const mainThinking =
     main &&
+    selected.source !== "organization" &&
     selected.id &&
     backupChoiceKey(main) ===
       backupChoiceKey({ provider: selected.provider ?? "", modelId: selected.id })

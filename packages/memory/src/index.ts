@@ -13,7 +13,7 @@ import type {
 } from "@rakazo/adapter-kit";
 import { MEMORY_REVISION_CONFLICT_ERROR } from "@rakazo/adapter-kit";
 import type { PrismaClient } from "@rakazo/db";
-import { Prisma, withTransactionRetry } from "@rakazo/db";
+import { assertBotIdUnlocked, Prisma, withTransactionRetry } from "@rakazo/db";
 
 /** Memory paths the organization's CMS owns; bots and members may read them but not edit them. */
 export const ORGANIZATION_DOCUMENT_PATH_PREFIX = "company/";
@@ -82,6 +82,9 @@ export class MarkdownMemoryStore implements MemoryStore {
 
   async commit(request: MemoryCommitRequest, context: AdapterContext): Promise<MemoryRevision> {
     if (isOrganizationDocumentPath(request.path)) throw new Error(ORGANIZATION_DOCUMENT_LOCKED);
+    if (request.scope === "bot" && request.botId) {
+      await assertBotIdUnlocked(this.prisma, request.botId);
+    }
     // A save replaces the current content and appends its history atomically.
     // Conflicts retry the whole transaction so revision numbers use fresh state.
     return withTransactionRetry(() =>
@@ -136,6 +139,9 @@ export class MarkdownMemoryStore implements MemoryStore {
     context: AdapterContext,
   ): Promise<{ removed: boolean }> {
     if (isOrganizationDocumentPath(request.path)) throw new Error(ORGANIZATION_DOCUMENT_LOCKED);
+    if (request.scope === "bot" && request.botId) {
+      await assertBotIdUnlocked(this.prisma, request.botId);
+    }
     // Revisions cascade with the document row.
     const { count } = await this.prisma.memoryDocument.deleteMany({
       where: {

@@ -57,6 +57,11 @@ export const FLEET_WRITE_TOOL_NAMES_SET: ReadonlySet<string> = new Set(FLEET_WRI
  */
 const CREATED_RUN_TOOL_NAMES = new Set(["ask_user", "update_bot"]);
 
+const COMPANY_DOCUMENT_TOOL_NAMES: ReadonlySet<string> = new Set([
+  "company_documents_search",
+  "attach_company_document",
+]);
+
 export function selectBuiltinToolsForRun(options: {
   ticketBoardEnabled?: boolean;
   phoneCallsEnabled?: boolean;
@@ -86,6 +91,8 @@ export function selectBuiltinToolsForRun(options: {
   userComputer?: boolean;
   /** That desktop can look at and drive its apps. */
   userComputerScreen?: boolean;
+  /** The bot's organization has at least one ready document. */
+  companyDocumentsReady?: boolean;
 }) {
   const disabled = disabledBuiltinToolSet(options.disabledBuiltinTools);
   const ownerStartedRun = isOwnerStartedRun(options.trigger, Boolean(options.followUpFromUser));
@@ -128,6 +135,7 @@ export function selectBuiltinToolsForRun(options: {
         ].includes(tool.name)) &&
       (options.voiceCall || tool.name !== "end_call") &&
       (options.userComputer || tool.name !== "user_computer_shell") &&
+      (options.companyDocumentsReady || !COMPANY_DOCUMENT_TOOL_NAMES.has(tool.name)) &&
       ((options.userComputer && options.userComputerScreen) ||
         !USER_COMPUTER_SCREEN_TOOLS.has(tool.name)) &&
       // Already on a call, or reached through a messaging channel that cannot ring.

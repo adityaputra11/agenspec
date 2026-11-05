@@ -41,6 +41,7 @@ import type { PrismaClient } from "@rakazo/db";
 import {
   AnswerTooLongError,
   configureProviderTransactionPool,
+  LockedBotError,
   runProviderTransaction,
 } from "@rakazo/db";
 import { createLogger, createTestSink, installLogger } from "@rakazo/logging";
@@ -56,8 +57,19 @@ import {
 } from "./router.js";
 import { providerScopeKey } from "./routes/connections.js";
 
+/** Fakes without an organization have no model policy, which is how the deployment runs them. */
+const withOrganizationModel = (prisma: RouterDeps["prisma"]) => {
+  const client = prisma as unknown as Record<string, Record<string, unknown> | undefined>;
+  if (client && typeof client === "object") {
+    client.space ??= { findUnique: async () => null };
+    client.organizationModelSettings ??= { findUnique: async () => null };
+  }
+  return prisma;
+};
+
 const withRoleDeps = (deps: RouterDeps) => {
   withModelRoles(deps.prisma);
+  withOrganizationModel(deps.prisma);
   return deps;
 };
 const createRouter = (deps: RouterDeps) => createRouterWith(withRoleDeps(deps));
@@ -105,7 +117,7 @@ describe("account preferences", () => {
         findUnique: vi.fn(async () => ({ timezone: user.timezone })),
         findUniqueOrThrow: vi.fn().mockResolvedValue(user),
       },
-      bot: { findMany: botFindMany },
+      bot: { findMany: botFindMany, findUnique: vi.fn().mockResolvedValue({ locked: false }) },
       routine: {
         findMany: vi.fn(async ({ where }: { where: Record<string, unknown> }) =>
           routines.filter((row) => matches(row, where)),
@@ -402,7 +414,12 @@ describe("account preferences", () => {
     });
     expect(botFindMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { userId: "user-1", avatarSetPinned: false, avatarSet: { not: "rakazo" } },
+        where: {
+          userId: "user-1",
+          avatarSetPinned: false,
+          locked: false,
+          avatarSet: { not: "rakazo" },
+        },
       }),
     );
   });
@@ -758,6 +775,7 @@ describe("model setup gate", () => {
       },
       // A bot that follows the main model.
       bot: {
+        findUnique: vi.fn().mockResolvedValue({ locked: false }),
         findFirst: vi.fn().mockResolvedValue({ id: "bot-1", thread: { id: "thread-1" } }),
         findMany: vi
           .fn()
@@ -965,6 +983,7 @@ describe("thread answer delivery", () => {
     installLogger(createLogger({ service: "rakazo-api", sinks: [sink] }));
     const prisma = {
       bot: {
+        findUnique: vi.fn().mockResolvedValue({ locked: false }),
         findFirst: vi.fn().mockResolvedValue({
           id: "bot-1",
           thread: { id: "thread-1" },
@@ -1033,6 +1052,7 @@ describe("oversized one-time answer", () => {
     const enqueue = vi.fn();
     const prisma = {
       bot: {
+        findUnique: vi.fn().mockResolvedValue({ locked: false }),
         findFirst: vi.fn().mockResolvedValue({
           id: "bot-1",
           thread: { id: "thread-1" },
@@ -1086,6 +1106,7 @@ describe("secret request dismissal", () => {
     const enqueue = vi.fn().mockResolvedValue(undefined);
     const prisma = {
       bot: {
+        findUnique: vi.fn().mockResolvedValue({ locked: false }),
         findFirst: vi.fn().mockResolvedValue({
           id: "bot-1",
           thread: { id: "thread-1" },
@@ -1277,6 +1298,7 @@ describe("thread stream authorization", () => {
     };
     const prisma = {
       bot: {
+        findUnique: vi.fn().mockResolvedValue({ locked: false }),
         findFirst: vi.fn().mockResolvedValue({
           id: "bot-1",
           thread: { id: "thread-1" },
@@ -6972,6 +6994,7 @@ describe("bot model auth on save", () => {
     const prisma = {
       $queryRaw: vi.fn(async () => []),
       bot: {
+        findUnique: vi.fn().mockResolvedValue({ locked: false }),
         findFirst: vi.fn(async () => bot),
         findMany: vi.fn(async () => [{ ...bot, name: "Ada renamed" }]),
         update: botUpdate,
@@ -8018,6 +8041,7 @@ describe("openai-compatible enabled models", () => {
       ...pins,
       $queryRaw: vi.fn(async () => []),
       bot: {
+        findUnique: vi.fn().mockResolvedValue({ locked: false }),
         findFirst: vi.fn(async () => bot),
         findMany: vi.fn(async ({ where }: { where: PinWhere }) =>
           where.modelProvider ? pins.bots(where) : [bot],
@@ -8672,6 +8696,7 @@ describe("threads.answerCall and threads.declineCall", () => {
     const tx = {
       $queryRaw: vi.fn(async () => []),
       bot: {
+        findUnique: vi.fn().mockResolvedValue({ locked: false }),
         findFirst: vi
           .fn()
           .mockResolvedValue({ id: "bot-1", thread: { id: "thread-1" }, computer: null }),
@@ -8828,6 +8853,7 @@ describe("threads.endCall", () => {
     } as never;
     const prisma = {
       bot: {
+        findUnique: vi.fn().mockResolvedValue({ locked: false }),
         findFirst: vi
           .fn()
           .mockResolvedValue({ id: "bot-1", thread: { id: "thread-1" }, computer: null }),
@@ -9525,6 +9551,7 @@ describe("export.bot", () => {
   ) {
     const prisma = {
       bot: {
+        findUnique: vi.fn().mockResolvedValue({ locked: false }),
         findFirst: vi.fn().mockResolvedValue({
           id: "bot-1",
           name: "Writer",
@@ -9959,6 +9986,7 @@ describe("quarantined computer stop", () => {
       });
       const prisma = {
         bot: {
+          findUnique: vi.fn().mockResolvedValue({ locked: false }),
           findFirst: vi.fn(async () => {
             const snapshot = { ...row };
             return {
@@ -10026,4 +10054,71 @@ describe("quarantined computer stop", () => {
       }
     },
   );
+});
+
+describe("locked bots", () => {
+  function lockedBotFixture() {
+    const bot = {
+      id: "legal-1",
+      spaceId: "space-1",
+      userId: "user-1",
+      name: "Legal",
+      description: "",
+      instructions: "",
+      instructionHistory: [],
+      color: "#3EC5A8",
+      notifyOnFinish: true,
+      pinned: false,
+      sectionId: null,
+      archivedAt: null,
+      locked: true,
+      modelProvider: null,
+      modelId: null,
+      thinkingLevel: null,
+      thread: { id: "thread-legal" },
+      computer: null,
+    };
+    const botApi = {
+      findFirst: vi.fn(async () => bot),
+      findUnique: vi.fn(async () => ({ locked: true })),
+      findMany: vi.fn(async () => []),
+      update: vi.fn(async () => ({ id: "legal-1", name: "Legal", description: "" })),
+    };
+    const prisma = {
+      bot: botApi,
+      $transaction: vi.fn(),
+    };
+    const client = createRouterClient(createRouter({ prisma, env: {} } as unknown as RouterDeps), {
+      context: {
+        actor: {
+          spaceId: "space-1",
+          userId: "user-1",
+          email: "user@rakazo.test",
+          isDeploymentOwner: false,
+        },
+      } as never,
+    });
+    return { botApi, client };
+  }
+
+  it("refuses a rename of a locked bot", async () => {
+    const { botApi, client } = lockedBotFixture();
+    await expect(client.bots.update({ botId: "legal-1", name: "Renamed" })).rejects.toBeInstanceOf(
+      LockedBotError,
+    );
+    expect(botApi.update).not.toHaveBeenCalled();
+  });
+
+  it("lets a pin change through to the write", async () => {
+    const { botApi, client } = lockedBotFixture();
+    // The route's read of the roster after the write is not faked here, so the call fails after the write.
+    const outcome = await client.bots.update({ botId: "legal-1", pinned: true }).then(
+      () => null,
+      (error: unknown) => error,
+    );
+    expect(outcome).not.toBeInstanceOf(LockedBotError);
+    expect(botApi.update).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ pinned: true }) }),
+    );
+  });
 });

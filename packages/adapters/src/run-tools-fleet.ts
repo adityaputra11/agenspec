@@ -5,6 +5,7 @@ import {
   createSpaceForMember,
   InstructionConflictError,
   InvalidSpaceNameError,
+  LockedBotError,
   runAsSystem,
   SpaceLimitError,
   writeBotInstructions,
@@ -111,6 +112,7 @@ async function commitOwnInstructions(
         expectedInstructions: previousInstructions,
       });
     } catch (error) {
+      if (error instanceof LockedBotError) return { error: error.message };
       if (!(error instanceof InstructionConflictError)) throw error;
       // Re-reading cannot rebase this attempt, so point the model at a fresh run.
       return { error: OWN_INSTRUCTIONS_CHANGED_ERROR };
@@ -349,6 +351,7 @@ export const fleetTools: ToolHandlers = {
           data: settings.data,
         });
       } catch (error) {
+        if (error instanceof LockedBotError) return call.finish({ error: error.message });
         if (!(error && typeof error === "object" && "code" in error && error.code === "P2025"))
           throw error;
         return call.finish({ error: "Your settings changed meanwhile; read them and try again." });

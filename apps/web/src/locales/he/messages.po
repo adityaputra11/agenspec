@@ -69,14 +69,14 @@ msgid "{0, plural, one {Switch # bot to the space default?} other {Switch # bots
 msgstr ""
 
 #. placeholder {0}: Math.ceil(oauth.expiresInSeconds / 60)
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "{0, plural, one {Waiting for sign-in — the code expires in about # minute.} other {Waiting for sign-in — the code expires in about # minutes.}}"
 msgstr "{0, plural, one {ממתין להתחברות — הקוד יפוג בעוד כ-# דקה.} other {ממתין להתחברות — הקוד יפוג בעוד כ-# דקות.}}"
 
 #. placeholder {0}: Math.ceil(oauth.expiresInSeconds / 60)
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "{0, plural, one {Waiting for sign-in — the link expires in about # minute.} other {Waiting for sign-in — the link expires in about # minutes.}}"
 msgstr "{0, plural, one {ממתין להתחברות — הקישור יפוג בעוד כ-# דקה.} other {ממתין להתחברות — הקישור יפוג בעוד כ-# דקות.}}"
 
@@ -145,6 +145,11 @@ msgstr "{0} MB"
 #: src/pages/ExternalConversationSettings.tsx
 msgid "{0} rollup hours"
 msgstr "שעות סיכום של {0}"
+
+#. placeholder {0}: document.chunkCount
+#: src/pages/cms/documents-page.tsx
+msgid "{0} sections"
+msgstr ""
 
 #. placeholder {0}: parts.amount
 #: src/components/ArtifactFileCard.tsx
@@ -436,8 +441,8 @@ msgid "A command's output"
 msgstr ""
 
 #. placeholder {0}: oauth.verificationUri.replace(/^https:\/\//, "")
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "A sign-in tab opened at <0>{0}</0>. Enter this code there — this window keeps waiting:"
 msgstr "נפתחה לשונית התחברות בכתובת <0>{0}</0>. יש להזין שם את הקוד הזה — החלון הזה ממשיך להמתין:"
 
@@ -474,8 +479,8 @@ msgstr "חשבון"
 msgid "Account default"
 msgstr "ברירת המחדל של החשבון"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Account ID"
 msgstr "מזהה חשבון"
 
@@ -671,10 +676,10 @@ msgstr ""
 msgid "Admin"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
 #: src/pages/ModelSettingsOverlay.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/RoutineEditor.tsx
 #: src/pages/RoutineSchedule.tsx
 #: src/pages/shell/bot-panel.tsx
@@ -804,6 +809,10 @@ msgstr "לא ניתן היה להשתמש במפתח API שיובא. יש לבט
 msgid "An integration tool"
 msgstr ""
 
+#: src/pages/cms/documents-page.tsx
+msgid "Announce"
+msgstr ""
+
 #: src/lib/activity-list-filters.ts
 msgid "Another agent"
 msgstr "סוכן אחר"
@@ -829,7 +838,7 @@ msgstr "נענה"
 msgid "Answered: {answer}"
 msgstr "נענה: {answer}"
 
-#: src/pages/Onboarding.tsx
+#: src/components/ModelConnectForm.tsx
 msgid "Anthropic API"
 msgstr ""
 
@@ -846,13 +855,13 @@ msgid "Anyone with the link"
 msgstr "כל מי שיש לו את הקישור"
 
 #: src/components/ComputerProviderSettings.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/components/SecretAskCard.tsx
 #: src/components/vault/kinds.tsx
 #: src/lib/localized-provider-hint.ts
 #: src/pages/memory-providers/HonchoSettingsForm.tsx
 #: src/pages/model-settings/compatible-key-field.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/VoiceSettingsOverlay.tsx
 msgid "API key"
 msgstr "מפתח API"
@@ -990,8 +999,8 @@ msgstr ""
 msgid "Authentication failed."
 msgstr "האימות נכשל."
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Authorization code"
 msgstr "קוד הרשאה"
 
@@ -1244,6 +1253,7 @@ msgstr "לא ניתן לקרוא תמונות"
 #: src/components/ComputerMaintenanceActions.tsx
 #: src/components/integrations/plugin-marketplace.tsx
 #: src/components/markdown-link-prompt.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/components/ModelCredits.tsx
 #: src/components/PasskeySettings.tsx
 #: src/components/teach/TeachComputerOverlay.tsx
@@ -1251,12 +1261,12 @@ msgstr "לא ניתן לקרוא תמונות"
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/Artifacts.tsx
 #: src/pages/cms/documents-page.tsx
+#: src/pages/cms/models-page.tsx
 #: src/pages/KnowledgeSection.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/connection-controls.tsx
 #: src/pages/model-settings/space-bots-model.tsx
 #: src/pages/ModelSettingsOverlay.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/OrganizationSettingsPanel.tsx
 #: src/pages/PaymentWalletSettingsPanel.tsx
 #: src/pages/PluginSubmissionsPanel.tsx
@@ -1425,7 +1435,7 @@ msgstr "בחירת מודל"
 msgid "Choose a new password"
 msgstr "בחירת סיסמה חדשה"
 
-#: src/pages/Onboarding.tsx
+#: src/components/ModelConnectForm.tsx
 msgid "Choose a provider"
 msgstr ""
 
@@ -1820,18 +1830,18 @@ msgstr ""
 msgid "Contains code to run"
 msgstr "מכיל קוד להרצה"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Context limit"
 msgstr "מגבלת הקשר"
 
 #: src/components/ConfirmIdentityDialog.tsx
 #: src/components/integrations/IntegrationSetup.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/components/SecretAskCard.tsx
 #: src/components/SignupSurvey.tsx
 #: src/components/vault/VaultItemEditor.tsx
 #: src/pages/Auth.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/shell/agent-import.tsx
 #: src/pages/shell/dialogs.tsx
 msgid "Continue"
@@ -1857,18 +1867,18 @@ msgstr ""
 #: src/components/ComputersUnavailableHint.tsx
 #: src/components/InviteDialog.tsx
 #: src/components/markdown-copy.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/components/pages/PublicPageShell.tsx
 #: src/components/pages/SharePopover.tsx
 #: src/components/vault/VaultItemDetail.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/shell/agent-import.tsx
 msgid "Copied"
 msgstr "הועתק"
 
+#: src/components/ModelConnectForm.tsx
 #: src/components/vault/VaultItemDetail.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/shell/message-hover-actions.tsx
 msgid "Copy"
 msgstr "העתקה"
@@ -1913,6 +1923,10 @@ msgstr "לא ניתן להוסיף את שרת ה-MCP"
 
 #: src/components/integrations/plugin-marketplace.tsx
 msgid "Could not add skills"
+msgstr ""
+
+#: src/pages/cms/documents-page.tsx
+msgid "Could not announce this file"
 msgstr ""
 
 #: src/pages/PluginSubmissionsPanel.tsx
@@ -2073,6 +2087,10 @@ msgstr "לא ניתן לנתק את ספק הזיכרון"
 msgid "Could not disconnect OAuth"
 msgstr "לא ניתן לנתק את OAuth"
 
+#: src/pages/cms/models-page.tsx
+msgid "Could not disconnect the model"
+msgstr ""
+
 #: src/pages/model-settings/use-model-settings.ts
 msgid "Could not disconnect this provider"
 msgstr "לא ניתן לנתק את הספק הזה"
@@ -2196,9 +2214,9 @@ msgstr "לא ניתן לטעון את הגדרות הקול"
 msgid "Could not log out. Try again."
 msgstr "לא ניתן להתנתק. יש לנסות שוב."
 
+#: src/components/ModelConnectForm.tsx
 #: src/components/ModelCredits.tsx
 #: src/pages/BillingSettingsPanel.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/Paywall.tsx
 msgid "Could not open billing"
 msgstr "לא ניתן לפתוח את החיוב"
@@ -2327,7 +2345,11 @@ msgstr ""
 msgid "Could not save group"
 msgstr "לא ניתן לשמור את הקבוצה"
 
-#: src/pages/Onboarding.tsx
+#: src/pages/cms/models-page.tsx
+msgid "Could not save member providers"
+msgstr ""
+
+#: src/components/ModelConnectForm.tsx
 msgid "Could not save model"
 msgstr "לא ניתן לשמור את המודל"
 
@@ -2641,10 +2663,10 @@ msgstr "ימים"
 msgid "Decline"
 msgstr "דחייה"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
 #: src/pages/model-settings/role-model-picker.tsx
 #: src/pages/ModelRoleSettings.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/shell/avatar-studio-popover.tsx
 msgid "Default"
 msgstr "ברירת מחדל"
@@ -2827,6 +2849,7 @@ msgstr "מושבת"
 msgid "Discard recording"
 msgstr ""
 
+#: src/pages/cms/models-page.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/MemorySettingsOverlay.tsx
 #: src/pages/MessagingSettingsPanel.tsx
@@ -2846,6 +2869,10 @@ msgstr ""
 
 #: src/pages/VoiceSettingsOverlay.tsx
 msgid "Disconnect Self-hosted"
+msgstr ""
+
+#: src/pages/cms/models-page.tsx
+msgid "Disconnect this model?"
 msgstr ""
 
 #: src/pages/model-settings/use-model-settings.ts
@@ -3035,18 +3062,18 @@ msgstr "יש להזין סיסמה"
 msgid "Enter a valid email"
 msgstr "יש להזין אימייל תקין"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/use-model-settings.ts
-#: src/pages/Onboarding.tsx
 msgid "Enter a whole number from 1 to {MAX_MODEL_CONTEXT_WINDOW} for the context limit."
 msgstr "יש להזין מספר שלם בין 1 ל-{MAX_MODEL_CONTEXT_WINDOW} עבור מגבלת ההקשר."
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/use-model-settings.ts
-#: src/pages/Onboarding.tsx
 msgid "Enter a whole number from 1 to {MAX_MODEL_MAX_TOKENS} for maximum output tokens."
 msgstr "יש להזין מספר שלם בין 1 ל-{MAX_MODEL_MAX_TOKENS} עבור מספר טוקני הפלט המרבי."
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/use-model-settings.ts
-#: src/pages/Onboarding.tsx
 msgid "Enter a whole number from 1 to 1000 for the image limit."
 msgstr "יש להזין מספר שלם בין 1 ל-1000 עבור מגבלת התמונות."
 
@@ -3185,8 +3212,8 @@ msgstr "לייצא את הרשימה של השבוע מה-CRM ולשים אות�
 msgid "External conversation"
 msgstr "שיחה חיצונית"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Extra high"
 msgstr "גבוה מאוד"
 
@@ -3201,6 +3228,7 @@ msgstr "נכשל"
 
 #: src/components/SubagentCard.tsx
 #: src/pages/ActivityList.tsx
+#: src/pages/cms/documents-page.tsx
 msgid "Failed"
 msgstr "נכשל"
 
@@ -3263,13 +3291,13 @@ msgstr ""
 msgid "Find a page"
 msgstr "חיפוש דף"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Find models"
 msgstr "חיפוש מודלים"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Finding…"
 msgstr "מחפש…"
 
@@ -3341,8 +3369,8 @@ msgstr ""
 msgid "Fullscreen"
 msgstr "מסך מלא"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Gateway ID"
 msgstr "Gateway ID"
 
@@ -3463,9 +3491,9 @@ msgstr "הסתרת הסיסמה"
 msgid "Hide transcript"
 msgstr "הסתרת התמליל"
 
+#: src/components/ModelConnectForm.tsx
 #: src/lib/ticket-priority.ts
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "High"
 msgstr "גבוהה"
 
@@ -3886,9 +3914,9 @@ msgstr ""
 msgid "Looks like it contains a key"
 msgstr "נראה שמכיל מפתח"
 
+#: src/components/ModelConnectForm.tsx
 #: src/lib/ticket-priority.ts
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Low"
 msgstr "נמוך"
 
@@ -3926,6 +3954,10 @@ msgstr "ניהול שרתי MCP"
 msgid "Manage other bots"
 msgstr "ניהול בוטים אחרים"
 
+#: src/pages/shell/bot-panel.tsx
+msgid "Managed by your organization"
+msgstr ""
+
 #: src/pages/PluginsOverlay.tsx
 msgid "Manual"
 msgstr "ידני"
@@ -3954,8 +3986,8 @@ msgstr "טבלת Markdown"
 msgid "Marketing"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Max"
 msgstr "מקסימלי"
 
@@ -3968,14 +4000,14 @@ msgstr "מקסימלי"
 msgid "Maximize"
 msgstr "הגדלה"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Maximum images per request"
 msgstr "מספר תמונות מרבי לבקשה"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
 #: src/pages/ModelSettingsOverlay.tsx
-#: src/pages/Onboarding.tsx
 msgid "Maximum output tokens"
 msgstr "מספר טוקנים מרבי בפלט"
 
@@ -3992,8 +4024,8 @@ msgstr ""
 msgid "MCP servers"
 msgstr "שרתי MCP"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Medium"
 msgstr "בינוני"
 
@@ -4007,6 +4039,10 @@ msgstr "בינוני"
 msgid "Member"
 msgstr "חבר"
 
+#: src/pages/cms/models-page.tsx
+msgid "Member providers"
+msgstr ""
+
 #: src/pages/cms/overview-page.tsx
 #: src/pages/CmsPage.tsx
 msgid "Members"
@@ -4015,6 +4051,10 @@ msgstr ""
 #. placeholder {0}: selected.length
 #: src/pages/GroupPanel.tsx
 msgid "Members ({0})"
+msgstr ""
+
+#: src/pages/cms/models-page.tsx
+msgid "Members without their own model stop running bots."
 msgstr ""
 
 #: src/pages/KnowledgeSection.tsx
@@ -4100,8 +4140,8 @@ msgstr "הודעות"
 msgid "Microphone failed"
 msgstr "המיקרופון נכשל"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Minimal"
 msgstr "מינימלי"
 
@@ -4139,9 +4179,10 @@ msgstr ""
 msgid "Mode"
 msgstr "מצב"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/AccountSettingsOverlay.tsx
+#: src/pages/cms/overview-page.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/RoutineEditor.tsx
 #: src/pages/shell/agent-import.tsx
 #: src/pages/shell/bot-panel.tsx
@@ -4156,8 +4197,8 @@ msgstr "המודל \"{modelId}\" לא הופיע ברשימה."
 msgid "Model connections"
 msgstr "חיבורים למודלים"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Model id"
 msgstr "מזהה מודל"
 
@@ -4166,6 +4207,7 @@ msgstr "מזהה מודל"
 msgid "Model options"
 msgstr "אפשרויות מודל"
 
+#: src/pages/CmsPage.tsx
 #: src/pages/ModelSettingsOverlay.tsx
 #: src/pages/settings-nav.ts
 #: src/pages/SpaceSettingOverrides.tsx
@@ -4562,6 +4604,10 @@ msgstr "לא נמצא בקטלוג התוספים"
 msgid "Not now"
 msgstr "לא עכשיו"
 
+#: src/pages/cms/overview-page.tsx
+msgid "Not set"
+msgstr ""
+
 #: src/pages/shell/agent-import.tsx
 #: src/pages/shell/import-status.ts
 msgid "Not supported in Rakazo"
@@ -4615,13 +4661,13 @@ msgstr "תוקף OAuth פג"
 msgid "Offline"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Ollama API key"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/ModelSettingsOverlay.tsx
-#: src/pages/Onboarding.tsx
 msgid "Ollama Cloud"
 msgstr ""
 
@@ -4648,6 +4694,10 @@ msgstr ""
 
 #: src/pages/cms/apps-page.tsx
 msgid "Only allow listed apps"
+msgstr ""
+
+#: src/pages/cms/models-page.tsx
+msgid "Only allow listed providers"
 msgstr ""
 
 #: src/components/SecretAskCard.tsx
@@ -4681,8 +4731,8 @@ msgid "Open {title}"
 msgstr "פתיחת {title}"
 
 #. placeholder {0}: oauth.verificationUri.replace(/^https:\/\//, "")
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Open <0>{0}</0> and enter this code:"
 msgstr "יש לפתוח את <0>{0}</0> ולהזין את הקוד הזה:"
 
@@ -4724,12 +4774,12 @@ msgstr "פתיחת Rakazo"
 msgid "Open work"
 msgstr "עבודה פתוחה"
 
-#: src/pages/Onboarding.tsx
+#: src/components/ModelConnectForm.tsx
 msgid "OpenAI API"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "OpenAI-compatible server URL"
 msgstr "כתובת URL של שרת תואם OpenAI"
 
@@ -4741,9 +4791,9 @@ msgstr "OpenClaw או Hermes"
 msgid "Opens your browser's print dialog. Choose Save as PDF as the destination."
 msgstr "פותח את חלון ההדפסה של הדפדפן. בחר/י „שמירה כ-PDF” כיעד."
 
+#: src/components/ModelConnectForm.tsx
 #: src/components/SignupSurvey.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/VoiceSettingsOverlay.tsx
 msgid "Optional"
 msgstr "אופציונלי"
@@ -4752,8 +4802,8 @@ msgstr "אופציונלי"
 msgid "Optional header value"
 msgstr "ערך header אופציונלי"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Or paste an API key"
 msgstr "או הדבקת מפתח API"
 
@@ -4765,6 +4815,10 @@ msgstr "ארגון"
 #: src/pages/memory-providers/SupermemorySettingsForm.tsx
 msgid "Organization API key"
 msgstr "מפתח API של הארגון"
+
+#: src/pages/cms/models-page.tsx
+msgid "Organization model"
+msgstr ""
 
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/shell/avatar-studio-popover.tsx
@@ -5053,6 +5107,10 @@ msgstr "פרטי"
 msgid "Private workspace with its own bots and groups."
 msgstr "סביבת עבודה פרטית עם בוטים וקבוצות משלה."
 
+#: src/pages/cms/documents-page.tsx
+msgid "Processing"
+msgstr ""
+
 #: src/pages/PluginsOverlay.tsx
 msgid "Productivity"
 msgstr ""
@@ -5069,8 +5127,8 @@ msgstr "קלט מוגן"
 msgid "Protocol"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/MemorySettingsOverlay.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/VoiceSettingsOverlay.tsx
 msgid "Provider"
 msgstr "ספק"
@@ -5092,8 +5150,8 @@ msgstr "בתור"
 msgid "Rakazo"
 msgstr "Rakazo"
 
+#: src/components/ModelConnectForm.tsx
 #: src/components/ModelCredits.tsx
-#: src/pages/Onboarding.tsx
 msgid "Rakazo credits"
 msgstr ""
 
@@ -5113,6 +5171,7 @@ msgstr "אמוג׳י"
 msgid "Read replies aloud"
 msgstr "הקראת תשובות בקול"
 
+#: src/pages/cms/documents-page.tsx
 #: src/pages/shell/import-status.ts
 msgid "Ready"
 msgstr "מוכן"
@@ -5121,8 +5180,8 @@ msgstr "מוכן"
 msgid "Reason"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Reasoning effort"
 msgstr "רמת חשיבה"
 
@@ -5634,6 +5693,7 @@ msgstr "שבת"
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/Board.tsx
 #: src/pages/cms/apps-page.tsx
+#: src/pages/cms/models-page.tsx
 #: src/pages/ExternalConversationSettings.tsx
 #: src/pages/GroupPanel.tsx
 #: src/pages/KnowledgeSection.tsx
@@ -5851,6 +5911,10 @@ msgstr "שולח…"
 msgid "Sent"
 msgstr ""
 
+#: src/pages/cms/documents-page.tsx
+msgid "Sent to {delivered} members"
+msgstr ""
+
 #: src/pages/memory-providers/SerenitySettingsForm.tsx
 msgid "Serenity endpoint is required."
 msgstr "נדרשת נקודת קצה של Serenity."
@@ -5860,9 +5924,9 @@ msgid "Server name"
 msgstr "שם השרת"
 
 #: src/components/integrations/IntegrationSetup.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/VoiceSettingsOverlay.tsx
 msgid "Server URL"
 msgstr "URL של השרת"
@@ -5977,10 +6041,10 @@ msgid "Sidebar density"
 msgstr "צפיפות סרגל הצד"
 
 #: src/components/integrations/plugin-marketplace.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/lib/localized-provider-hint.ts
 #: src/pages/Auth.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/PluginsOverlay.tsx
 msgid "Sign in"
 msgstr "התחברות"
@@ -5995,8 +6059,8 @@ msgid "Sign in again"
 msgstr "התחברות מחדש"
 
 #. placeholder {0}: new URL(oauth.verificationUri).hostname
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Sign in at <0>{0}</0>, then paste the code here."
 msgstr "התחברו ב-<0>{0}</0> והדביקו כאן את הקוד."
 
@@ -6199,10 +6263,10 @@ msgstr "התחיל באיחור של {count} דק׳"
 msgid "Starting"
 msgstr "מתחיל"
 
+#: src/components/ModelConnectForm.tsx
 #: src/components/teach/TeachComputerOverlay.tsx
 #: src/lib/roster-status.ts
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Starting…"
 msgstr "מתחיל…"
 
@@ -6259,8 +6323,8 @@ msgstr "הזרמת תשובות"
 msgid "subagent"
 msgstr "סוכן משנה"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Submit"
 msgstr "שליחה"
 
@@ -6297,13 +6361,13 @@ msgstr "נדרש מנוי"
 msgid "Sunday"
 msgstr "יום ראשון"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Supports images"
 msgstr "תומך בתמונות"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Supports thinking"
 msgstr "תומך בחשיבה"
 
@@ -6908,8 +6972,8 @@ msgstr "שימוש ב{hostLabel}"
 msgid "Use {oauthEnvReference} for the access token."
 msgstr "השתמש ב-{oauthEnvReference} עבור אסימון הגישה."
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Use a found model"
 msgstr "שימוש במודל שנמצא"
 

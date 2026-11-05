@@ -30,6 +30,8 @@ export const BUILTIN_TOOL_NAMES = [
   "read_file",
   "write_file",
   "attach_file",
+  "company_documents_search",
+  "attach_company_document",
   "shell",
   "user_computer_shell",
   "user_computer_observe",

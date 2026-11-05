@@ -1220,6 +1220,8 @@ function compatiblePrismaParts(modelId: string, plaintext: string) {
         findMany: vi.fn(async () => []),
         findFirst: vi.fn(async () => null),
       },
+      space: { findUnique: vi.fn(async () => null) },
+      organizationModelSettings: { findUnique: vi.fn(async () => null) },
       deploymentSettings: { findUnique: vi.fn(async () => null) },
       secret: {
         findMany: vi.fn(async () => []),
@@ -3089,6 +3091,8 @@ description: Prepare standup notes
           findMany: vi.fn(async () => []),
           findFirst: vi.fn(async () => null),
         },
+        space: { findUnique: vi.fn(async () => null) },
+        organizationModelSettings: { findUnique: vi.fn(async () => null) },
         deploymentSettings: {
           findUnique: vi.fn(async () =>
             settings
@@ -3210,6 +3214,8 @@ description: Prepare standup notes
         ),
       },
       userModelCredential: { findMany: vi.fn(async () => []), findFirst: vi.fn(async () => null) },
+      space: { findUnique: vi.fn(async () => null) },
+      organizationModelSettings: { findUnique: vi.fn(async () => null) },
       deploymentSettings: { findUnique: vi.fn(async () => null) },
       taughtSkill: { findMany: vi.fn(async () => []) },
       secret: { findMany: vi.fn(async () => []) },
@@ -3328,6 +3334,7 @@ description: Prepare standup notes
         ),
       },
       userModelCredential: { findMany: vi.fn(async () => []), findFirst: vi.fn(async () => null) },
+      organizationModelSettings: { findUnique: vi.fn(async () => null) },
       deploymentSettings: { findUnique: vi.fn(async () => null) },
       taughtSkill: { findMany: vi.fn(async () => []) },
       secret: { findMany: vi.fn(async () => []) },
@@ -3389,6 +3396,8 @@ description: Prepare standup notes
       },
       userModelPreference: { findFirst },
       userModelCredential: { findMany: vi.fn(async () => []), findFirst: vi.fn(async () => null) },
+      space: { findUnique: vi.fn(async () => null) },
+      organizationModelSettings: { findUnique: vi.fn(async () => null) },
       deploymentSettings: { findUnique: vi.fn(async () => null) },
       secret: {
         findMany: vi.fn(async () => []),
@@ -3434,6 +3443,8 @@ description: Prepare standup notes
       },
     );
     const prisma = {
+      space: { findUnique: vi.fn(async () => null) },
+      organizationModelSettings: { findUnique: vi.fn(async () => null) },
       deploymentSettings: { findUnique: vi.fn(async () => null) },
       userModelPreference: { findFirst },
       userModelCredential: { findMany: vi.fn(async () => []), findFirst: vi.fn(async () => null) },
@@ -3486,6 +3497,8 @@ description: Prepare standup notes
     );
     const plaintext = compatibleSecret(["newest-model"]);
     const prisma = {
+      space: { findUnique: vi.fn(async () => null) },
+      organizationModelSettings: { findUnique: vi.fn(async () => null) },
       userModelPreference: { findFirst },
       userModelCredential: { findMany: vi.fn(async () => []), findFirst: vi.fn(async () => null) },
       secret: {
@@ -3571,6 +3584,8 @@ description: Prepare standup notes
             thinkingLevel: null,
           })),
         },
+        space: { findUnique: vi.fn(async () => null) },
+        organizationModelSettings: { findUnique: vi.fn(async () => null) },
         deploymentSettings: { findUnique: vi.fn(async () => null) },
       };
       const secretStore = { load: vi.fn(async (value: string) => value), put: vi.fn() };
@@ -3828,6 +3843,8 @@ description: Prepare standup notes
         ),
       },
       userModelCredential: { findMany: vi.fn(async () => []), findFirst: vi.fn(async () => null) },
+      space: { findUnique: vi.fn(async () => null) },
+      organizationModelSettings: { findUnique: vi.fn(async () => null) },
       deploymentSettings: { findUnique: vi.fn(async () => null) },
       secret: {
         findFirst: vi.fn(async () => ({ id: "secret-codex", ciphertext: plaintext })),
@@ -3872,6 +3889,8 @@ description: Prepare standup notes
         ),
       },
       userModelCredential: { findMany: vi.fn(async () => []), findFirst: vi.fn(async () => null) },
+      space: { findUnique: vi.fn(async () => null) },
+      organizationModelSettings: { findUnique: vi.fn(async () => null) },
       deploymentSettings: { findUnique: vi.fn(async () => null) },
       secret: {
         findFirst: vi.fn(async () => ({ id: "secret-codex", ciphertext: plaintext })),
@@ -3940,6 +3959,8 @@ description: Prepare standup notes
           findMany: vi.fn(async () => []),
           findFirst: vi.fn(async () => null),
         },
+        space: { findUnique: vi.fn(async () => null) },
+        organizationModelSettings: { findUnique: vi.fn(async () => null) },
         deploymentSettings: { findUnique: vi.fn(async () => null) },
         secret: {
           findFirst: vi.fn(async () => ({ id: "secret-codex", ciphertext: plaintext })),
@@ -4013,6 +4034,8 @@ description: Prepare standup notes
         ),
       },
       userModelCredential: { findMany: vi.fn(async () => []), findFirst: vi.fn(async () => null) },
+      space: { findUnique: vi.fn(async () => null) },
+      organizationModelSettings: { findUnique: vi.fn(async () => null) },
       deploymentSettings: { findUnique: vi.fn(async () => null) },
       secret: {
         findFirst: vi.fn(async () => ({ id: "secret-codex", ciphertext: plaintext })),
@@ -4054,6 +4077,8 @@ description: Prepare standup notes
       },
       userModelPreference: { findFirst },
       userModelCredential: { findMany: vi.fn(async () => []), findFirst: vi.fn(async () => null) },
+      space: { findUnique: vi.fn(async () => null) },
+      organizationModelSettings: { findUnique: vi.fn(async () => null) },
       deploymentSettings: { findUnique: vi.fn(async () => null) },
       secret: {
         findFirst: vi.fn(async () => ({ id: "secret-scripted", ciphertext: plaintext })),
@@ -4103,6 +4128,8 @@ description: Prepare standup notes
       bot: { findFirst: vi.fn(async () => bot) },
       userModelPreference: { findFirst },
       userModelCredential: { findMany: vi.fn(async () => []), findFirst: vi.fn(async () => null) },
+      space: { findUnique: vi.fn(async () => null) },
+      organizationModelSettings: { findUnique: vi.fn(async () => null) },
       deploymentSettings: { findUnique: vi.fn(async () => null) },
       secret: {
         findFirst: vi.fn(async () => ({
@@ -4160,6 +4187,8 @@ description: Prepare standup notes
       },
       userModelPreference: { findFirst },
       userModelCredential: { findMany: vi.fn(async () => []), findFirst: vi.fn(async () => null) },
+      space: { findUnique: vi.fn(async () => null) },
+      organizationModelSettings: { findUnique: vi.fn(async () => null) },
       deploymentSettings: { findUnique: vi.fn(async () => null) },
       secret: { findFirst: vi.fn(async () => null), findUnique: vi.fn(async () => null) },
     } as unknown as PrismaClient;
@@ -4203,6 +4232,8 @@ description: Prepare standup notes
           prisma: {
             userModelPreference: { findFirst: async () => null },
             userModelCredential: { findFirst: async () => null },
+            space: { findUnique: vi.fn(async () => null) },
+            organizationModelSettings: { findUnique: vi.fn(async () => null) },
             deploymentSettings: {
               findUnique: async () => ({
                 defaultModelProvider: provider,
@@ -4227,6 +4258,8 @@ description: Prepare standup notes
       bot: { findFirst: vi.fn(async () => null) },
       userModelPreference: { findFirst: vi.fn(async () => null) },
       userModelCredential: { findMany: vi.fn(async () => []), findFirst: vi.fn(async () => null) },
+      space: { findUnique: vi.fn(async () => null) },
+      organizationModelSettings: { findUnique: vi.fn(async () => null) },
       deploymentSettings: {
         findUnique: vi.fn(async () => ({
           defaultModelProvider: "anthropic",
@@ -4266,6 +4299,8 @@ description: Prepare standup notes
       },
       userModelPreference: { findFirst },
       userModelCredential: { findMany: vi.fn(async () => []), findFirst: vi.fn(async () => null) },
+      space: { findUnique: vi.fn(async () => null) },
+      organizationModelSettings: { findUnique: vi.fn(async () => null) },
       deploymentSettings: { findUnique: vi.fn(async () => null) },
       secret: {
         findFirst: vi.fn(async () => ({ id: "fixture-secret", ciphertext: "fixture-ciphertext" })),

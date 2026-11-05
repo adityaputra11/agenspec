@@ -98,9 +98,6 @@ importers:
       mermaid:
         specifier: 11.17.2
         version: 11.17.2
-      unpdf:
-        specifier: 1.9.1
-        version: 1.9.1
     devDependencies:
       typescript:
         specifier: 7.0.2
@@ -779,6 +776,9 @@ importers:
       undici:
         specifier: 8.12.3
         version: 8.12.3
+      unpdf:
+        specifier: 1.9.1
+        version: 1.9.1
       ws:
         specifier: 8.22.0
         version: 8.22.0

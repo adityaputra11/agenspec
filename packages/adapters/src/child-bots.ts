@@ -17,6 +17,7 @@ import {
 import { ACTIVE_RUN_STATUSES } from "@rakazo/core";
 import type { Prisma, PrismaClient } from "@rakazo/db";
 import {
+  assertBotUnlocked,
   cancelRunsInTransaction,
   clearEndedRunState,
   computerScopeKey,
@@ -24,6 +25,7 @@ import {
   createThreadMessageInTransaction,
   deletePageShareSecrets,
   expireComputerExecutionLeases,
+  LOCKED_BOT_MESSAGE,
   legacyTeamHomeKey,
   recordComputerRunEnd,
   withTransactionRetry,
@@ -290,6 +292,7 @@ export async function archiveSpawnedBot(
   if (target.id === input.spawnedByBotId) {
     return { error: "A bot cannot archive itself with archive_bot." };
   }
+  if (target.locked) return { error: LOCKED_BOT_MESSAGE };
 
   await archiveBot(deps, target, context);
   return { ok: true as const, botId: target.id, name: target.name };
@@ -297,9 +300,10 @@ export async function archiveSpawnedBot(
 
 export async function archiveBot(
   deps: BotLifecycleDeps,
-  bot: LifecycleBot,
+  bot: LifecycleBot & { locked: boolean },
   context: AdapterContext,
 ) {
+  assertBotUnlocked(bot);
   const [dedicated, activeRuns, activeRoutines] = await Promise.all([
     deps.prisma.computer.findUnique({
       where: {

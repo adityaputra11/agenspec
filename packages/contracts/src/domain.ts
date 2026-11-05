@@ -140,6 +140,8 @@ export const BotSchema = z.object({
   webhookConfigured: z.boolean(),
   /** Present when created with an idempotency key (e.g. onboarding:first). */
   spawnKey: z.string().nullable(),
+  /** Organization-managed: no edits, archive or delete; chat, pin and reorder still work. */
+  locked: z.boolean(),
   /** The bot is ringing the user right now. */
   incomingCall: z
     .object({
@@ -1579,9 +1581,36 @@ export const ModelConnectionLabelSchema = z.string().trim().min(1).max(MAX_MODEL
 
 export const CONNECTION_LABEL_MAX_LENGTH = 80;
 
+/**
+ * The per-model settings a connection can carry. A member's connection and the organization's
+ * model accept exactly these, so both store and run them the same way.
+ */
+export const ModelConnectOptionFields = {
+  ...ModelContextLimitsSchema.shape,
+  reasoning: z.boolean().optional(),
+  thinkingLevel: ThinkingLevelSchema.nullable().optional(),
+  maxTokens: z.number().int().min(1).max(MAX_MODEL_MAX_TOKENS).nullable().optional(),
+  supportsImages: z.boolean().optional(),
+  maxImagesPerPrompt: z.number().int().min(1).max(1000).nullable().optional(),
+};
+
+/** The output limit must leave room for input; shared by a member's connect and the organization's. */
+export function refineModelConnectOptions(
+  value: { maxTokens?: number | null; contextWindow?: number },
+  ctx: z.RefinementCtx,
+): void {
+  if (!modelOutputLeavesInputRoom(value.maxTokens, value.contextWindow)) {
+    ctx.addIssue({
+      code: "custom",
+      message: "Maximum output tokens must leave room for input",
+      path: ["maxTokens"],
+    });
+  }
+}
+
 export const ModelConnectInputSchema = z
   .object({
-    ...ModelContextLimitsSchema.shape,
+    ...ModelConnectOptionFields,
     provider: z.string(),
     apiKey: z.string().optional(),
     accountId: z.string().optional(),
@@ -1596,28 +1625,17 @@ export const ModelConnectInputSchema = z
      */
     credentialId: ModelConnectionTargetSchema,
     modelId: z.string().optional(),
-    reasoning: z.boolean().optional(),
-    thinkingLevel: ThinkingLevelSchema.nullable().optional(),
     /** False keeps the current main model; omitted means true. */
     makeDefault: z.boolean().optional(),
     /** Where makeDefault sets the main model; omitted means whichever applies in the Space. */
     scope: SettingsScopeSchema.optional(),
-    maxTokens: z.number().int().min(1).max(MAX_MODEL_MAX_TOKENS).nullable().optional(),
-    supportsImages: z.boolean().optional(),
-    maxImagesPerPrompt: z.number().int().min(1).max(1000).nullable().optional(),
     enabledModelIds: z
       .array(z.string().trim().min(1).max(512))
       .max(MAX_ENABLED_MODEL_IDS)
       .optional(),
   })
   .superRefine((value, ctx) => {
-    if (!modelOutputLeavesInputRoom(value.maxTokens, value.contextWindow)) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Maximum output tokens must leave room for input",
-        path: ["maxTokens"],
-      });
-    }
+    refineModelConnectOptions(value, ctx);
     if (isCloudflareModelProvider(value.provider)) {
       if (value.accountId !== undefined && !cloudflareGatewayRoutingId(value.accountId)) {
         ctx.addIssue({

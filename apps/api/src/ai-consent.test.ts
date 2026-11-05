@@ -28,6 +28,8 @@ function setup() {
       },
       spaceMemoryConfig: { findUnique: vi.fn(async () => null) },
       deploymentSettings: { findUnique: vi.fn(async () => null) },
+      space: { findUnique: vi.fn(async () => null) },
+      organizationModelSettings: { findUnique: vi.fn(async () => null) },
       aiDataConsent: { findMany: vi.fn(async () => []), upsert },
       $transaction: vi.fn(async (write: (tx: unknown) => Promise<unknown>) =>
         write({ aiDataConsent: { upsert } }),

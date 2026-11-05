@@ -429,6 +429,8 @@ function fixture({
     },
     usageRecord: { createMany: vi.fn(async () => ({ count: 1 })) },
     modelCreditEntry: { findUnique: vi.fn(async () => null) },
+    space: { findUnique: vi.fn(async () => null) },
+    organizationModelSettings: { findUnique: vi.fn(async () => null) },
     deploymentSettings: {
       findUnique: vi.fn(async () => ({
         defaultModelProvider: "openrouter",

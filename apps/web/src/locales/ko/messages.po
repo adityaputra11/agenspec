@@ -69,14 +69,14 @@ msgid "{0, plural, one {Switch # bot to the space default?} other {Switch # bots
 msgstr ""
 
 #. placeholder {0}: Math.ceil(oauth.expiresInSeconds / 60)
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "{0, plural, one {Waiting for sign-in — the code expires in about # minute.} other {Waiting for sign-in — the code expires in about # minutes.}}"
 msgstr ""
 
 #. placeholder {0}: Math.ceil(oauth.expiresInSeconds / 60)
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "{0, plural, one {Waiting for sign-in — the link expires in about # minute.} other {Waiting for sign-in — the link expires in about # minutes.}}"
 msgstr ""
 
@@ -144,6 +144,11 @@ msgstr "{0} MB"
 #. placeholder {0}: sender.name
 #: src/pages/ExternalConversationSettings.tsx
 msgid "{0} rollup hours"
+msgstr ""
+
+#. placeholder {0}: document.chunkCount
+#: src/pages/cms/documents-page.tsx
+msgid "{0} sections"
 msgstr ""
 
 #. placeholder {0}: parts.amount
@@ -436,8 +441,8 @@ msgid "A command's output"
 msgstr "명령 출력"
 
 #. placeholder {0}: oauth.verificationUri.replace(/^https:\/\//, "")
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "A sign-in tab opened at <0>{0}</0>. Enter this code there — this window keeps waiting:"
 msgstr ""
 
@@ -474,8 +479,8 @@ msgstr "계정"
 msgid "Account default"
 msgstr "계정 기본값"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Account ID"
 msgstr "계정 ID"
 
@@ -671,10 +676,10 @@ msgstr ""
 msgid "Admin"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
 #: src/pages/ModelSettingsOverlay.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/RoutineEditor.tsx
 #: src/pages/RoutineSchedule.tsx
 #: src/pages/shell/bot-panel.tsx
@@ -804,6 +809,10 @@ msgstr "가져온 API 키를 사용할 수 없습니다. 선택을 해제하고 
 msgid "An integration tool"
 msgstr "연동 도구"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Announce"
+msgstr ""
+
 #: src/lib/activity-list-filters.ts
 msgid "Another agent"
 msgstr "다른 Agent"
@@ -829,7 +838,7 @@ msgstr "응답함"
 msgid "Answered: {answer}"
 msgstr "응답: {answer}"
 
-#: src/pages/Onboarding.tsx
+#: src/components/ModelConnectForm.tsx
 msgid "Anthropic API"
 msgstr ""
 
@@ -846,13 +855,13 @@ msgid "Anyone with the link"
 msgstr "링크가 있는 모든 사용자"
 
 #: src/components/ComputerProviderSettings.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/components/SecretAskCard.tsx
 #: src/components/vault/kinds.tsx
 #: src/lib/localized-provider-hint.ts
 #: src/pages/memory-providers/HonchoSettingsForm.tsx
 #: src/pages/model-settings/compatible-key-field.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/VoiceSettingsOverlay.tsx
 msgid "API key"
 msgstr "API 키"
@@ -990,8 +999,8 @@ msgstr ""
 msgid "Authentication failed."
 msgstr "인증에 실패했습니다."
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Authorization code"
 msgstr "인증 코드"
 
@@ -1244,6 +1253,7 @@ msgstr "이미지를 읽을 수 없음"
 #: src/components/ComputerMaintenanceActions.tsx
 #: src/components/integrations/plugin-marketplace.tsx
 #: src/components/markdown-link-prompt.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/components/ModelCredits.tsx
 #: src/components/PasskeySettings.tsx
 #: src/components/teach/TeachComputerOverlay.tsx
@@ -1251,12 +1261,12 @@ msgstr "이미지를 읽을 수 없음"
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/Artifacts.tsx
 #: src/pages/cms/documents-page.tsx
+#: src/pages/cms/models-page.tsx
 #: src/pages/KnowledgeSection.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/connection-controls.tsx
 #: src/pages/model-settings/space-bots-model.tsx
 #: src/pages/ModelSettingsOverlay.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/OrganizationSettingsPanel.tsx
 #: src/pages/PaymentWalletSettingsPanel.tsx
 #: src/pages/PluginSubmissionsPanel.tsx
@@ -1425,7 +1435,7 @@ msgstr "모델 선택"
 msgid "Choose a new password"
 msgstr "새 비밀번호 선택"
 
-#: src/pages/Onboarding.tsx
+#: src/components/ModelConnectForm.tsx
 msgid "Choose a provider"
 msgstr ""
 
@@ -1820,18 +1830,18 @@ msgstr ""
 msgid "Contains code to run"
 msgstr "실행할 코드 포함"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Context limit"
 msgstr "컨텍스트 한도"
 
 #: src/components/ConfirmIdentityDialog.tsx
 #: src/components/integrations/IntegrationSetup.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/components/SecretAskCard.tsx
 #: src/components/SignupSurvey.tsx
 #: src/components/vault/VaultItemEditor.tsx
 #: src/pages/Auth.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/shell/agent-import.tsx
 #: src/pages/shell/dialogs.tsx
 msgid "Continue"
@@ -1857,18 +1867,18 @@ msgstr ""
 #: src/components/ComputersUnavailableHint.tsx
 #: src/components/InviteDialog.tsx
 #: src/components/markdown-copy.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/components/pages/PublicPageShell.tsx
 #: src/components/pages/SharePopover.tsx
 #: src/components/vault/VaultItemDetail.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/shell/agent-import.tsx
 msgid "Copied"
 msgstr "복사됨"
 
+#: src/components/ModelConnectForm.tsx
 #: src/components/vault/VaultItemDetail.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/shell/message-hover-actions.tsx
 msgid "Copy"
 msgstr "복사"
@@ -1913,6 +1923,10 @@ msgstr "MCP 서버를 추가하지 못했습니다."
 
 #: src/components/integrations/plugin-marketplace.tsx
 msgid "Could not add skills"
+msgstr ""
+
+#: src/pages/cms/documents-page.tsx
+msgid "Could not announce this file"
 msgstr ""
 
 #: src/pages/PluginSubmissionsPanel.tsx
@@ -2073,6 +2087,10 @@ msgstr "기억 서비스 연결을 해제하지 못했습니다."
 msgid "Could not disconnect OAuth"
 msgstr "OAuth 연결을 해제하지 못했습니다."
 
+#: src/pages/cms/models-page.tsx
+msgid "Could not disconnect the model"
+msgstr ""
+
 #: src/pages/model-settings/use-model-settings.ts
 msgid "Could not disconnect this provider"
 msgstr ""
@@ -2196,9 +2214,9 @@ msgstr "음성 설정을 불러오지 못했습니다."
 msgid "Could not log out. Try again."
 msgstr "로그아웃하지 못했습니다. 다시 시도해 주세요."
 
+#: src/components/ModelConnectForm.tsx
 #: src/components/ModelCredits.tsx
 #: src/pages/BillingSettingsPanel.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/Paywall.tsx
 msgid "Could not open billing"
 msgstr ""
@@ -2327,7 +2345,11 @@ msgstr ""
 msgid "Could not save group"
 msgstr "그룹을 저장하지 못했습니다."
 
-#: src/pages/Onboarding.tsx
+#: src/pages/cms/models-page.tsx
+msgid "Could not save member providers"
+msgstr ""
+
+#: src/components/ModelConnectForm.tsx
 msgid "Could not save model"
 msgstr "AI 모델을 저장하지 못했습니다."
 
@@ -2641,10 +2663,10 @@ msgstr "일"
 msgid "Decline"
 msgstr "거절"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
 #: src/pages/model-settings/role-model-picker.tsx
 #: src/pages/ModelRoleSettings.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/shell/avatar-studio-popover.tsx
 msgid "Default"
 msgstr "기본값"
@@ -2827,6 +2849,7 @@ msgstr "비활성화됨"
 msgid "Discard recording"
 msgstr ""
 
+#: src/pages/cms/models-page.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/MemorySettingsOverlay.tsx
 #: src/pages/MessagingSettingsPanel.tsx
@@ -2846,6 +2869,10 @@ msgstr ""
 
 #: src/pages/VoiceSettingsOverlay.tsx
 msgid "Disconnect Self-hosted"
+msgstr ""
+
+#: src/pages/cms/models-page.tsx
+msgid "Disconnect this model?"
 msgstr ""
 
 #: src/pages/model-settings/use-model-settings.ts
@@ -3035,18 +3062,18 @@ msgstr "비밀번호를 입력하세요"
 msgid "Enter a valid email"
 msgstr "올바른 이메일을 입력하세요"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/use-model-settings.ts
-#: src/pages/Onboarding.tsx
 msgid "Enter a whole number from 1 to {MAX_MODEL_CONTEXT_WINDOW} for the context limit."
 msgstr "컨텍스트 한도는 1에서 {MAX_MODEL_CONTEXT_WINDOW} 사이의 정수로 입력하세요."
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/use-model-settings.ts
-#: src/pages/Onboarding.tsx
 msgid "Enter a whole number from 1 to {MAX_MODEL_MAX_TOKENS} for maximum output tokens."
 msgstr "최대 출력 토큰 수는 1에서 {MAX_MODEL_MAX_TOKENS} 사이의 정수로 입력하세요."
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/use-model-settings.ts
-#: src/pages/Onboarding.tsx
 msgid "Enter a whole number from 1 to 1000 for the image limit."
 msgstr "이미지 한도는 1에서 1000 사이의 정수로 입력하세요."
 
@@ -3185,8 +3212,8 @@ msgstr "CRM에서 이번 주 목록을 내려받아 공유 폴더에 넣기"
 msgid "External conversation"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Extra high"
 msgstr "매우 높음"
 
@@ -3201,6 +3228,7 @@ msgstr "실패"
 
 #: src/components/SubagentCard.tsx
 #: src/pages/ActivityList.tsx
+#: src/pages/cms/documents-page.tsx
 msgid "Failed"
 msgstr "실패"
 
@@ -3263,13 +3291,13 @@ msgstr ""
 msgid "Find a page"
 msgstr "페이지 찾기"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Find models"
 msgstr "모델 찾기"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Finding…"
 msgstr "찾는 중…"
 
@@ -3341,8 +3369,8 @@ msgstr ""
 msgid "Fullscreen"
 msgstr "전체 화면"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Gateway ID"
 msgstr "게이트웨이 ID"
 
@@ -3463,9 +3491,9 @@ msgstr "비밀번호 숨기기"
 msgid "Hide transcript"
 msgstr "대화 기록 숨기기"
 
+#: src/components/ModelConnectForm.tsx
 #: src/lib/ticket-priority.ts
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "High"
 msgstr "높음"
 
@@ -3886,9 +3914,9 @@ msgstr ""
 msgid "Looks like it contains a key"
 msgstr "키가 포함된 것 같습니다"
 
+#: src/components/ModelConnectForm.tsx
 #: src/lib/ticket-priority.ts
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Low"
 msgstr "낮음"
 
@@ -3926,6 +3954,10 @@ msgstr "MCP 서버 관리"
 msgid "Manage other bots"
 msgstr "다른 봇 관리"
 
+#: src/pages/shell/bot-panel.tsx
+msgid "Managed by your organization"
+msgstr ""
+
 #: src/pages/PluginsOverlay.tsx
 msgid "Manual"
 msgstr ""
@@ -3954,8 +3986,8 @@ msgstr "Markdown 표"
 msgid "Marketing"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Max"
 msgstr "최대"
 
@@ -3968,14 +4000,14 @@ msgstr "최대"
 msgid "Maximize"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Maximum images per request"
 msgstr "요청당 최대 이미지 수"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
 #: src/pages/ModelSettingsOverlay.tsx
-#: src/pages/Onboarding.tsx
 msgid "Maximum output tokens"
 msgstr "최대 출력 토큰 수"
 
@@ -3992,8 +4024,8 @@ msgstr ""
 msgid "MCP servers"
 msgstr "MCP 서버"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Medium"
 msgstr "보통"
 
@@ -4007,6 +4039,10 @@ msgstr "보통"
 msgid "Member"
 msgstr "멤버"
 
+#: src/pages/cms/models-page.tsx
+msgid "Member providers"
+msgstr ""
+
 #: src/pages/cms/overview-page.tsx
 #: src/pages/CmsPage.tsx
 msgid "Members"
@@ -4015,6 +4051,10 @@ msgstr ""
 #. placeholder {0}: selected.length
 #: src/pages/GroupPanel.tsx
 msgid "Members ({0})"
+msgstr ""
+
+#: src/pages/cms/models-page.tsx
+msgid "Members without their own model stop running bots."
 msgstr ""
 
 #: src/pages/KnowledgeSection.tsx
@@ -4100,8 +4140,8 @@ msgstr "메시징"
 msgid "Microphone failed"
 msgstr "마이크를 사용할 수 없습니다."
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Minimal"
 msgstr "최소"
 
@@ -4139,9 +4179,10 @@ msgstr ""
 msgid "Mode"
 msgstr "모드"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/AccountSettingsOverlay.tsx
+#: src/pages/cms/overview-page.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/RoutineEditor.tsx
 #: src/pages/shell/agent-import.tsx
 #: src/pages/shell/bot-panel.tsx
@@ -4156,8 +4197,8 @@ msgstr "\"{modelId}\" 모델이 목록에 없습니다."
 msgid "Model connections"
 msgstr "모델 연결"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Model id"
 msgstr "모델 ID"
 
@@ -4166,6 +4207,7 @@ msgstr "모델 ID"
 msgid "Model options"
 msgstr "모델 선택지"
 
+#: src/pages/CmsPage.tsx
 #: src/pages/ModelSettingsOverlay.tsx
 #: src/pages/settings-nav.ts
 #: src/pages/SpaceSettingOverrides.tsx
@@ -4562,6 +4604,10 @@ msgstr "플러그인 카탈로그에 없음"
 msgid "Not now"
 msgstr "나중에"
 
+#: src/pages/cms/overview-page.tsx
+msgid "Not set"
+msgstr ""
+
 #: src/pages/shell/agent-import.tsx
 #: src/pages/shell/import-status.ts
 msgid "Not supported in Rakazo"
@@ -4615,13 +4661,13 @@ msgstr "OAuth 만료됨"
 msgid "Offline"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Ollama API key"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/ModelSettingsOverlay.tsx
-#: src/pages/Onboarding.tsx
 msgid "Ollama Cloud"
 msgstr ""
 
@@ -4648,6 +4694,10 @@ msgstr ""
 
 #: src/pages/cms/apps-page.tsx
 msgid "Only allow listed apps"
+msgstr ""
+
+#: src/pages/cms/models-page.tsx
+msgid "Only allow listed providers"
 msgstr ""
 
 #: src/components/SecretAskCard.tsx
@@ -4681,8 +4731,8 @@ msgid "Open {title}"
 msgstr "{title} 열기"
 
 #. placeholder {0}: oauth.verificationUri.replace(/^https:\/\//, "")
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Open <0>{0}</0> and enter this code:"
 msgstr ""
 
@@ -4724,12 +4774,12 @@ msgstr "Rakazo 열기"
 msgid "Open work"
 msgstr "진행 중인 작업"
 
-#: src/pages/Onboarding.tsx
+#: src/components/ModelConnectForm.tsx
 msgid "OpenAI API"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "OpenAI-compatible server URL"
 msgstr "OpenAI 호환 서버 주소"
 
@@ -4741,9 +4791,9 @@ msgstr "OpenClaw 또는 Hermes"
 msgid "Opens your browser's print dialog. Choose Save as PDF as the destination."
 msgstr "브라우저의 인쇄 대화상자를 엽니다. 대상으로 PDF로 저장을 선택하세요."
 
+#: src/components/ModelConnectForm.tsx
 #: src/components/SignupSurvey.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/VoiceSettingsOverlay.tsx
 msgid "Optional"
 msgstr "선택 사항"
@@ -4752,8 +4802,8 @@ msgstr "선택 사항"
 msgid "Optional header value"
 msgstr "선택 사항인 헤더 값"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Or paste an API key"
 msgstr "또는 API 키 붙여넣기"
 
@@ -4765,6 +4815,10 @@ msgstr "조직"
 #: src/pages/memory-providers/SupermemorySettingsForm.tsx
 msgid "Organization API key"
 msgstr "조직 API 키"
+
+#: src/pages/cms/models-page.tsx
+msgid "Organization model"
+msgstr ""
 
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/shell/avatar-studio-popover.tsx
@@ -5053,6 +5107,10 @@ msgstr "Bot 전용"
 msgid "Private workspace with its own bots and groups."
 msgstr ""
 
+#: src/pages/cms/documents-page.tsx
+msgid "Processing"
+msgstr ""
+
 #: src/pages/PluginsOverlay.tsx
 msgid "Productivity"
 msgstr ""
@@ -5069,8 +5127,8 @@ msgstr ""
 msgid "Protocol"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/MemorySettingsOverlay.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/VoiceSettingsOverlay.tsx
 msgid "Provider"
 msgstr "서비스"
@@ -5092,8 +5150,8 @@ msgstr "대기 중"
 msgid "Rakazo"
 msgstr "Rakazo"
 
+#: src/components/ModelConnectForm.tsx
 #: src/components/ModelCredits.tsx
-#: src/pages/Onboarding.tsx
 msgid "Rakazo credits"
 msgstr ""
 
@@ -5113,6 +5171,7 @@ msgstr "반응"
 msgid "Read replies aloud"
 msgstr "답변을 자동으로 읽기"
 
+#: src/pages/cms/documents-page.tsx
 #: src/pages/shell/import-status.ts
 msgid "Ready"
 msgstr "준비됨"
@@ -5121,8 +5180,8 @@ msgstr "준비됨"
 msgid "Reason"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Reasoning effort"
 msgstr "추론 강도"
 
@@ -5634,6 +5693,7 @@ msgstr "토요일"
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/Board.tsx
 #: src/pages/cms/apps-page.tsx
+#: src/pages/cms/models-page.tsx
 #: src/pages/ExternalConversationSettings.tsx
 #: src/pages/GroupPanel.tsx
 #: src/pages/KnowledgeSection.tsx
@@ -5851,6 +5911,10 @@ msgstr "보내는 중…"
 msgid "Sent"
 msgstr ""
 
+#: src/pages/cms/documents-page.tsx
+msgid "Sent to {delivered} members"
+msgstr ""
+
 #: src/pages/memory-providers/SerenitySettingsForm.tsx
 msgid "Serenity endpoint is required."
 msgstr ""
@@ -5860,9 +5924,9 @@ msgid "Server name"
 msgstr "서버 이름"
 
 #: src/components/integrations/IntegrationSetup.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/VoiceSettingsOverlay.tsx
 msgid "Server URL"
 msgstr "서버 URL"
@@ -5977,10 +6041,10 @@ msgid "Sidebar density"
 msgstr ""
 
 #: src/components/integrations/plugin-marketplace.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/lib/localized-provider-hint.ts
 #: src/pages/Auth.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/PluginsOverlay.tsx
 msgid "Sign in"
 msgstr "로그인"
@@ -5995,8 +6059,8 @@ msgid "Sign in again"
 msgstr "다시 로그인"
 
 #. placeholder {0}: new URL(oauth.verificationUri).hostname
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Sign in at <0>{0}</0>, then paste the code here."
 msgstr "<0>{0}</0>에서 로그인한 다음 코드를 여기에 붙여넣으세요."
 
@@ -6199,10 +6263,10 @@ msgstr "{count}분 늦게 시작됨"
 msgid "Starting"
 msgstr "시작 중"
 
+#: src/components/ModelConnectForm.tsx
 #: src/components/teach/TeachComputerOverlay.tsx
 #: src/lib/roster-status.ts
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Starting…"
 msgstr "시작하는 중…"
 
@@ -6259,8 +6323,8 @@ msgstr "답변 스트리밍"
 msgid "subagent"
 msgstr "보조 에이전트"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Submit"
 msgstr "확인"
 
@@ -6297,13 +6361,13 @@ msgstr ""
 msgid "Sunday"
 msgstr "일요일"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Supports images"
 msgstr "이미지 지원"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Supports thinking"
 msgstr "사고 모드 지원"
 
@@ -6908,8 +6972,8 @@ msgstr "{hostLabel} 사용"
 msgid "Use {oauthEnvReference} for the access token."
 msgstr "액세스 토큰에는 {oauthEnvReference}를 사용하세요."
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Use a found model"
 msgstr "찾은 모델 중에서 선택"
 

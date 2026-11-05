@@ -6,6 +6,8 @@ vi.mock("./bot-instructions.js", () => ({ writeBotInstructions: vi.fn() }));
 import { writeBotInstructions } from "./bot-instructions.js";
 import { botProfileLabelsChanged, commitBotUpdate } from "./bot-update.js";
 
+const unlockedBot = () => ({ findUnique: vi.fn().mockResolvedValue({ locked: false }) });
+
 describe("botProfileLabelsChanged", () => {
   it("is true when name, description, or color is present", () => {
     expect(botProfileLabelsChanged({})).toBe(false);
@@ -19,7 +21,10 @@ describe("botProfileLabelsChanged", () => {
 describe("commitBotUpdate", () => {
   it("does not publish or notify when a restore rejects its baseline", async () => {
     vi.mocked(writeBotInstructions).mockRejectedValueOnce(new Error("Instructions changed"));
-    const tx = { $queryRaw: vi.fn().mockResolvedValue([]), bot: { update: vi.fn() } };
+    const tx = {
+      $queryRaw: vi.fn().mockResolvedValue([]),
+      bot: { ...unlockedBot(), update: vi.fn() },
+    };
     const notify = vi.fn();
     const appendEvent = vi.fn();
     await expect(
@@ -27,6 +32,7 @@ describe("commitBotUpdate", () => {
         {
           prisma: {
             $transaction: async (run: (client: typeof tx) => Promise<unknown>) => run(tx),
+            bot: unlockedBot(),
           } as never,
           notify,
           spaceId: "space-1",
@@ -57,7 +63,7 @@ describe("commitBotUpdate", () => {
       const appendEvent = vi.fn().mockResolvedValue({ seq: 10 });
       await commitBotUpdate(
         {
-          prisma: { $transaction: transaction } as never,
+          prisma: { $transaction: transaction, bot: unlockedBot() } as never,
           notify,
           spaceId: "space-1",
           threadId: "thread-1",
@@ -106,7 +112,7 @@ describe("commitBotUpdate", () => {
     const appendEvent = vi.fn().mockResolvedValue({ seq: 9 });
     const prisma = {
       $transaction: transaction,
-      bot: { update: vi.fn() },
+      bot: { ...unlockedBot(), update: vi.fn() },
     };
 
     await expect(
@@ -162,7 +168,7 @@ describe("commitBotUpdate", () => {
     const notify = vi.fn();
     const prisma = {
       $transaction: transaction,
-      bot: { update: vi.fn() },
+      bot: { ...unlockedBot(), update: vi.fn() },
     };
 
     await expect(
@@ -191,7 +197,7 @@ describe("commitBotUpdate", () => {
     });
     const prisma = {
       $transaction: vi.fn(),
-      bot: { update },
+      bot: { ...unlockedBot(), update },
     };
     const notify = vi.fn();
     const appendEvent = vi.fn();
@@ -221,7 +227,7 @@ describe("commitBotUpdate", () => {
 it("normalizes generated name tokens before updating a bot", async () => {
   const update = vi.fn().mockResolvedValue({ id: "bot-1", name: "Bot", description: "" });
   await commitBotUpdate({
-    prisma: { bot: { update } } as never,
+    prisma: { bot: { ...unlockedBot(), update } } as never,
     notify: vi.fn(),
     spaceId: "space-1",
     threadId: "thread-1",
@@ -237,7 +243,7 @@ it("preserves readable numbered bot names on writes", async () => {
     .fn()
     .mockResolvedValue({ id: "bot-1", name: "CustomerSupportBot2026", description: "" });
   await commitBotUpdate({
-    prisma: { bot: { update } } as never,
+    prisma: { bot: { ...unlockedBot(), update } } as never,
     notify: vi.fn(),
     spaceId: "space-1",
     threadId: "thread-1",

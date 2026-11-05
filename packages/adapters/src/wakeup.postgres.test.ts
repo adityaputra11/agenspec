@@ -28,6 +28,7 @@ afterEach(async () => {
 function handlers(overrides: Partial<BackgroundJobHandlers> = {}): BackgroundJobHandlers {
   return {
     "run.continue": vi.fn(async () => undefined),
+    "organization_document.process": vi.fn(async () => undefined),
     "routine.wakeup": vi.fn(async () => undefined),
     "routine.retry": vi.fn(async () => undefined),
     "computer.update": vi.fn(async () => undefined),

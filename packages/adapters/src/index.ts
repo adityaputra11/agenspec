@@ -138,6 +138,8 @@ export * from "./openai-compatible-url.js";
 export * from "./openai-compatible-voice.js";
 export * from "./openai-voice.js";
 export * from "./openrouter-usage.js";
+export * from "./organization-documents.js";
+export * from "./organization-model.js";
 export * from "./page-browser-session.js";
 export * from "./page-share-secrets.js";
 export * from "./parallel-web.js";

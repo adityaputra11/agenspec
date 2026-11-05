@@ -1,6 +1,6 @@
 import { Trans, useLingui } from "@lingui/react/macro";
 import { useQuery } from "@tanstack/react-query";
-import { Blocks, ChevronLeft, FileText, LayoutDashboard, Users } from "lucide-react";
+import { Blocks, ChevronLeft, Cpu, FileText, LayoutDashboard, Users } from "lucide-react";
 import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { PageLoading } from "../components/PageLoading";
 import { SETTINGS_CONTENT_WIDTH } from "../components/SettingsRows";
@@ -8,6 +8,7 @@ import { useSpaceQueries } from "../lib/query";
 import { AppsPage } from "./cms/apps-page";
 import { DocumentsPage } from "./cms/documents-page";
 import { MembersPage } from "./cms/members-page";
+import { ModelsPage } from "./cms/models-page";
 import { OverviewPage } from "./cms/overview-page";
 import { settingsNavItemClass } from "./settings-nav";
 import { WindowChrome } from "./WindowChrome";
@@ -26,6 +27,7 @@ function CmsConsole({ organizationName }: { organizationName: string }) {
     { to: "/cms", label: t`Overview`, icon: LayoutDashboard },
     { to: "/cms/documents", label: t`Documents`, icon: FileText },
     { to: "/cms/apps", label: t`Apps`, icon: Blocks },
+    { to: "/cms/models", label: t`Models`, icon: Cpu },
     { to: "/cms/members", label: t`Members`, icon: Users },
   ];
   const isActive = (to: string) =>
@@ -77,6 +79,7 @@ function CmsConsole({ organizationName }: { organizationName: string }) {
                 <Route index element={<OverviewPage />} />
                 <Route path="documents" element={<DocumentsPage />} />
                 <Route path="apps" element={<AppsPage />} />
+                <Route path="models" element={<ModelsPage />} />
                 <Route path="members" element={<MembersPage />} />
                 <Route path="*" element={<Navigate to="/cms" replace />} />
               </Routes>

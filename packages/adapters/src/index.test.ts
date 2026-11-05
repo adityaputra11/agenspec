@@ -188,7 +188,14 @@ describe("builtin tools", () => {
       historyRetrievalEnabled: true,
       messagingChannelRun: false,
       voiceCall: true,
+      companyDocumentsReady: true,
     };
+    const companyNames = ["company_documents_search", "attach_company_document"];
+    const withoutCompanyDocuments = selectBuiltinToolsForRun({
+      ...options,
+      companyDocumentsReady: false,
+    }).map((tool) => tool.name);
+    expect(withoutCompanyDocuments.some((name) => companyNames.includes(name))).toBe(false);
     const ticketNames = [
       "board_tickets",
       "ticket_get",

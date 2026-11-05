@@ -748,6 +748,8 @@ model Bot {
   archivedAt        DateTime?
   parentBotId       String?
   spawnKey          String?
+  /// Built-in bots the organization manages: nobody can edit, archive, or delete them, but they can be chatted with, pinned, and reordered.
+  locked            Boolean           @default(false)
   memoryScope       String?
   parent            Bot?              @relation("BotChildren", fields: [parentBotId], references: [id], onDelete: SetNull)
   children          Bot[]             @relation("BotChildren")
@@ -2392,17 +2394,61 @@ model OrganizationPolicy {
   @@map("organization_policies")
 }
 
+/// The AI model every member of an organization runs on unless they connect their own.
+model OrganizationModelSettings {
+  organizationId          String   @id
+  /// The organization id, which keys the row for tenant policies, as organization documents do.
+  spaceId                 String?
+  provider                String?
+  modelId                 String?
+  baseUrl                 String?
+  /// The encrypted connection (key, and endpoint for an OpenAI-compatible server), never returned to clients.
+  credentialCipher        String?
+  restrictMemberProviders Boolean  @default(false)
+  allowedProviders        String[] @default([])
+  updatedByUserId         String?
+  updatedAt               DateTime @updatedAt
+
+  @@map("organization_model_settings")
+}
+
 model OrganizationDocument {
   id              String   @id @default(cuid())
   organizationId  String
+  /// The organization's default Space id, which keys the document's encrypted search tokens and rows.
+  spaceId         String?
   name            String
   mimeType        String
   sizeBytes       Int
-  content         String
+  /// Legacy plaintext copy. Written by no release that encrypts; kept nullable for the previous release.
+  content         String?
+  /// processing | ready | failed
+  status          String   @default("processing")
+  error           String?
+  chunkCount      Int      @default(0)
+  /// The original file in the artifact store.
+  artifactStorageId String?
   createdByUserId String
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   @@index([organizationId])
   @@map("organization_documents")
+}
+
+/// A searchable section of an organization document. Content is encrypted with the default space key.
+model OrganizationDocumentChunk {
+  id             String   @id @default(cuid())
+  spaceId        String
+  documentId     String
+  organizationId String
+  ordinal        Int
+  heading        String
+  content        String
+  searchTokens   Int[]    @default([])
+  createdAt      DateTime @default(now())
+
+  @@index([documentId])
+  @@index([organizationId])
+  @@map("organization_document_chunks")
 }

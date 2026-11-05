@@ -32,6 +32,13 @@ import {
 } from "./model-selection.js";
 import { compatibleModelSeesImages } from "./model-vision.js";
 import { assertAllowedOpenAiCompatibleUrl } from "./openai-compatible-url.js";
+import type { OrganizationModel } from "./organization-model.js";
+import {
+  memberMayUseProvider,
+  organizationModelFor,
+  organizationModelRecord,
+  organizationModelSettingsFor,
+} from "./organization-model.js";
 import { codexLiveModel } from "./pi-codex-catalog.js";
 import { toOAuthCredential } from "./pi-credentials.js";
 import { LOCAL_PROVIDER_ID } from "./pi-local-provider.js";
@@ -86,14 +93,16 @@ export async function fleetPrepareDeps(
           provider,
         ),
       defaultModel: async () => {
-        const [main, settings] = await Promise.all([
+        const [main, settings, organization] = await Promise.all([
           resolveMemberMainModel(deps, scope),
           deps.prisma.deploymentSettings.findUnique({ where: { id: "default" } }),
+          organizationModelFor(deps.prisma, scope),
         ]);
         const selected = selectConfiguredModel({
           override: null,
           overrideCredential: null,
           main,
+          organization,
           hostedProvider,
           defaults: {
             settings,
@@ -422,6 +431,8 @@ export async function resolveConnectedModelKey(
   const hostedProvider = (await modelCreditBillingEnabled(deps))
     ? resolveDeploymentModel().provider
     : undefined;
+  const organization = await organizationModelSettingsFor(deps.prisma, scope);
+  if (!memberMayUseProvider(organization, provider)) throw new Error(MEMBER_PROVIDER_NOT_ALLOWED);
   const validationError = await validateConnectedModelChoice(
     deps.prisma,
     deps.secretStore,
@@ -490,6 +501,75 @@ export async function resolveConnectedRunModel(
   };
 }
 
+/** A member's own connection to a provider the organization does not list never runs. */
+export const MEMBER_PROVIDER_NOT_ALLOWED = "Your organization does not allow this provider";
+
+/**
+ * The organization's connection for a run in one of its Spaces. It is the same key handling a
+ * member's API key or OpenAI-compatible endpoint gets. Only API keys and endpoints are offered
+ * for an organization, so a sign-in token never reaches this path.
+ */
+export async function resolveOrganizationModelKey(
+  deps: ExecutorDeps,
+  organization: OrganizationModel,
+  modelId: string,
+): Promise<Awaited<ReturnType<typeof resolveModelKey>>> {
+  const { provider } = organization;
+  // The record id binds the ciphertext to this organization; another one's copy will not open.
+  const plaintext = await deps.secretStore.load(
+    organization.credentialCipher,
+    organizationModelRecord(organization.organizationId),
+  );
+  const secret = parseModelSecret(plaintext);
+  if (secret.kind === "oauth")
+    throw new UnavailableModelForAuthError("Organization model needs an API key");
+  const authError = validateModelAuthAvailability(provider, modelId, plaintext);
+  if (authError) throw new UnavailableModelForAuthError(authError);
+  const { apiKey } = await resolveModelAuth(plaintext, provider);
+  const baseUrl = secret.kind === "openai_compatible" ? secret.baseUrl : undefined;
+  const allowPrivateEndpoint = baseUrl ? deps.mcpAllowPrivateEndpoint === true : undefined;
+  if (baseUrl) {
+    try {
+      assertAllowedOpenAiCompatibleUrl(baseUrl, {
+        allowPublic: true,
+        allowPrivate: allowPrivateEndpoint,
+      });
+    } catch (error) {
+      throw new UnavailableModelForAuthError((error as Error).message);
+    }
+  }
+  const accountId = secret.kind === "api_key" ? secret.accountId : undefined;
+  const gatewayId = secret.kind === "api_key" ? secret.gatewayId : undefined;
+  cloudflareProviderEnv({ provider, accountId, gatewayId });
+  const compatible = secret.kind === "openai_compatible" ? secret : undefined;
+  return {
+    apiKey,
+    accountId,
+    gatewayId,
+    baseUrl,
+    apiProtocol: compatible?.apiProtocol,
+    headers: compatible?.headers,
+    allowPrivateEndpoint,
+    cacheCapabilities: secret.cacheCapabilities,
+    contextWindow: secret.contextWindow,
+    reasoning: compatible?.reasoning,
+    maxTokens: secret.maxTokens,
+    thinkingLevel: compatible?.thinkingLevel,
+    acceptsImages: compatible
+      ? compatibleModelSeesImages({ defaultModel: modelId }, compatible, modelId)
+      : undefined,
+    maxImagesPerPrompt: compatible?.maxImagesPerPrompt,
+    oauth: undefined,
+    persistOAuth: undefined,
+    retireOAuth: undefined,
+    // Organization connections never draw on hosted credits, so no usage is observed here.
+    callObserver: undefined,
+    redact: [...secretValuesToRedact(secret), apiKey].filter((value): value is string =>
+      Boolean(value),
+    ),
+  };
+}
+
 export async function resolveRunModel(
   deps: ExecutorDeps,
   scope: {
@@ -509,7 +589,7 @@ export async function resolveRunModel(
       })
     : null;
   const hasOverride = Boolean(override?.modelProvider && override.modelId);
-  const [overrideCredential, main, settings] = await Promise.all([
+  const [overrideCredential, main, settings, organization] = await Promise.all([
     hasOverride
       ? findConnectedModelCredential(
           deps.prisma,
@@ -523,11 +603,13 @@ export async function resolveRunModel(
     deps.prisma.deploymentSettings.findUnique({
       where: { id: "default" },
     }),
+    organizationModelFor(deps.prisma, scope),
   ]);
   const selected = selectConfiguredModel({
     override,
     overrideCredential,
     main,
+    organization,
     hostedProvider: (await modelCreditBillingEnabled(deps))
       ? resolveDeploymentModel().provider
       : undefined,
@@ -545,14 +627,10 @@ export async function resolveRunModel(
   }
   if (!provider || !id) throw new Error(MISSING_MODEL_RUN_ERROR);
   // The key is resolved for the provider that won above, not before it is known.
-  const resolved = await resolveModelKey(
-    deps,
-    scope.userId,
-    scope.spaceId,
-    credential,
-    provider,
-    id,
-  );
+  const resolved =
+    organization && selected.source === "organization"
+      ? await resolveOrganizationModelKey(deps, organization, id)
+      : await resolveModelKey(deps, scope.userId, scope.spaceId, credential, provider, id);
   return {
     provider,
     id,

@@ -4,7 +4,7 @@ import {
   HistorySearchInputSchema,
   MEMORY_INDEX_PATH,
 } from "@rakazo/contracts";
-import { readHistory, searchHistory } from "@rakazo/db";
+import { LockedBotError, readHistory, searchHistory } from "@rakazo/db";
 import { sharedMemorySaveError } from "./builtin-tools.js";
 import { redactConnectorPayload } from "./connector-safety.js";
 import { MAX_RECALLED_MEMORIES } from "./history-compaction.js";
@@ -96,6 +96,7 @@ export const memoryTools: ToolHandlers = {
         );
         return call.finish({ ok: true });
       } catch (error) {
+        if (error instanceof LockedBotError) return call.finish({ error: error.message });
         const message = error instanceof Error ? error.message : "";
         if (message !== MEMORY_REVISION_CONFLICT_ERROR || attempt >= 3) throw error;
       }

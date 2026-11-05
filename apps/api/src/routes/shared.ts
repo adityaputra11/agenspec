@@ -4,6 +4,8 @@ import {
   hasHostedModelCredits,
   hostCredentialSource,
   mcpStdioAvailable,
+  memberMayUseProvider,
+  organizationModelFor,
   resolveMemberMainModel,
   selectConfiguredModel,
 } from "@rakazo/adapters";
@@ -62,6 +64,7 @@ export async function meDto(deps: RouterDeps, actor: Actor): Promise<Me> {
     // Set only while the active default is the deployment's own, running on host credentials.
     ...hostCredentials(
       !setup.main &&
+        !setup.organization &&
         !setup.settings?.defaultModelProvider &&
         Boolean(deps.env.deploymentModelHostCredentials),
       deps.env.defaultProvider,
@@ -100,14 +103,19 @@ function computerHostFor(
   return null;
 }
 
-/** The main model chat runs: the member's while it can run, else the deployment's. */
+/**
+ * The main model chat runs: the member's while it can run and their organization allows it, else
+ * the organization's model, else the deployment's.
+ */
 export async function modelSetup(deps: RouterDeps, actor: Actor) {
-  const [member, settings] = await Promise.all([
+  const [member, settings, organization] = await Promise.all([
     resolveMemberMainModel({ prisma: deps.prisma, secretStore: deps.secrets }, actor),
     deps.prisma.deploymentSettings.findUnique({ where: { id: "default" } }),
+    organizationModelFor(deps.prisma, actor),
   ]);
   const main =
     member &&
+    memberMayUseProvider(organization, member.provider) &&
     (member.credential ||
       (deps.billing?.modelCreditsEnabled &&
         (await hasHostedModelCredits(deps.prisma, actor, member.provider))))
@@ -119,10 +127,15 @@ export async function modelSetup(deps: RouterDeps, actor: Actor) {
   const hasDeployment =
     Boolean(deps.env.deploymentModelConfigured) &&
     (!funding?.creditPurchasesEnabled || creditsAvailable);
+  const organizationChoice = organization
+    ? { provider: organization.provider, modelId: organization.modelId }
+    : null;
   return {
     main,
+    organization: organizationChoice,
     model:
       main ??
+      organizationChoice ??
       deploymentModelRole("main", {
         settings,
         deployment: { provider: deps.env.defaultProvider, model: deps.env.defaultModel },
@@ -131,7 +144,9 @@ export async function modelSetup(deps: RouterDeps, actor: Actor) {
     funding,
     creditsAvailable,
     hasDeployment,
-    needsModel: deps.env.agentRuntime !== "scripted" && !main && !hasDeployment,
+    // An organization model leaves nothing for the member to connect.
+    needsModel:
+      deps.env.agentRuntime !== "scripted" && !main && !organizationChoice && !hasDeployment,
   };
 }
 

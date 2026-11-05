@@ -183,7 +183,12 @@ export function accountRoutes(ctx: RouterContext) {
           // space they own bots in, announced like any edit so other devices redraw it.
           const bots = await runAsSystem("restyle the user's own bots in all their spaces", () =>
             deps.prisma.bot.findMany({
-              where: { userId, avatarSetPinned: false, avatarSet: { not: botAvatarSet } },
+              where: {
+                userId,
+                avatarSetPinned: false,
+                locked: false,
+                avatarSet: { not: botAvatarSet },
+              },
               select: { id: true, spaceId: true, thread: { select: { id: true } } },
             }),
           );

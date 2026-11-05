@@ -69,14 +69,14 @@ msgid "{0, plural, one {Switch # bot to the space default?} other {Switch # bots
 msgstr ""
 
 #. placeholder {0}: Math.ceil(oauth.expiresInSeconds / 60)
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "{0, plural, one {Waiting for sign-in — the code expires in about # minute.} other {Waiting for sign-in — the code expires in about # minutes.}}"
 msgstr ""
 
 #. placeholder {0}: Math.ceil(oauth.expiresInSeconds / 60)
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "{0, plural, one {Waiting for sign-in — the link expires in about # minute.} other {Waiting for sign-in — the link expires in about # minutes.}}"
 msgstr ""
 
@@ -144,6 +144,11 @@ msgstr "{0} MB"
 #. placeholder {0}: sender.name
 #: src/pages/ExternalConversationSettings.tsx
 msgid "{0} rollup hours"
+msgstr ""
+
+#. placeholder {0}: document.chunkCount
+#: src/pages/cms/documents-page.tsx
+msgid "{0} sections"
 msgstr ""
 
 #. placeholder {0}: parts.amount
@@ -436,8 +441,8 @@ msgid "A command's output"
 msgstr "Ausgabe eines Befehls"
 
 #. placeholder {0}: oauth.verificationUri.replace(/^https:\/\//, "")
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "A sign-in tab opened at <0>{0}</0>. Enter this code there — this window keeps waiting:"
 msgstr ""
 
@@ -474,8 +479,8 @@ msgstr "Konto"
 msgid "Account default"
 msgstr "Kontostandard"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Account ID"
 msgstr "Konto-ID"
 
@@ -671,10 +676,10 @@ msgstr ""
 msgid "Admin"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
 #: src/pages/ModelSettingsOverlay.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/RoutineEditor.tsx
 #: src/pages/RoutineSchedule.tsx
 #: src/pages/shell/bot-panel.tsx
@@ -804,6 +809,10 @@ msgstr "Ein importierter API-Schlüssel konnte nicht verwendet werden. Entferne 
 msgid "An integration tool"
 msgstr "Ein Integrationstool"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Announce"
+msgstr ""
+
 #: src/lib/activity-list-filters.ts
 msgid "Another agent"
 msgstr "Ein anderer Agent"
@@ -829,7 +838,7 @@ msgstr "Beantwortet"
 msgid "Answered: {answer}"
 msgstr "Beantwortet: {answer}"
 
-#: src/pages/Onboarding.tsx
+#: src/components/ModelConnectForm.tsx
 msgid "Anthropic API"
 msgstr ""
 
@@ -846,13 +855,13 @@ msgid "Anyone with the link"
 msgstr "Alle mit dem Link"
 
 #: src/components/ComputerProviderSettings.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/components/SecretAskCard.tsx
 #: src/components/vault/kinds.tsx
 #: src/lib/localized-provider-hint.ts
 #: src/pages/memory-providers/HonchoSettingsForm.tsx
 #: src/pages/model-settings/compatible-key-field.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/VoiceSettingsOverlay.tsx
 msgid "API key"
 msgstr "API-Schlüssel"
@@ -990,8 +999,8 @@ msgstr ""
 msgid "Authentication failed."
 msgstr "Authentifizierung fehlgeschlagen."
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Authorization code"
 msgstr "Autorisierungscode"
 
@@ -1244,6 +1253,7 @@ msgstr "Kann keine Bilder lesen"
 #: src/components/ComputerMaintenanceActions.tsx
 #: src/components/integrations/plugin-marketplace.tsx
 #: src/components/markdown-link-prompt.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/components/ModelCredits.tsx
 #: src/components/PasskeySettings.tsx
 #: src/components/teach/TeachComputerOverlay.tsx
@@ -1251,12 +1261,12 @@ msgstr "Kann keine Bilder lesen"
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/Artifacts.tsx
 #: src/pages/cms/documents-page.tsx
+#: src/pages/cms/models-page.tsx
 #: src/pages/KnowledgeSection.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/connection-controls.tsx
 #: src/pages/model-settings/space-bots-model.tsx
 #: src/pages/ModelSettingsOverlay.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/OrganizationSettingsPanel.tsx
 #: src/pages/PaymentWalletSettingsPanel.tsx
 #: src/pages/PluginSubmissionsPanel.tsx
@@ -1425,7 +1435,7 @@ msgstr "Modell auswählen"
 msgid "Choose a new password"
 msgstr "Wähle ein neues Passwort"
 
-#: src/pages/Onboarding.tsx
+#: src/components/ModelConnectForm.tsx
 msgid "Choose a provider"
 msgstr ""
 
@@ -1820,18 +1830,18 @@ msgstr ""
 msgid "Contains code to run"
 msgstr "Enthält ausführbaren Code"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Context limit"
 msgstr "Kontextlimit"
 
 #: src/components/ConfirmIdentityDialog.tsx
 #: src/components/integrations/IntegrationSetup.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/components/SecretAskCard.tsx
 #: src/components/SignupSurvey.tsx
 #: src/components/vault/VaultItemEditor.tsx
 #: src/pages/Auth.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/shell/agent-import.tsx
 #: src/pages/shell/dialogs.tsx
 msgid "Continue"
@@ -1857,18 +1867,18 @@ msgstr ""
 #: src/components/ComputersUnavailableHint.tsx
 #: src/components/InviteDialog.tsx
 #: src/components/markdown-copy.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/components/pages/PublicPageShell.tsx
 #: src/components/pages/SharePopover.tsx
 #: src/components/vault/VaultItemDetail.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/shell/agent-import.tsx
 msgid "Copied"
 msgstr "Kopiert"
 
+#: src/components/ModelConnectForm.tsx
 #: src/components/vault/VaultItemDetail.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/shell/message-hover-actions.tsx
 msgid "Copy"
 msgstr "Kopieren"
@@ -1913,6 +1923,10 @@ msgstr "MCP-Server konnte nicht hinzugefügt werden"
 
 #: src/components/integrations/plugin-marketplace.tsx
 msgid "Could not add skills"
+msgstr ""
+
+#: src/pages/cms/documents-page.tsx
+msgid "Could not announce this file"
 msgstr ""
 
 #: src/pages/PluginSubmissionsPanel.tsx
@@ -2073,6 +2087,10 @@ msgstr "Erinnerungsanbieter konnte nicht getrennt werden"
 msgid "Could not disconnect OAuth"
 msgstr "OAuth-Verbindung konnte nicht getrennt werden"
 
+#: src/pages/cms/models-page.tsx
+msgid "Could not disconnect the model"
+msgstr ""
+
 #: src/pages/model-settings/use-model-settings.ts
 msgid "Could not disconnect this provider"
 msgstr ""
@@ -2196,9 +2214,9 @@ msgstr "Stimmeinstellungen konnten nicht geladen werden"
 msgid "Could not log out. Try again."
 msgstr "Abmelden fehlgeschlagen. Bitte erneut versuchen."
 
+#: src/components/ModelConnectForm.tsx
 #: src/components/ModelCredits.tsx
 #: src/pages/BillingSettingsPanel.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/Paywall.tsx
 msgid "Could not open billing"
 msgstr ""
@@ -2327,7 +2345,11 @@ msgstr ""
 msgid "Could not save group"
 msgstr "Gruppe konnte nicht gespeichert werden"
 
-#: src/pages/Onboarding.tsx
+#: src/pages/cms/models-page.tsx
+msgid "Could not save member providers"
+msgstr ""
+
+#: src/components/ModelConnectForm.tsx
 msgid "Could not save model"
 msgstr "Modell konnte nicht gespeichert werden"
 
@@ -2641,10 +2663,10 @@ msgstr "Tage"
 msgid "Decline"
 msgstr "Ablehnen"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
 #: src/pages/model-settings/role-model-picker.tsx
 #: src/pages/ModelRoleSettings.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/shell/avatar-studio-popover.tsx
 msgid "Default"
 msgstr "Standard"
@@ -2827,6 +2849,7 @@ msgstr "Deaktiviert"
 msgid "Discard recording"
 msgstr "Aufnahme verwerfen"
 
+#: src/pages/cms/models-page.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/MemorySettingsOverlay.tsx
 #: src/pages/MessagingSettingsPanel.tsx
@@ -2846,6 +2869,10 @@ msgstr ""
 
 #: src/pages/VoiceSettingsOverlay.tsx
 msgid "Disconnect Self-hosted"
+msgstr ""
+
+#: src/pages/cms/models-page.tsx
+msgid "Disconnect this model?"
 msgstr ""
 
 #: src/pages/model-settings/use-model-settings.ts
@@ -3035,18 +3062,18 @@ msgstr "Gib ein Passwort ein"
 msgid "Enter a valid email"
 msgstr "Gib eine gültige E-Mail-Adresse ein"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/use-model-settings.ts
-#: src/pages/Onboarding.tsx
 msgid "Enter a whole number from 1 to {MAX_MODEL_CONTEXT_WINDOW} for the context limit."
 msgstr "Gib eine ganze Zahl von 1 bis {MAX_MODEL_CONTEXT_WINDOW} für das Kontextlimit ein."
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/use-model-settings.ts
-#: src/pages/Onboarding.tsx
 msgid "Enter a whole number from 1 to {MAX_MODEL_MAX_TOKENS} for maximum output tokens."
 msgstr "Gib eine ganze Zahl von 1 bis {MAX_MODEL_MAX_TOKENS} für die maximalen Ausgabetokens ein."
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/use-model-settings.ts
-#: src/pages/Onboarding.tsx
 msgid "Enter a whole number from 1 to 1000 for the image limit."
 msgstr "Gib eine ganze Zahl von 1 bis 1000 für das Bilderlimit ein."
 
@@ -3185,8 +3212,8 @@ msgstr "Exportiere die Liste dieser Woche aus dem CRM und lege sie im freigegebe
 msgid "External conversation"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Extra high"
 msgstr "Sehr hoch"
 
@@ -3201,6 +3228,7 @@ msgstr "fehlgeschlagen"
 
 #: src/components/SubagentCard.tsx
 #: src/pages/ActivityList.tsx
+#: src/pages/cms/documents-page.tsx
 msgid "Failed"
 msgstr "Fehlgeschlagen"
 
@@ -3263,13 +3291,13 @@ msgstr ""
 msgid "Find a page"
 msgstr "Seite finden"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Find models"
 msgstr "Modelle suchen"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Finding…"
 msgstr "Suche läuft…"
 
@@ -3341,8 +3369,8 @@ msgstr ""
 msgid "Fullscreen"
 msgstr "Vollbild"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Gateway ID"
 msgstr "Gateway-ID"
 
@@ -3463,9 +3491,9 @@ msgstr ""
 msgid "Hide transcript"
 msgstr "Transkript ausblenden"
 
+#: src/components/ModelConnectForm.tsx
 #: src/lib/ticket-priority.ts
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "High"
 msgstr "Hoch"
 
@@ -3886,9 +3914,9 @@ msgstr ""
 msgid "Looks like it contains a key"
 msgstr "Scheint einen Schlüssel zu enthalten"
 
+#: src/components/ModelConnectForm.tsx
 #: src/lib/ticket-priority.ts
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Low"
 msgstr "Niedrig"
 
@@ -3926,6 +3954,10 @@ msgstr "MCP-Server verwalten"
 msgid "Manage other bots"
 msgstr "Andere Bots verwalten"
 
+#: src/pages/shell/bot-panel.tsx
+msgid "Managed by your organization"
+msgstr ""
+
 #: src/pages/PluginsOverlay.tsx
 msgid "Manual"
 msgstr ""
@@ -3954,8 +3986,8 @@ msgstr "Markdown-Tabelle"
 msgid "Marketing"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Max"
 msgstr "Max."
 
@@ -3968,14 +4000,14 @@ msgstr "Max."
 msgid "Maximize"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Maximum images per request"
 msgstr "Maximale Bilder pro Anfrage"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
 #: src/pages/ModelSettingsOverlay.tsx
-#: src/pages/Onboarding.tsx
 msgid "Maximum output tokens"
 msgstr "Maximale Ausgabetokens"
 
@@ -3992,8 +4024,8 @@ msgstr ""
 msgid "MCP servers"
 msgstr "MCP-Server"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Medium"
 msgstr "Mittel"
 
@@ -4007,6 +4039,10 @@ msgstr "Mittel"
 msgid "Member"
 msgstr "Mitglied"
 
+#: src/pages/cms/models-page.tsx
+msgid "Member providers"
+msgstr ""
+
 #: src/pages/cms/overview-page.tsx
 #: src/pages/CmsPage.tsx
 msgid "Members"
@@ -4015,6 +4051,10 @@ msgstr ""
 #. placeholder {0}: selected.length
 #: src/pages/GroupPanel.tsx
 msgid "Members ({0})"
+msgstr ""
+
+#: src/pages/cms/models-page.tsx
+msgid "Members without their own model stop running bots."
 msgstr ""
 
 #: src/pages/KnowledgeSection.tsx
@@ -4100,8 +4140,8 @@ msgstr ""
 msgid "Microphone failed"
 msgstr "Mikrofonfehler"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Minimal"
 msgstr "Minimal"
 
@@ -4139,9 +4179,10 @@ msgstr "Verpasster Anruf"
 msgid "Mode"
 msgstr "Modus"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/AccountSettingsOverlay.tsx
+#: src/pages/cms/overview-page.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/RoutineEditor.tsx
 #: src/pages/shell/agent-import.tsx
 #: src/pages/shell/bot-panel.tsx
@@ -4156,8 +4197,8 @@ msgstr "Modell \"{modelId}\" wurde nicht aufgelistet."
 msgid "Model connections"
 msgstr "Modellverbindungen"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Model id"
 msgstr "Modell-ID"
 
@@ -4166,6 +4207,7 @@ msgstr "Modell-ID"
 msgid "Model options"
 msgstr "Modelloptionen"
 
+#: src/pages/CmsPage.tsx
 #: src/pages/ModelSettingsOverlay.tsx
 #: src/pages/settings-nav.ts
 #: src/pages/SpaceSettingOverrides.tsx
@@ -4562,6 +4604,10 @@ msgstr ""
 msgid "Not now"
 msgstr "Jetzt nicht"
 
+#: src/pages/cms/overview-page.tsx
+msgid "Not set"
+msgstr ""
+
 #: src/pages/shell/agent-import.tsx
 #: src/pages/shell/import-status.ts
 msgid "Not supported in Rakazo"
@@ -4615,13 +4661,13 @@ msgstr "OAuth abgelaufen"
 msgid "Offline"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Ollama API key"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/ModelSettingsOverlay.tsx
-#: src/pages/Onboarding.tsx
 msgid "Ollama Cloud"
 msgstr ""
 
@@ -4648,6 +4694,10 @@ msgstr ""
 
 #: src/pages/cms/apps-page.tsx
 msgid "Only allow listed apps"
+msgstr ""
+
+#: src/pages/cms/models-page.tsx
+msgid "Only allow listed providers"
 msgstr ""
 
 #: src/components/SecretAskCard.tsx
@@ -4681,8 +4731,8 @@ msgid "Open {title}"
 msgstr "{title} öffnen"
 
 #. placeholder {0}: oauth.verificationUri.replace(/^https:\/\//, "")
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Open <0>{0}</0> and enter this code:"
 msgstr ""
 
@@ -4724,12 +4774,12 @@ msgstr "Rakazo öffnen"
 msgid "Open work"
 msgstr "Offene Arbeit"
 
-#: src/pages/Onboarding.tsx
+#: src/components/ModelConnectForm.tsx
 msgid "OpenAI API"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "OpenAI-compatible server URL"
 msgstr "URL eines OpenAI-kompatiblen Servers"
 
@@ -4741,9 +4791,9 @@ msgstr "OpenClaw oder Hermes"
 msgid "Opens your browser's print dialog. Choose Save as PDF as the destination."
 msgstr "Öffnet den Druckdialog deines Browsers. Wähle „Als PDF speichern“ als Ziel."
 
+#: src/components/ModelConnectForm.tsx
 #: src/components/SignupSurvey.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/VoiceSettingsOverlay.tsx
 msgid "Optional"
 msgstr "Optional"
@@ -4752,8 +4802,8 @@ msgstr "Optional"
 msgid "Optional header value"
 msgstr "Optionaler Header-Wert"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Or paste an API key"
 msgstr "Oder einen API-Schlüssel einfügen"
 
@@ -4765,6 +4815,10 @@ msgstr "Organisation"
 #: src/pages/memory-providers/SupermemorySettingsForm.tsx
 msgid "Organization API key"
 msgstr "Organisations-API-Schlüssel"
+
+#: src/pages/cms/models-page.tsx
+msgid "Organization model"
+msgstr ""
 
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/shell/avatar-studio-popover.tsx
@@ -5053,6 +5107,10 @@ msgstr "Privat"
 msgid "Private workspace with its own bots and groups."
 msgstr ""
 
+#: src/pages/cms/documents-page.tsx
+msgid "Processing"
+msgstr ""
+
 #: src/pages/PluginsOverlay.tsx
 msgid "Productivity"
 msgstr ""
@@ -5069,8 +5127,8 @@ msgstr ""
 msgid "Protocol"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/MemorySettingsOverlay.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/VoiceSettingsOverlay.tsx
 msgid "Provider"
 msgstr "Anbieter"
@@ -5092,8 +5150,8 @@ msgstr "In Warteschlange"
 msgid "Rakazo"
 msgstr "Rakazo"
 
+#: src/components/ModelConnectForm.tsx
 #: src/components/ModelCredits.tsx
-#: src/pages/Onboarding.tsx
 msgid "Rakazo credits"
 msgstr ""
 
@@ -5113,6 +5171,7 @@ msgstr "Reaktionen"
 msgid "Read replies aloud"
 msgstr "Antworten vorlesen"
 
+#: src/pages/cms/documents-page.tsx
 #: src/pages/shell/import-status.ts
 msgid "Ready"
 msgstr "Bereit"
@@ -5121,8 +5180,8 @@ msgstr "Bereit"
 msgid "Reason"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Reasoning effort"
 msgstr "Denkaufwand"
 
@@ -5634,6 +5693,7 @@ msgstr "Samstag"
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/Board.tsx
 #: src/pages/cms/apps-page.tsx
+#: src/pages/cms/models-page.tsx
 #: src/pages/ExternalConversationSettings.tsx
 #: src/pages/GroupPanel.tsx
 #: src/pages/KnowledgeSection.tsx
@@ -5851,6 +5911,10 @@ msgstr "Wird gesendet…"
 msgid "Sent"
 msgstr ""
 
+#: src/pages/cms/documents-page.tsx
+msgid "Sent to {delivered} members"
+msgstr ""
+
 #: src/pages/memory-providers/SerenitySettingsForm.tsx
 msgid "Serenity endpoint is required."
 msgstr ""
@@ -5860,9 +5924,9 @@ msgid "Server name"
 msgstr "Servername"
 
 #: src/components/integrations/IntegrationSetup.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/VoiceSettingsOverlay.tsx
 msgid "Server URL"
 msgstr "Server-URL"
@@ -5977,10 +6041,10 @@ msgid "Sidebar density"
 msgstr ""
 
 #: src/components/integrations/plugin-marketplace.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/lib/localized-provider-hint.ts
 #: src/pages/Auth.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/PluginsOverlay.tsx
 msgid "Sign in"
 msgstr "Anmelden"
@@ -5995,8 +6059,8 @@ msgid "Sign in again"
 msgstr "Erneut anmelden"
 
 #. placeholder {0}: new URL(oauth.verificationUri).hostname
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Sign in at <0>{0}</0>, then paste the code here."
 msgstr "Melde dich bei <0>{0}</0> an und füge dann den Code hier ein."
 
@@ -6199,10 +6263,10 @@ msgstr "{count} Min. verspätet gestartet"
 msgid "Starting"
 msgstr "Startet"
 
+#: src/components/ModelConnectForm.tsx
 #: src/components/teach/TeachComputerOverlay.tsx
 #: src/lib/roster-status.ts
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Starting…"
 msgstr "Wird gestartet…"
 
@@ -6259,8 +6323,8 @@ msgstr "Antworten streamen"
 msgid "subagent"
 msgstr "Subagent"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Submit"
 msgstr "Absenden"
 
@@ -6297,13 +6361,13 @@ msgstr ""
 msgid "Sunday"
 msgstr "Sonntag"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Supports images"
 msgstr "Unterstützt Bilder"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Supports thinking"
 msgstr "Unterstützt Denkmodus"
 
@@ -6908,8 +6972,8 @@ msgstr "{hostLabel} verwenden"
 msgid "Use {oauthEnvReference} for the access token."
 msgstr "Verwende {oauthEnvReference} für das Zugriffstoken."
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Use a found model"
 msgstr "Gefundenes Modell verwenden"
 

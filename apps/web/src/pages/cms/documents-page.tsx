@@ -8,6 +8,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  Badge,
   Button,
   DropdownMenu,
   DropdownMenuContent,
@@ -17,7 +18,7 @@ import {
   toast,
 } from "@rakazo/ui-web";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { MoreHorizontal, Trash2, Upload } from "lucide-react";
+import { Megaphone, MoreHorizontal, Trash2, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import { SettingsGroup, SettingsRow } from "../../components/SettingsRows";
 import { useSpaceQueries } from "../../lib/query";
@@ -38,13 +39,25 @@ interface DocumentRow {
   mimeType: string;
   sizeBytes: number;
   createdAt: string;
+  status: "processing" | "ready" | "failed";
+  error: string | null;
+  chunkCount: number;
 }
+
+/** Two seconds while any document is still being indexed; otherwise the list is fetched once. */
+const PROCESSING_POLL_MS = 2_000;
 
 export function DocumentsPage() {
   const { t } = useLingui();
   const queries = useSpaceQueries();
   const queryClient = useQueryClient();
-  const documents = useQuery(queries.cms.documents.list.queryOptions());
+  const documents = useQuery({
+    ...queries.cms.documents.list.queryOptions(),
+    refetchInterval: (query) =>
+      query.state.data?.some((document) => document.status === "processing")
+        ? PROCESSING_POLL_MS
+        : false,
+  });
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -75,6 +88,15 @@ export function DocumentsPage() {
       await queryClient.invalidateQueries({ queryKey: queries.cms.documents.list.key() });
     } catch (err) {
       toast.error(errorText(err, t`Could not delete this file`));
+    }
+  }
+
+  async function announce(document: DocumentRow) {
+    try {
+      const { delivered } = await rpc.cms.documents.announce({ id: document.id });
+      toast.success(t`Sent to ${delivered} members`);
+    } catch (err) {
+      toast.error(errorText(err, t`Could not announce this file`));
     }
   }
 
@@ -120,9 +142,12 @@ export function DocumentsPage() {
               label={
                 <div className="min-w-0">
                   <div className="truncate">{document.name}</div>
-                  <div className="text-[12.5px] text-muted-foreground">
-                    {documentTypeBadge(document.mimeType)} · {formatSize(document.sizeBytes)} ·{" "}
-                    {formatDate(document.createdAt)}
+                  <div className="flex flex-wrap items-center gap-2 text-[12.5px] text-muted-foreground">
+                    <span>
+                      {documentTypeBadge(document.mimeType)} · {formatSize(document.sizeBytes)} ·{" "}
+                      {formatDate(document.createdAt)}
+                    </span>
+                    <DocumentStatus document={document} />
                   </div>
                 </div>
               }
@@ -136,6 +161,12 @@ export function DocumentsPage() {
                     <MoreHorizontal />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
+                    {document.status === "ready" ? (
+                      <DropdownMenuItem onClick={() => void announce(document)}>
+                        <Megaphone />
+                        <Trans>Announce</Trans>
+                      </DropdownMenuItem>
+                    ) : null}
                     <DropdownMenuItem
                       variant="destructive"
                       onClick={() => setPendingDelete(document)}
@@ -192,5 +223,32 @@ export function DocumentsPage() {
         </AlertDialogContent>
       </AlertDialog>
     </section>
+  );
+}
+
+function DocumentStatus({ document }: { document: DocumentRow }) {
+  const { t } = useLingui();
+  if (document.status === "processing") {
+    return (
+      <Badge variant="secondary">
+        <Spinner />
+        <Trans>Processing</Trans>
+      </Badge>
+    );
+  }
+  if (document.status === "failed") {
+    return (
+      <Badge variant="destructive" title={document.error ?? undefined}>
+        <Trans>Failed</Trans>
+      </Badge>
+    );
+  }
+  return (
+    <>
+      <Badge variant="outline">
+        <Trans>Ready</Trans>
+      </Badge>
+      <span>{t`${document.chunkCount} sections`}</span>
+    </>
   );
 }

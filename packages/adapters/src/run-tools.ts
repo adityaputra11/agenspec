@@ -8,6 +8,7 @@ import type { ToolHandler } from "./run-tool-gate.js";
 import { auditToolCall, gateToolCall } from "./run-tool-gate.js";
 import { prepareToolRequest, resolveToolRequest } from "./run-tool-request.js";
 import { PAGE_BROWSER_TOOL_NAMES } from "./run-tool-selection.js";
+import { companyTools } from "./run-tools-company.js";
 import { computerTools, pageBrowserTool } from "./run-tools-computer.js";
 import { feedbackTools } from "./run-tools-feedback.js";
 import { fileTools } from "./run-tools-files.js";
@@ -36,6 +37,7 @@ const TOOL_HANDLERS = new Map<string, ToolHandler>([
   ...Object.entries(fileTools),
   ...Object.entries(pageTools),
   ...Object.entries(memoryTools),
+  ...Object.entries(companyTools),
   ...Object.entries(integrationTools),
   ...Object.entries(taskTools),
   ...Object.entries(messagingTools),

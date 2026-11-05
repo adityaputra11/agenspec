@@ -32,10 +32,12 @@ import { BotSecretAuth, resolveBotAvatarSet } from "@rakazo/contracts";
 import { ACTIVE_RUN_STATUSES, displayName } from "@rakazo/core";
 import type { Prisma } from "@rakazo/db";
 import {
+  assertBotUnlocked,
   BotSectionNameConflictError,
   botProfileLabelsChanged,
   ComputerLimitError,
   commitBotUpdate,
+  ensureLegalBotForActor,
   expireComputerExecutionLeases,
   InstructionConflictError,
   IsolationError,
@@ -298,7 +300,13 @@ export function botsRoutes(ctx: RouterContext) {
     ctx;
   return {
     bots: {
-      list: authed.bots.list.handler(async ({ context }) => repos.listBots(context.actor)),
+      list: authed.bots.list.handler(async ({ context }) => {
+        // A member who joined after the default space was set up gets their Legal bot on first list.
+        await ensureLegalBotForActor(deps.prisma, context.actor).catch((error: unknown) => {
+          getLogger().error("legal bot provisioning on list", error);
+        });
+        return repos.listBots(context.actor);
+      }),
       listArchived: authed.bots.listArchived.handler(async ({ context }) =>
         repos.listBots(context.actor, { archived: true }),
       ),
@@ -501,6 +509,7 @@ export function botsRoutes(ctx: RouterContext) {
       }),
       setComputer: authed.bots.setComputer.handler(async ({ context, input }) => {
         const bot = await repos.getBot(context.actor, input.botId);
+        assertBotUnlocked(bot);
         if (!bot.computer) throw new IsolationError();
         const currentMode = bot.computer.scope === "dedicated" ? "dedicated" : "team";
         if (currentMode === input.mode) {
@@ -610,6 +619,7 @@ export function botsRoutes(ctx: RouterContext) {
       }),
       rotateWebhookSecret: authed.bots.rotateWebhookSecret.handler(async ({ context, input }) => {
         const bot = await repos.getBot(context.actor, input.botId);
+        assertBotUnlocked(bot);
         const plaintext = randomBytes(32).toString("base64url");
         const stored = await deps.secrets.put(plaintext, {
           operationId: "bots.rotateWebhookSecret",

@@ -44,7 +44,10 @@ describe("memory store contract shape", () => {
 
   it("removes one document by scope, bot and path inside the caller's space", async () => {
     const deleteMany = vi.fn().mockResolvedValue({ count: 1 });
-    const store = new MarkdownMemoryStore({ memoryDocument: { deleteMany } } as never);
+    const store = new MarkdownMemoryStore({
+      bot: { findUnique: vi.fn().mockResolvedValue({ locked: false }) },
+      memoryDocument: { deleteMany },
+    } as never);
     await expect(
       store.remove(
         { id: "memory-9", scope: "bot", botId: "bot-1", path: "projects/retired.md" },
@@ -97,6 +100,28 @@ describe("organization documents", () => {
     await expect(
       store.remove({ scope: "user", path: "company/doc-1.md" }, context),
     ).rejects.toThrow("This document is managed by your organization");
+    expect(transaction).not.toHaveBeenCalled();
+    expect(deleteMany).not.toHaveBeenCalled();
+  });
+});
+
+describe("locked bots", () => {
+  it("refuses bot-scope commits and removals for a locked bot", async () => {
+    const transaction = vi.fn();
+    const deleteMany = vi.fn();
+    const findUnique = vi.fn().mockResolvedValue({ locked: true });
+    const store = new MarkdownMemoryStore({
+      bot: { findUnique },
+      $transaction: transaction,
+      memoryDocument: { deleteMany },
+    } as never);
+
+    await expect(
+      store.commit({ scope: "bot", botId: "legal-1", path: "MEMORY.md", content: "x" }, context),
+    ).rejects.toThrow("This bot is managed by your organization");
+    await expect(
+      store.remove({ scope: "bot", botId: "legal-1", path: "MEMORY.md" }, context),
+    ).rejects.toThrow("This bot is managed by your organization");
     expect(transaction).not.toHaveBeenCalled();
     expect(deleteMany).not.toHaveBeenCalled();
   });

@@ -113,6 +113,7 @@ import {
 import { encryptionKeyWarning, signupPolicyFromEnv } from "@rakazo/core";
 import type { Pool, PrismaClient } from "@rakazo/db";
 import {
+  backfillLegalBots,
   configureProviderTransactionPool,
   createBoardEvents,
   createDb,
@@ -123,6 +124,7 @@ import {
   IsolationError,
   installAuditEventStore,
   installSecurityEventStore,
+  LockedBotError,
   ProviderTransactionBusyError,
   parsePositiveInteger,
   provisionMessagingIdentity,
@@ -329,6 +331,12 @@ async function buildApp(overrides: CreateAppOverrides): Promise<AppHandles> {
   prisma = withSecretPersistence(prisma, secrets);
   installSecurityEventStore(prisma);
   installAuditEventStore(prisma);
+  // Gives default spaces created before the built-in Legal bot their copy. Never blocks startup.
+  if (!prismaOverride) {
+    void backfillLegalBots(prisma).catch((error: unknown) => {
+      logger.error("legal bot backfill", error);
+    });
+  }
   const unreadableMasterKeys = await verifyContentKeys(prisma);
   if (unreadableMasterKeys.length)
     logger.error("Stored space keys need master keys that are not configured", undefined, {
@@ -1602,6 +1610,10 @@ export function handleRpcError(
   if (error instanceof IsolationError) {
     getLogger().warn(`rpc ${path.join("/")} not found`, { "error.stack": error.stack });
     throw new ORPCError("NOT_FOUND", { message: error.message, cause: error });
+  }
+  // An organization-managed bot refused an edit, archive or delete.
+  if (error instanceof LockedBotError) {
+    throw new ORPCError("FORBIDDEN", { message: error.message, cause: error });
   }
   // The user's own voice account refused the request: theirs to fix.
   if (error instanceof VoiceAccountError) {

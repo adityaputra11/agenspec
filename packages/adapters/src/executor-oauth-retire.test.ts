@@ -93,6 +93,8 @@ function oauthPrisma() {
   };
   const prisma = {
     $transaction: vi.fn(async (callback: (txArg: typeof tx) => Promise<unknown>) => callback(tx)),
+    space: { findUnique: vi.fn(async () => null) },
+    organizationModelSettings: { findUnique: vi.fn(async () => null) },
     userModelCredential: {
       findMany: vi.fn(async () => [...state.credentials]),
       findFirst: vi.fn(async () => state.credentials[0] ?? null),

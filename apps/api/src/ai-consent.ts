@@ -3,6 +3,8 @@ import { ORPCError } from "@orpc/server";
 import {
   aiRecipient,
   cloudAgentsEnabled,
+  organizationModelFor,
+  organizationModelRecord,
   parseModelSecret,
   resolveMemberMainModel,
   selectConfiguredModel,
@@ -149,6 +151,7 @@ export async function aiConsentStatus(
           thinkingLevel: preference.thinkingLevel,
         },
         thinkingLevel: null,
+        source: null,
       });
     // Every purpose's models, fallbacks included, can receive a run's content.
     const roleModels = await Promise.all(
@@ -157,7 +160,13 @@ export async function aiConsentStatus(
           ? await findModelCredentialById(deps.prisma, actor, choice.credentialId)
           : await findModelCredential(deps.prisma, actor, choice.provider, choice.modelId);
         return credential
-          ? { provider: choice.provider, id: choice.modelId, credential, thinkingLevel: null }
+          ? {
+              provider: choice.provider,
+              id: choice.modelId,
+              credential,
+              thinkingLevel: null,
+              source: null,
+            }
           : null;
       }),
     );
@@ -173,6 +182,7 @@ export async function aiConsentStatus(
           deps.env.teamChatJudgeModel,
         ),
         thinkingLevel: null,
+        source: null,
       });
     }
     const models = [
@@ -215,6 +225,18 @@ export async function aiConsentStatus(
           provider: model.provider!,
           modelId: model.id!,
           baseUrl: model.credential ? baseUrls.get(model.credential.secretId) : undefined,
+          use: "model",
+        }),
+      );
+    }
+    // The organization's model receives content from every member who runs on it.
+    const organization = await organizationModelFor(deps.prisma, actor);
+    if (organization) {
+      add(
+        aiRecipient({
+          provider: organization.provider,
+          modelId: organization.modelId,
+          baseUrl: await organizationModelBaseUrl(deps, organization),
           use: "model",
         }),
       );
@@ -302,4 +324,23 @@ export async function allowAiConsent(
       input.keys.includes(recipient.key) ? { ...recipient, allowed: true } : recipient,
     ),
   };
+}
+
+/** The endpoint an organization's OpenAI-compatible model sends to, or undefined when it has none or it cannot be read. */
+async function organizationModelBaseUrl(
+  deps: RouterDeps,
+  organization: { organizationId: string; credentialCipher: string },
+): Promise<string | undefined> {
+  try {
+    const parsed = parseModelSecret(
+      await deps.secrets.load(
+        organization.credentialCipher,
+        organizationModelRecord(organization.organizationId),
+      ),
+    );
+    return parsed.kind === "openai_compatible" ? parsed.baseUrl : undefined;
+  } catch {
+    // An unreadable connection still discloses by provider; the endpoint is unknown.
+    return undefined;
+  }
 }

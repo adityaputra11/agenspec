@@ -69,14 +69,14 @@ msgid "{0, plural, one {Switch # bot to the space default?} other {Switch # bots
 msgstr "{0, plural, one {将 # 个 Bot 切换为工作区默认？} other {将 # 个 Bot 切换为工作区默认？}}"
 
 #. placeholder {0}: Math.ceil(oauth.expiresInSeconds / 60)
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "{0, plural, one {Waiting for sign-in — the code expires in about # minute.} other {Waiting for sign-in — the code expires in about # minutes.}}"
 msgstr "{0, plural, one {正在等待登录，验证码大约 # 分钟后过期。} other {正在等待登录，验证码大约 # 分钟后过期。}}"
 
 #. placeholder {0}: Math.ceil(oauth.expiresInSeconds / 60)
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "{0, plural, one {Waiting for sign-in — the link expires in about # minute.} other {Waiting for sign-in — the link expires in about # minutes.}}"
 msgstr "{0, plural, one {正在等待登录，链接大约 # 分钟后过期。} other {正在等待登录，链接大约 # 分钟后过期。}}"
 
@@ -145,6 +145,11 @@ msgstr "{0} MB"
 #: src/pages/ExternalConversationSettings.tsx
 msgid "{0} rollup hours"
 msgstr "{0} 的合并间隔（小时）"
+
+#. placeholder {0}: document.chunkCount
+#: src/pages/cms/documents-page.tsx
+msgid "{0} sections"
+msgstr ""
 
 #. placeholder {0}: parts.amount
 #: src/components/ArtifactFileCard.tsx
@@ -436,8 +441,8 @@ msgid "A command's output"
 msgstr "命令的输出"
 
 #. placeholder {0}: oauth.verificationUri.replace(/^https:\/\//, "")
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "A sign-in tab opened at <0>{0}</0>. Enter this code there — this window keeps waiting:"
 msgstr "已在 <0>{0}</0> 打开登录页。请在那里输入验证码，这个窗口会继续等："
 
@@ -474,8 +479,8 @@ msgstr "账户"
 msgid "Account default"
 msgstr "账户默认"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Account ID"
 msgstr "账户 ID"
 
@@ -671,10 +676,10 @@ msgstr ""
 msgid "Admin"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
 #: src/pages/ModelSettingsOverlay.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/RoutineEditor.tsx
 #: src/pages/RoutineSchedule.tsx
 #: src/pages/shell/bot-panel.tsx
@@ -804,6 +809,10 @@ msgstr "无法使用导入的 API 密钥。取消勾选后重试。"
 msgid "An integration tool"
 msgstr "集成工具"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Announce"
+msgstr ""
+
 #: src/lib/activity-list-filters.ts
 msgid "Another agent"
 msgstr "其他 Agent"
@@ -829,7 +838,7 @@ msgstr "已回答"
 msgid "Answered: {answer}"
 msgstr "已回答：{answer}"
 
-#: src/pages/Onboarding.tsx
+#: src/components/ModelConnectForm.tsx
 msgid "Anthropic API"
 msgstr "Anthropic API"
 
@@ -846,13 +855,13 @@ msgid "Anyone with the link"
 msgstr "任何拥有链接的人"
 
 #: src/components/ComputerProviderSettings.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/components/SecretAskCard.tsx
 #: src/components/vault/kinds.tsx
 #: src/lib/localized-provider-hint.ts
 #: src/pages/memory-providers/HonchoSettingsForm.tsx
 #: src/pages/model-settings/compatible-key-field.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/VoiceSettingsOverlay.tsx
 msgid "API key"
 msgstr "API 密钥"
@@ -990,8 +999,8 @@ msgstr "认证"
 msgid "Authentication failed."
 msgstr "身份验证失败。"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Authorization code"
 msgstr "授权码"
 
@@ -1244,6 +1253,7 @@ msgstr "无法读取图像"
 #: src/components/ComputerMaintenanceActions.tsx
 #: src/components/integrations/plugin-marketplace.tsx
 #: src/components/markdown-link-prompt.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/components/ModelCredits.tsx
 #: src/components/PasskeySettings.tsx
 #: src/components/teach/TeachComputerOverlay.tsx
@@ -1251,12 +1261,12 @@ msgstr "无法读取图像"
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/Artifacts.tsx
 #: src/pages/cms/documents-page.tsx
+#: src/pages/cms/models-page.tsx
 #: src/pages/KnowledgeSection.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/connection-controls.tsx
 #: src/pages/model-settings/space-bots-model.tsx
 #: src/pages/ModelSettingsOverlay.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/OrganizationSettingsPanel.tsx
 #: src/pages/PaymentWalletSettingsPanel.tsx
 #: src/pages/PluginSubmissionsPanel.tsx
@@ -1425,7 +1435,7 @@ msgstr "选择模型"
 msgid "Choose a new password"
 msgstr "设置新密码"
 
-#: src/pages/Onboarding.tsx
+#: src/components/ModelConnectForm.tsx
 msgid "Choose a provider"
 msgstr "选择提供方"
 
@@ -1820,18 +1830,18 @@ msgstr ""
 msgid "Contains code to run"
 msgstr "包含可运行的代码"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Context limit"
 msgstr "上下文限制"
 
 #: src/components/ConfirmIdentityDialog.tsx
 #: src/components/integrations/IntegrationSetup.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/components/SecretAskCard.tsx
 #: src/components/SignupSurvey.tsx
 #: src/components/vault/VaultItemEditor.tsx
 #: src/pages/Auth.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/shell/agent-import.tsx
 #: src/pages/shell/dialogs.tsx
 msgid "Continue"
@@ -1857,18 +1867,18 @@ msgstr "对话"
 #: src/components/ComputersUnavailableHint.tsx
 #: src/components/InviteDialog.tsx
 #: src/components/markdown-copy.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/components/pages/PublicPageShell.tsx
 #: src/components/pages/SharePopover.tsx
 #: src/components/vault/VaultItemDetail.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/shell/agent-import.tsx
 msgid "Copied"
 msgstr "已复制"
 
+#: src/components/ModelConnectForm.tsx
 #: src/components/vault/VaultItemDetail.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/shell/message-hover-actions.tsx
 msgid "Copy"
 msgstr "复制"
@@ -1914,6 +1924,10 @@ msgstr "无法添加 MCP 服务器"
 #: src/components/integrations/plugin-marketplace.tsx
 msgid "Could not add skills"
 msgstr "无法添加技能"
+
+#: src/pages/cms/documents-page.tsx
+msgid "Could not announce this file"
+msgstr ""
 
 #: src/pages/PluginSubmissionsPanel.tsx
 msgid "Could not approve plugin"
@@ -2073,6 +2087,10 @@ msgstr "无法断开记忆提供方"
 msgid "Could not disconnect OAuth"
 msgstr "无法断开 OAuth"
 
+#: src/pages/cms/models-page.tsx
+msgid "Could not disconnect the model"
+msgstr ""
+
 #: src/pages/model-settings/use-model-settings.ts
 msgid "Could not disconnect this provider"
 msgstr "无法断开此提供方"
@@ -2196,9 +2214,9 @@ msgstr "无法加载语音设置"
 msgid "Could not log out. Try again."
 msgstr "无法退出登录。请重试。"
 
+#: src/components/ModelConnectForm.tsx
 #: src/components/ModelCredits.tsx
 #: src/pages/BillingSettingsPanel.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/Paywall.tsx
 msgid "Could not open billing"
 msgstr "无法打开账单"
@@ -2327,7 +2345,11 @@ msgstr ""
 msgid "Could not save group"
 msgstr "无法保存群组"
 
-#: src/pages/Onboarding.tsx
+#: src/pages/cms/models-page.tsx
+msgid "Could not save member providers"
+msgstr ""
+
+#: src/components/ModelConnectForm.tsx
 msgid "Could not save model"
 msgstr "无法保存模型"
 
@@ -2641,10 +2663,10 @@ msgstr "天"
 msgid "Decline"
 msgstr "拒绝"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
 #: src/pages/model-settings/role-model-picker.tsx
 #: src/pages/ModelRoleSettings.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/shell/avatar-studio-popover.tsx
 msgid "Default"
 msgstr "默认"
@@ -2827,6 +2849,7 @@ msgstr "已禁用"
 msgid "Discard recording"
 msgstr "丢弃录音"
 
+#: src/pages/cms/models-page.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/MemorySettingsOverlay.tsx
 #: src/pages/MessagingSettingsPanel.tsx
@@ -2847,6 +2870,10 @@ msgstr "断开 {name}？"
 #: src/pages/VoiceSettingsOverlay.tsx
 msgid "Disconnect Self-hosted"
 msgstr "断开自托管"
+
+#: src/pages/cms/models-page.tsx
+msgid "Disconnect this model?"
+msgstr ""
 
 #: src/pages/model-settings/use-model-settings.ts
 msgid "Disconnected {disconnectName}."
@@ -3035,18 +3062,18 @@ msgstr "请输入密码"
 msgid "Enter a valid email"
 msgstr "请输入有效的电子邮件地址"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/use-model-settings.ts
-#: src/pages/Onboarding.tsx
 msgid "Enter a whole number from 1 to {MAX_MODEL_CONTEXT_WINDOW} for the context limit."
 msgstr "请输入 1 到 {MAX_MODEL_CONTEXT_WINDOW} 之间的整数作为上下文限制。"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/use-model-settings.ts
-#: src/pages/Onboarding.tsx
 msgid "Enter a whole number from 1 to {MAX_MODEL_MAX_TOKENS} for maximum output tokens."
 msgstr "请输入 1 到 {MAX_MODEL_MAX_TOKENS} 之间的整数作为最大输出 token 数。"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/use-model-settings.ts
-#: src/pages/Onboarding.tsx
 msgid "Enter a whole number from 1 to 1000 for the image limit."
 msgstr "请输入 1 到 1000 之间的整数作为图像限制。"
 
@@ -3185,8 +3212,8 @@ msgstr "从 CRM 导出本周名单并放到共享文件夹"
 msgid "External conversation"
 msgstr "外部对话"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Extra high"
 msgstr "极高"
 
@@ -3201,6 +3228,7 @@ msgstr "失败"
 
 #: src/components/SubagentCard.tsx
 #: src/pages/ActivityList.tsx
+#: src/pages/cms/documents-page.tsx
 msgid "Failed"
 msgstr "失败"
 
@@ -3263,13 +3291,13 @@ msgstr "财务"
 msgid "Find a page"
 msgstr "查找页面"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Find models"
 msgstr "查找模型"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Finding…"
 msgstr "正在查找…"
 
@@ -3341,8 +3369,8 @@ msgstr ""
 msgid "Fullscreen"
 msgstr "全屏"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Gateway ID"
 msgstr "网关 ID"
 
@@ -3463,9 +3491,9 @@ msgstr "隐藏密码"
 msgid "Hide transcript"
 msgstr "隐藏文字记录"
 
+#: src/components/ModelConnectForm.tsx
 #: src/lib/ticket-priority.ts
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "High"
 msgstr "高"
 
@@ -3886,9 +3914,9 @@ msgstr ""
 msgid "Looks like it contains a key"
 msgstr "似乎包含密钥"
 
+#: src/components/ModelConnectForm.tsx
 #: src/lib/ticket-priority.ts
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Low"
 msgstr "低"
 
@@ -3926,6 +3954,10 @@ msgstr "管理 MCP 服务器"
 msgid "Manage other bots"
 msgstr "管理其他机器人"
 
+#: src/pages/shell/bot-panel.tsx
+msgid "Managed by your organization"
+msgstr ""
+
 #: src/pages/PluginsOverlay.tsx
 msgid "Manual"
 msgstr "手动"
@@ -3954,8 +3986,8 @@ msgstr "Markdown 表格"
 msgid "Marketing"
 msgstr "营销"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Max"
 msgstr "最大"
 
@@ -3968,14 +4000,14 @@ msgstr "最高"
 msgid "Maximize"
 msgstr "最大化"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Maximum images per request"
 msgstr "每次请求的最大图像数"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
 #: src/pages/ModelSettingsOverlay.tsx
-#: src/pages/Onboarding.tsx
 msgid "Maximum output tokens"
 msgstr "最大输出 token 数"
 
@@ -3992,8 +4024,8 @@ msgstr "MCP 服务器"
 msgid "MCP servers"
 msgstr "MCP 服务器"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Medium"
 msgstr "中"
 
@@ -4007,6 +4039,10 @@ msgstr "中"
 msgid "Member"
 msgstr "成员"
 
+#: src/pages/cms/models-page.tsx
+msgid "Member providers"
+msgstr ""
+
 #: src/pages/cms/overview-page.tsx
 #: src/pages/CmsPage.tsx
 msgid "Members"
@@ -4016,6 +4052,10 @@ msgstr ""
 #: src/pages/GroupPanel.tsx
 msgid "Members ({0})"
 msgstr "成员（{0}）"
+
+#: src/pages/cms/models-page.tsx
+msgid "Members without their own model stop running bots."
+msgstr ""
 
 #: src/pages/KnowledgeSection.tsx
 #: src/pages/MemorySettingsOverlay.tsx
@@ -4100,8 +4140,8 @@ msgstr "消息"
 msgid "Microphone failed"
 msgstr "麦克风失败"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Minimal"
 msgstr "最低"
 
@@ -4139,9 +4179,10 @@ msgstr "未接来电"
 msgid "Mode"
 msgstr "模式"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/AccountSettingsOverlay.tsx
+#: src/pages/cms/overview-page.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/RoutineEditor.tsx
 #: src/pages/shell/agent-import.tsx
 #: src/pages/shell/bot-panel.tsx
@@ -4156,8 +4197,8 @@ msgstr "模型“{modelId}”未列出。"
 msgid "Model connections"
 msgstr "模型连接"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Model id"
 msgstr "模型 ID"
 
@@ -4166,6 +4207,7 @@ msgstr "模型 ID"
 msgid "Model options"
 msgstr "模型选项"
 
+#: src/pages/CmsPage.tsx
 #: src/pages/ModelSettingsOverlay.tsx
 #: src/pages/settings-nav.ts
 #: src/pages/SpaceSettingOverrides.tsx
@@ -4562,6 +4604,10 @@ msgstr "不在插件目录中"
 msgid "Not now"
 msgstr "暂不"
 
+#: src/pages/cms/overview-page.tsx
+msgid "Not set"
+msgstr ""
+
 #: src/pages/shell/agent-import.tsx
 #: src/pages/shell/import-status.ts
 msgid "Not supported in Rakazo"
@@ -4615,13 +4661,13 @@ msgstr "OAuth 已过期"
 msgid "Offline"
 msgstr "离线"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Ollama API key"
 msgstr "Ollama API 密钥"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/ModelSettingsOverlay.tsx
-#: src/pages/Onboarding.tsx
 msgid "Ollama Cloud"
 msgstr "Ollama Cloud"
 
@@ -4648,6 +4694,10 @@ msgstr "单次购买，额度不会过期。"
 
 #: src/pages/cms/apps-page.tsx
 msgid "Only allow listed apps"
+msgstr ""
+
+#: src/pages/cms/models-page.tsx
+msgid "Only allow listed providers"
 msgstr ""
 
 #: src/components/SecretAskCard.tsx
@@ -4681,8 +4731,8 @@ msgid "Open {title}"
 msgstr "打开 {title}"
 
 #. placeholder {0}: oauth.verificationUri.replace(/^https:\/\//, "")
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Open <0>{0}</0> and enter this code:"
 msgstr "打开 <0>{0}</0>，输入这个验证码："
 
@@ -4724,12 +4774,12 @@ msgstr "打开 Rakazo"
 msgid "Open work"
 msgstr "待办"
 
-#: src/pages/Onboarding.tsx
+#: src/components/ModelConnectForm.tsx
 msgid "OpenAI API"
 msgstr "OpenAI API"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "OpenAI-compatible server URL"
 msgstr "OpenAI 兼容服务器 URL"
 
@@ -4741,9 +4791,9 @@ msgstr "OpenClaw 或 Hermes"
 msgid "Opens your browser's print dialog. Choose Save as PDF as the destination."
 msgstr "打开浏览器的打印对话框。目标请选择“另存为 PDF”。"
 
+#: src/components/ModelConnectForm.tsx
 #: src/components/SignupSurvey.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/VoiceSettingsOverlay.tsx
 msgid "Optional"
 msgstr "可选"
@@ -4752,8 +4802,8 @@ msgstr "可选"
 msgid "Optional header value"
 msgstr "可选请求头值"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Or paste an API key"
 msgstr "或粘贴 API 密钥"
 
@@ -4765,6 +4815,10 @@ msgstr "组织"
 #: src/pages/memory-providers/SupermemorySettingsForm.tsx
 msgid "Organization API key"
 msgstr "组织 API 密钥"
+
+#: src/pages/cms/models-page.tsx
+msgid "Organization model"
+msgstr ""
 
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/shell/avatar-studio-popover.tsx
@@ -5053,6 +5107,10 @@ msgstr "私有"
 msgid "Private workspace with its own bots and groups."
 msgstr "单独的工作区，有自己的 Bot 和群组。"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Processing"
+msgstr ""
+
 #: src/pages/PluginsOverlay.tsx
 msgid "Productivity"
 msgstr "效率"
@@ -5069,8 +5127,8 @@ msgstr "受保护输入"
 msgid "Protocol"
 msgstr ""
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/MemorySettingsOverlay.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/VoiceSettingsOverlay.tsx
 msgid "Provider"
 msgstr "提供方"
@@ -5092,8 +5150,8 @@ msgstr "排队中"
 msgid "Rakazo"
 msgstr "Rakazo"
 
+#: src/components/ModelConnectForm.tsx
 #: src/components/ModelCredits.tsx
-#: src/pages/Onboarding.tsx
 msgid "Rakazo credits"
 msgstr "Rakazo 额度"
 
@@ -5113,6 +5171,7 @@ msgstr "表情回应"
 msgid "Read replies aloud"
 msgstr "朗读回复"
 
+#: src/pages/cms/documents-page.tsx
 #: src/pages/shell/import-status.ts
 msgid "Ready"
 msgstr "就绪"
@@ -5121,8 +5180,8 @@ msgstr "就绪"
 msgid "Reason"
 msgstr "原因"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Reasoning effort"
 msgstr "推理强度"
 
@@ -5634,6 +5693,7 @@ msgstr "周六"
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/Board.tsx
 #: src/pages/cms/apps-page.tsx
+#: src/pages/cms/models-page.tsx
 #: src/pages/ExternalConversationSettings.tsx
 #: src/pages/GroupPanel.tsx
 #: src/pages/KnowledgeSection.tsx
@@ -5851,6 +5911,10 @@ msgstr "正在发送…"
 msgid "Sent"
 msgstr "已发送"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Sent to {delivered} members"
+msgstr ""
+
 #: src/pages/memory-providers/SerenitySettingsForm.tsx
 msgid "Serenity endpoint is required."
 msgstr "请填写 Serenity 端点。"
@@ -5860,9 +5924,9 @@ msgid "Server name"
 msgstr "服务器名称"
 
 #: src/components/integrations/IntegrationSetup.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/VoiceSettingsOverlay.tsx
 msgid "Server URL"
 msgstr "服务器 URL"
@@ -5977,10 +6041,10 @@ msgid "Sidebar density"
 msgstr "侧栏密度"
 
 #: src/components/integrations/plugin-marketplace.tsx
+#: src/components/ModelConnectForm.tsx
 #: src/lib/localized-provider-hint.ts
 #: src/pages/Auth.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 #: src/pages/PluginsOverlay.tsx
 msgid "Sign in"
 msgstr "登录"
@@ -5995,8 +6059,8 @@ msgid "Sign in again"
 msgstr "重新登录"
 
 #. placeholder {0}: new URL(oauth.verificationUri).hostname
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Sign in at <0>{0}</0>, then paste the code here."
 msgstr "在 <0>{0}</0> 登录，然后将代码粘贴到这里。"
 
@@ -6199,10 +6263,10 @@ msgstr "延迟 {count} 分钟开始"
 msgid "Starting"
 msgstr "正在开始"
 
+#: src/components/ModelConnectForm.tsx
 #: src/components/teach/TeachComputerOverlay.tsx
 #: src/lib/roster-status.ts
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Starting…"
 msgstr "正在开始…"
 
@@ -6259,8 +6323,8 @@ msgstr "流式回复"
 msgid "subagent"
 msgstr "子 Agent"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/connection-controls.tsx
-#: src/pages/Onboarding.tsx
 msgid "Submit"
 msgstr "提交"
 
@@ -6297,13 +6361,13 @@ msgstr "需要订阅"
 msgid "Sunday"
 msgstr "周日"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Supports images"
 msgstr "支持图片"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Supports thinking"
 msgstr "支持思考"
 
@@ -6908,8 +6972,8 @@ msgstr "使用 {hostLabel}"
 msgid "Use {oauthEnvReference} for the access token."
 msgstr "访问令牌请使用 {oauthEnvReference}。"
 
+#: src/components/ModelConnectForm.tsx
 #: src/pages/model-settings/compatible-model-fields.tsx
-#: src/pages/Onboarding.tsx
 msgid "Use a found model"
 msgstr "使用找到的模型"
 

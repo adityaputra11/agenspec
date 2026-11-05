@@ -1,6 +1,8 @@
 import { randomBytes } from "node:crypto";
 import { signupPolicyFromEnv } from "@rakazo/core";
+import { getLogger } from "@rakazo/logging";
 import type { PrismaClient } from "./client.js";
+import { ensureLegalBot } from "./locked-bots.js";
 
 export interface SignupPolicyEnv {
   signupsEnabled: string | undefined;
@@ -115,6 +117,7 @@ export async function bootstrapUserSpace(
     name: "Personal",
     slug: `user-${user.id.slice(0, 12)}`,
   });
+  await provisionLegalBot(prisma, { spaceId, userId: user.id });
   const policy = signupPolicyFromEnv(env);
   await prisma.deploymentSettings.upsert({
     where: { id: "default" },
@@ -128,4 +131,14 @@ export async function bootstrapUserSpace(
     update: {},
   });
   return { spaceId };
+}
+
+/** Signup must not fail on the built-in bot; the startup backfill retries a missing one. */
+export async function provisionLegalBot(
+  prisma: PrismaClient,
+  input: { spaceId: string; userId: string },
+): Promise<void> {
+  await ensureLegalBot(prisma, input).catch((error: unknown) => {
+    getLogger().error("legal bot provisioning", { "space.id": input.spaceId, error });
+  });
 }

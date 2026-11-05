@@ -15,8 +15,10 @@ import {
   kickModelCredentialRefresh,
   listAvailablePiCatalog,
   McpOAuthBroker,
+  memberMayUseProvider,
   modelCredentialAuthKindsForSpace,
   offeredCatalog,
+  organizationModelSettingsFor,
   providerCatalogCache,
   providerLiveCatalogsForSpace,
   savedCatalogSelections,
@@ -134,10 +136,19 @@ export function createRouterContext(deps: RouterDeps) {
   });
   // The scripted fixture only exists to drive the scripted runtime; a real runtime
   // cannot execute it, so it stays out of the user-facing catalog otherwise.
+  // An organization that restricts providers lists only the ones its members may connect.
+  const withScripted = <T,>(catalog: T[]) =>
+    deps.env.agentRuntime === "scripted" ? [...catalog, scriptedCatalogEntry as T] : catalog;
   const chatCatalog = async (actor: Actor) => {
-    const catalog = await catalogForSpace(actor);
-    return deps.env.agentRuntime === "scripted" ? [...catalog, scriptedCatalogEntry] : catalog;
+    const policy = await organizationModelSettingsFor(deps.prisma, actor);
+    return withScripted(
+      (await catalogForSpace(actor)).filter((entry) =>
+        memberMayUseProvider(policy, entry.provider),
+      ),
+    );
   };
+  /** Every provider, whatever the member allowlist says: an admin picks the organization model from it. */
+  const unrestrictedChatCatalog = async (actor: Actor) => withScripted(await catalogForSpace(actor));
   const catalogForSpace = async (actor: Actor) => {
     const auth = await modelCredentialAuthKindsForSpace(
       deps.prisma,
@@ -415,6 +426,7 @@ export function createRouterContext(deps: RouterDeps) {
     removeBot,
     agentImportServices,
     chatCatalog,
+    unrestrictedChatCatalog,
     withDeploymentDefault,
     modelRoleCatalog,
     validateRoleChoices,

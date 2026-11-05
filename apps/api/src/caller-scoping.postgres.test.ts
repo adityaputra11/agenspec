@@ -308,9 +308,10 @@ describePostgres("caller and tenant scoping (PostgreSQL)", () => {
         }),
         { prefix: "/rpc", context: { actor } },
       );
-      return ((await response!.json()) as { json: Array<{ id: string }> }).json.map(
-        (row) => row.id,
-      );
+      // Every member also gets the built-in Legal bot; this test is about the person's own bots.
+      return ((await response!.json()) as { json: Array<{ id: string; locked: boolean }> }).json
+        .filter((row) => !row.locked)
+        .map((row) => row.id);
     };
 
     expect(await listed(inWork)).toEqual([workBot.id]);

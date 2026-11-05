@@ -3,8 +3,10 @@ import { SecretStoreUnavailableError } from "@rakazo/adapter-kit";
 import {
   listPiCatalog,
   ModelSignInError,
+  memberMayUseProvider,
   modelCredentialDto,
   oauthCredentialEmail,
+  organizationModelSettingsFor,
   prepareStoredModelAuth,
   probeCatalogProviderModels,
   probeOpenAiCompatibleModels,
@@ -16,7 +18,7 @@ import {
   storedOpenAiCompatibleProbeKey,
   UNAVAILABLE_MODEL_FOR_AUTH_MESSAGE,
 } from "@rakazo/adapters";
-import type { ThinkingLevel } from "@rakazo/contracts";
+import type { Actor, ThinkingLevel } from "@rakazo/contracts";
 import {
   backupChoiceKey,
   canonicalPiProviderId,
@@ -194,6 +196,7 @@ export function modelsRoutes(ctx: RouterContext) {
         return { ok: true as const };
       }),
       connect: authed.models.connect.handler(async ({ context, input }) => {
+        await assertMemberProviderAllowed(deps, context.actor, input.provider);
         const record = await firstModelConnectAnalytics(deps, context.actor, "api_key");
         record(input.provider, { name: "model_connect_started" });
         try {
@@ -207,6 +210,7 @@ export function modelsRoutes(ctx: RouterContext) {
       }),
       probeOpenAiCompatible: authed.models.probeOpenAiCompatible.handler(
         async ({ context, input }) => {
+          await assertMemberProviderAllowed(deps, context.actor, OPENAI_COMPATIBLE_PROVIDER_ID);
           let apiKey = input.apiKey;
           let headers = input.headers;
           if (!apiKey?.trim() || headers === undefined) {
@@ -274,6 +278,7 @@ export function modelsRoutes(ctx: RouterContext) {
         },
       ),
       probeCatalog: authed.models.probeCatalog.handler(async ({ context, input }) => {
+        await assertMemberProviderAllowed(deps, context.actor, input.provider);
         try {
           const models = await probeCatalogProviderModels(
             { provider: input.provider, apiKey: input.apiKey },
@@ -288,6 +293,7 @@ export function modelsRoutes(ctx: RouterContext) {
         }
       }),
       beginOAuth: authed.models.beginOAuth.handler(async ({ context, input }) => {
+        await assertMemberProviderAllowed(deps, context.actor, input.provider);
         // An older app's sign-in renews the provider's newest connection, bound now so a
         // disconnect of that connection retires it and it never lands on another one.
         const target = await modelConnectionTarget(
@@ -391,6 +397,7 @@ export function modelsRoutes(ctx: RouterContext) {
         return { ok: true as const };
       }),
       setDefault: authed.models.setDefault.handler(async ({ context, input }) => {
+        await assertMemberProviderAllowed(deps, context.actor, input.provider);
         const modelId = usableModelId(input.modelId);
         if (!modelId) throw new ORPCError("BAD_REQUEST", { message: "Choose a model" });
         // An omitted level keeps the one this model already has in the main list: on the
@@ -648,4 +655,18 @@ export function modelsRoutes(ctx: RouterContext) {
       }),
     },
   };
+}
+
+/**
+ * Refuses a member's new or changed connection to a provider their organization does not list.
+ * Runs and listings apply the same rule, so an unlisted provider never reaches a run either.
+ */
+async function assertMemberProviderAllowed(
+  deps: { prisma: PrismaClient },
+  actor: Actor,
+  provider: string,
+): Promise<void> {
+  const policy = await organizationModelSettingsFor(deps.prisma, actor);
+  if (!memberMayUseProvider(policy, provider))
+    throw new ORPCError("FORBIDDEN", { message: "Your organization does not allow this provider" });
 }

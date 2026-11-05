@@ -160,7 +160,10 @@ describePostgres("organizations (PostgreSQL)", () => {
       memberships: [{ userId: ada.userId, role: "owner" }],
     });
     await expect(
-      system.memoryDocument.count({ where: { spaceId: work.id, path: "MEMORY.md" } }),
+      // The built-in Legal bot brings its own MEMORY.md; this counts the space's document only.
+      system.memoryDocument.count({
+        where: { spaceId: work.id, scope: "user", path: "MEMORY.md" },
+      }),
     ).resolves.toBe(1);
     await expect(client(ada).organizations.list()).resolves.toEqual({
       activeOrganizationId: ada.spaceId,

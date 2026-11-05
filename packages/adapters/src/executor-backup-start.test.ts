@@ -200,6 +200,8 @@ async function runTurn({
             state.secrets.find((row) => row.id === args.where.id) ?? null,
         ),
       },
+      space: { findUnique: vi.fn(async () => null) },
+      organizationModelSettings: { findUnique: vi.fn(async () => null) },
       deploymentSettings: { findUnique: vi.fn(async () => null) },
       taughtSkill: { findMany: vi.fn(async () => []) },
       vaultCredential: { findMany: vi.fn(async () => []) },

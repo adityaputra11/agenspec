@@ -24,6 +24,7 @@ const payloadSchemas = {
   "call.expire": z.object({ threadId: z.string().min(1), callId: z.string().min(1) }),
   "history.compact": z.object({ threadId: z.string().min(1) }),
   "messaging.deliver": z.object({ runId: z.string().min(1).optional() }),
+  "organization_document.process": z.object({ documentId: z.string().min(1) }),
   "messaging.credential-cleanup": z.object({
     installationId: z.string().min(1),
     ref: z.string().min(1),
@@ -79,6 +80,14 @@ export function computerControlExpireJobKey(computerId: string, leaseId?: string
 
 export function skillTeachingExpireJobKey(skillId: string): string {
   return `skill.teaching-expire:${skillId}`;
+}
+
+export function organizationDocumentProcessJob(documentId: string): BackgroundJob {
+  return {
+    name: "organization_document.process",
+    payload: { documentId },
+    replaceKey: `organization_document:${documentId}`,
+  };
 }
 
 export function runContinueJob(runId: string): BackgroundJob {

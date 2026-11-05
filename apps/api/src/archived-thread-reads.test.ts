@@ -47,6 +47,8 @@ function fixture() {
     },
   ]);
   const prisma = {
+    space: { findUnique: vi.fn(async () => null) },
+    organizationModelSettings: { findUnique: vi.fn(async () => null) },
     bot: { findFirst: findBot },
     userModelPreference: { findFirst: vi.fn(async () => null) },
     spaceSettingOverride: { findUnique: vi.fn(async () => null) },
