@@ -37,14 +37,28 @@ const AllowedAppSlugSchema = z
   .max(80)
   .regex(/^[a-z0-9_.-]+$/, "App slugs use letters, digits, dots, dashes and underscores");
 
+/** The Timesheet MCP endpoint. Absent leaves it unchanged; null clears it. */
+export const TimesheetServerUrlSchema = z
+  .string()
+  .max(500)
+  .refine((value) => {
+    try {
+      return new URL(value).protocol === "https:";
+    } catch {
+      return false;
+    }
+  }, "Use an https URL");
+
 export const OrganizationPolicyInputSchema = z.object({
   restrictApps: z.boolean(),
   allowedApps: z.array(AllowedAppSlugSchema).max(200),
+  timesheetServerUrl: TimesheetServerUrlSchema.nullable().optional(),
 });
 
 export const OrganizationPolicySchema = z.object({
   restrictApps: z.boolean(),
   allowedApps: z.array(z.string()),
+  timesheetServerUrl: z.string().nullable(),
 });
 
 /** The organization model and the member provider policy. Never carries the key or the stored connection. */

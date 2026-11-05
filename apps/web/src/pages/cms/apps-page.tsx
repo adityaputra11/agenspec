@@ -17,17 +17,21 @@ export function AppsPage() {
   const [restrictApps, setRestrictApps] = useState(false);
   const [allowedApps, setAllowedApps] = useState<string[]>([]);
   const [draft, setDraft] = useState("");
+  const [timesheetServer, setTimesheetServer] = useState("");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     if (!policy.data) return;
     setRestrictApps(policy.data.restrictApps);
     setAllowedApps(policy.data.allowedApps);
+    setTimesheetServer(policy.data.timesheetServerUrl ?? "");
   }, [policy.data]);
 
   const changed =
     policy.data !== undefined &&
-    (restrictApps !== policy.data.restrictApps || !sameApps(allowedApps, policy.data.allowedApps));
+    (restrictApps !== policy.data.restrictApps ||
+      !sameApps(allowedApps, policy.data.allowedApps) ||
+      timesheetServer.trim() !== (policy.data.timesheetServerUrl ?? ""));
 
   function addApp() {
     const slug = draft.trim().toLowerCase();
@@ -43,7 +47,11 @@ export function AppsPage() {
   async function save() {
     setBusy(true);
     try {
-      await rpc.cms.policy.update({ restrictApps, allowedApps });
+      await rpc.cms.policy.update({
+        restrictApps,
+        allowedApps,
+        timesheetServerUrl: timesheetServer.trim() || null,
+      });
       await queryClient.invalidateQueries({ queryKey: queries.cms.policy.get.key() });
     } catch (err) {
       toast.error(errorText(err, t`Could not save allowed apps`));
@@ -55,6 +63,19 @@ export function AppsPage() {
   return (
     <div className="space-y-8">
       <SettingsGroup>
+        <SettingsRow
+          label={<Trans>Timesheet server</Trans>}
+          control={
+            <Input
+              aria-label={t`Timesheet server`}
+              type="url"
+              value={timesheetServer}
+              maxLength={500}
+              placeholder="https://…/mcp"
+              onChange={(event) => setTimesheetServer(event.target.value)}
+            />
+          }
+        />
         <SettingsRow
           label={<Trans>Only allow listed apps</Trans>}
           control={

@@ -6861,6 +6861,10 @@ msgstr "गुरुवार"
 msgid "Time of day"
 msgstr "दिन का समय"
 
+#: src/pages/cms/apps-page.tsx
+msgid "Timesheet server"
+msgstr ""
+
 #: src/pages/AccountSettingsOverlay.tsx
 msgid "Timezone"
 msgstr ""

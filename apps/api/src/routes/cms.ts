@@ -18,10 +18,15 @@ import {
   usableModelId,
 } from "@rakazo/contracts";
 import type { AuditEventInput } from "@rakazo/db";
-import { postToLegalBots, recordAuditEvent, runAsSystem } from "@rakazo/db";
+import {
+  postToLegalBots,
+  recordAuditEvent,
+  runAsSystem,
+  setTimesheetServerEndpoint,
+} from "@rakazo/db";
 import { getLogger } from "@rakazo/logging";
-import { mayUsePrivateEndpoint } from "../mcp-servers.js";
-import { orgAdminRoles, orgAppPolicyFor, orgMembershipOf, requireOrgAdmin } from "../org-admin.js";
+import { assertMcpRemoteEndpoint, mayUsePrivateEndpoint } from "../mcp-servers.js";
+import { orgAdminRoles, orgMembershipOf, requireOrgAdmin } from "../org-admin.js";
 import type { RouterContext } from "./context.js";
 
 const DOCUMENT_MIME_TYPES: ReadonlySet<string> = new Set([
@@ -29,8 +34,6 @@ const DOCUMENT_MIME_TYPES: ReadonlySet<string> = new Set([
   "text/plain",
   "text/markdown",
 ]);
-
-const DEFAULT_POLICY = { restrictApps: false, allowedApps: [] as string[] };
 
 export function cmsRoutes(ctx: RouterContext) {
   const { deps, authed } = ctx;
@@ -47,19 +50,36 @@ export function cmsRoutes(ctx: RouterContext) {
       }),
       policy: {
         get: authed.cms.policy.get.handler(async ({ context }) => {
-          await requireOrgAdmin(deps.prisma, context.actor);
-          const policy = await orgAppPolicyFor(deps.prisma, context.actor);
-          return policy ?? DEFAULT_POLICY;
+          const organizationId = await requireOrgAdmin(deps.prisma, context.actor);
+          const policy = await deps.prisma.organizationPolicy.findUnique({
+            where: { organizationId },
+            select: { restrictApps: true, allowedApps: true, timesheetServerUrl: true },
+          });
+          return {
+            restrictApps: policy?.restrictApps ?? false,
+            allowedApps: policy?.allowedApps ?? [],
+            timesheetServerUrl: policy?.timesheetServerUrl ?? null,
+          };
         }),
         update: authed.cms.policy.update.handler(async ({ context, input }) => {
           const organizationId = await requireOrgAdmin(deps.prisma, context.actor);
           const allowedApps = [...new Set(input.allowedApps)];
+          // Absent leaves the Timesheet server as it is, so the apps form never clears it.
+          const timesheetServerUrl = input.timesheetServerUrl?.trim() || null;
+          const changesTimesheet = input.timesheetServerUrl !== undefined;
+          if (timesheetServerUrl) {
+            await assertMcpRemoteEndpoint(timesheetServerUrl, deps);
+          }
+          const timesheet = changesTimesheet ? { timesheetServerUrl } : {};
           const saved = await deps.prisma.organizationPolicy.upsert({
             where: { organizationId },
-            create: { organizationId, restrictApps: input.restrictApps, allowedApps },
-            update: { restrictApps: input.restrictApps, allowedApps },
-            select: { restrictApps: true, allowedApps: true },
+            create: { organizationId, restrictApps: input.restrictApps, allowedApps, ...timesheet },
+            update: { restrictApps: input.restrictApps, allowedApps, ...timesheet },
+            select: { restrictApps: true, allowedApps: true, timesheetServerUrl: true },
           });
+          if (changesTimesheet) {
+            await setTimesheetServerEndpoint(deps.prisma, organizationId, saved.timesheetServerUrl);
+          }
           await audit(context.actor.userId, organizationId, "organization_policy.changed", {
             restrictApps: saved.restrictApps,
             allowedAppCount: saved.allowedApps.length,

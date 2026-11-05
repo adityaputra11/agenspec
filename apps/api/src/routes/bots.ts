@@ -38,6 +38,7 @@ import {
   ComputerLimitError,
   commitBotUpdate,
   ensureLegalBotForActor,
+  ensureTimesheetBotForActor,
   expireComputerExecutionLeases,
   GroupPeopleError,
   InstructionConflictError,
@@ -305,6 +306,9 @@ export function botsRoutes(ctx: RouterContext) {
         // A member who joined after the default space was set up gets their Legal bot on first list.
         await ensureLegalBotForActor(deps.prisma, context.actor).catch((error: unknown) => {
           getLogger().error("legal bot provisioning on list", error);
+        });
+        await ensureTimesheetBotForActor(deps.prisma, context.actor).catch((error: unknown) => {
+          getLogger().error("timesheet bot provisioning on list", error);
         });
         return repos.listBots(context.actor);
       }),
