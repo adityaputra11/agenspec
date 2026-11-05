@@ -6861,6 +6861,10 @@ msgstr "quinta-feira"
 msgid "Time of day"
 msgstr "Hora do dia"
 
+#: src/pages/cms/apps-page.tsx
+msgid "Timesheet server"
+msgstr ""
+
 #: src/pages/AccountSettingsOverlay.tsx
 msgid "Timezone"
 msgstr ""

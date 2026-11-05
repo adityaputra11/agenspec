@@ -6862,6 +6862,10 @@ msgstr "週四"
 msgid "Time of day"
 msgstr "時間"
 
+#: src/pages/cms/apps-page.tsx
+msgid "Timesheet server"
+msgstr ""
+
 #: src/pages/AccountSettingsOverlay.tsx
 msgid "Timezone"
 msgstr "時區"
