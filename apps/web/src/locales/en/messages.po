@@ -809,6 +809,10 @@ msgstr "An imported API key could not be used. Untick it and try again."
 msgid "An integration tool"
 msgstr "An integration tool"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Announce"
+msgstr "Announce"
+
 #: src/lib/activity-list-filters.ts
 msgid "Another agent"
 msgstr "Another agent"
@@ -1920,6 +1924,10 @@ msgstr "Could not add MCP server"
 #: src/components/integrations/plugin-marketplace.tsx
 msgid "Could not add skills"
 msgstr "Could not add skills"
+
+#: src/pages/cms/documents-page.tsx
+msgid "Could not announce this file"
+msgstr "Could not announce this file"
 
 #: src/pages/PluginSubmissionsPanel.tsx
 msgid "Could not approve plugin"
@@ -5902,6 +5910,10 @@ msgstr "Sending…"
 #: src/components/SecretAskCard.tsx
 msgid "Sent"
 msgstr "Sent"
+
+#: src/pages/cms/documents-page.tsx
+msgid "Sent to {delivered} members"
+msgstr "Sent to {delivered} members"
 
 #: src/pages/memory-providers/SerenitySettingsForm.tsx
 msgid "Serenity endpoint is required."

@@ -1,6 +1,9 @@
+import type { MessageBlock } from "@rakazo/contracts";
 import { BOT_COLORS } from "@rakazo/contracts";
 import { getLogger } from "@rakazo/logging";
 import type { PrismaClient } from "./client.js";
+import { appendEventInTransaction } from "./events.js";
+import { createThreadMessageInTransaction } from "./messages.js";
 import { createRepos } from "./repos.js";
 import { runAsSystem } from "./row-security.js";
 
@@ -186,4 +189,53 @@ export async function backfillLegalBots(prisma: PrismaClient): Promise<void> {
     if (members.length < BACKFILL_BATCH_SIZE) return;
     after = members[members.length - 1]!.id;
   }
+}
+
+/**
+ * Posts one message to every organization member's Legal bot chat. `nonce` makes a repeat
+ * a no-op per chat. Returns the chats written, so the caller can notify live viewers.
+ */
+export async function postToLegalBots(
+  prisma: PrismaClient,
+  input: { organizationId: string; blocks: MessageBlock[]; nonce: string },
+): Promise<Array<{ threadId: string; eventSeq: number }>> {
+  return runAsSystem("announce to the Legal bots", async () => {
+    const members = await prisma.spaceMember.findMany({
+      where: { space: { organizationId: input.organizationId, isDefault: true, deletingAt: null } },
+      select: { spaceId: true, userId: true },
+    });
+    const written: Array<{ threadId: string; eventSeq: number }> = [];
+    for (const member of members) {
+      try {
+        const bot = await ensureLegalBot(prisma, member);
+        const thread = bot
+          ? await prisma.thread.findUnique({ where: { botId: bot.id }, select: { id: true } })
+          : null;
+        if (!bot || !thread) continue;
+        const committed = await prisma.$transaction(async (tx) => {
+          const message = await createThreadMessageInTransaction(tx, {
+            threadId: thread.id,
+            role: "bot",
+            markUnread: true,
+            blocks: input.blocks,
+            botId: bot.id,
+            clientNonce: input.nonce,
+          });
+          return appendEventInTransaction(tx, {
+            spaceId: member.spaceId,
+            threadId: thread.id,
+            botId: bot.id,
+            type: "thread.message.created",
+            payload: { messageId: message.id, role: "bot", blocks: input.blocks },
+          });
+        });
+        written.push({ threadId: thread.id, eventSeq: committed.seq });
+      } catch (error) {
+        // A repeat announcement hits the nonce's unique key; any other failure is logged and skipped.
+        if (!(error && typeof error === "object" && "code" in error && error.code === "P2002"))
+          getLogger().error("announce to a Legal bot", error);
+      }
+    }
+    return written;
+  });
 }

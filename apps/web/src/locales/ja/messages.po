@@ -809,6 +809,10 @@ msgstr "インポートしたAPIキーを使用できませんでした。チェ
 msgid "An integration tool"
 msgstr "連携ツール"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Announce"
+msgstr ""
+
 #: src/lib/activity-list-filters.ts
 msgid "Another agent"
 msgstr "別のエージェント"
@@ -1919,6 +1923,10 @@ msgstr "MCPサーバーを追加できませんでした"
 
 #: src/components/integrations/plugin-marketplace.tsx
 msgid "Could not add skills"
+msgstr ""
+
+#: src/pages/cms/documents-page.tsx
+msgid "Could not announce this file"
 msgstr ""
 
 #: src/pages/PluginSubmissionsPanel.tsx
@@ -5901,6 +5909,10 @@ msgstr "送信中…"
 #: src/components/AskCard.tsx
 #: src/components/SecretAskCard.tsx
 msgid "Sent"
+msgstr ""
+
+#: src/pages/cms/documents-page.tsx
+msgid "Sent to {delivered} members"
 msgstr ""
 
 #: src/pages/memory-providers/SerenitySettingsForm.tsx

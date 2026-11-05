@@ -809,6 +809,10 @@ msgstr "가져온 API 키를 사용할 수 없습니다. 선택을 해제하고 
 msgid "An integration tool"
 msgstr "연동 도구"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Announce"
+msgstr ""
+
 #: src/lib/activity-list-filters.ts
 msgid "Another agent"
 msgstr "다른 Agent"
@@ -1919,6 +1923,10 @@ msgstr "MCP 서버를 추가하지 못했습니다."
 
 #: src/components/integrations/plugin-marketplace.tsx
 msgid "Could not add skills"
+msgstr ""
+
+#: src/pages/cms/documents-page.tsx
+msgid "Could not announce this file"
 msgstr ""
 
 #: src/pages/PluginSubmissionsPanel.tsx
@@ -5901,6 +5909,10 @@ msgstr "보내는 중…"
 #: src/components/AskCard.tsx
 #: src/components/SecretAskCard.tsx
 msgid "Sent"
+msgstr ""
+
+#: src/pages/cms/documents-page.tsx
+msgid "Sent to {delivered} members"
 msgstr ""
 
 #: src/pages/memory-providers/SerenitySettingsForm.tsx

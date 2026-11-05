@@ -404,6 +404,8 @@ export const appContract = {
         )
         .output(OrganizationDocumentSchema),
       delete: oc.input(z.object({ id: Id })).output(z.object({ ok: z.literal(true) })),
+      /** Tells every member's Legal chat about a ready document. */
+      announce: oc.input(z.object({ id: Id })).output(z.object({ delivered: z.number().int() })),
     },
   },
   /** Admins only, on deployments that sell model credits. */

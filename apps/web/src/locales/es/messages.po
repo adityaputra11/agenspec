@@ -809,6 +809,10 @@ msgstr "No se pudo usar una clave de API importada. Desmárcala y vuelve a inten
 msgid "An integration tool"
 msgstr "Una herramienta de integración"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Announce"
+msgstr ""
+
 #: src/lib/activity-list-filters.ts
 msgid "Another agent"
 msgstr "Otro agente"
@@ -1920,6 +1924,10 @@ msgstr "No se pudo agregar el servidor MCP"
 #: src/components/integrations/plugin-marketplace.tsx
 msgid "Could not add skills"
 msgstr "No se pudieron agregar las habilidades"
+
+#: src/pages/cms/documents-page.tsx
+msgid "Could not announce this file"
+msgstr ""
 
 #: src/pages/PluginSubmissionsPanel.tsx
 msgid "Could not approve plugin"
@@ -5902,6 +5910,10 @@ msgstr "Enviando…"
 #: src/components/SecretAskCard.tsx
 msgid "Sent"
 msgstr "Enviado"
+
+#: src/pages/cms/documents-page.tsx
+msgid "Sent to {delivered} members"
+msgstr ""
 
 #: src/pages/memory-providers/SerenitySettingsForm.tsx
 msgid "Serenity endpoint is required."

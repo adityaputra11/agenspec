@@ -18,7 +18,7 @@ import {
   usableModelId,
 } from "@rakazo/contracts";
 import type { AuditEventInput } from "@rakazo/db";
-import { recordAuditEvent, runAsSystem } from "@rakazo/db";
+import { postToLegalBots, recordAuditEvent, runAsSystem } from "@rakazo/db";
 import { getLogger } from "@rakazo/logging";
 import { mayUsePrivateEndpoint } from "../mcp-servers.js";
 import { orgAdminRoles, orgAppPolicyFor, orgMembershipOf, requireOrgAdmin } from "../org-admin.js";
@@ -175,6 +175,39 @@ export function cmsRoutes(ctx: RouterContext) {
             chunkCount: 0,
           };
         }),
+        announce: authed.cms.documents.announce.handler(async ({ context, input }) => {
+          const organizationId = await requireOrgAdmin(deps.prisma, context.actor);
+          const document = await runAsSystem("read an organization document", () =>
+            deps.prisma.organizationDocument.findFirst({
+              where: { id: input.id, organizationId, status: "ready" },
+              select: { id: true, name: true },
+            }),
+          );
+          if (!document) throw new ORPCError("NOT_FOUND");
+          const written = await postToLegalBots(deps.prisma, {
+            organizationId,
+            nonce: `announce:${document.id}`,
+            blocks: [
+              {
+                kind: "text",
+                text: `New company document: ${document.name}. Ask me about it and I will cite it.`,
+              },
+            ],
+          });
+          await Promise.all(
+            written.map((item) =>
+              deps.events.notify(item.threadId, item.eventSeq).catch((error: unknown) => {
+                getLogger().error("announcement realtime notification", error);
+              }),
+            ),
+          );
+          await audit(context.actor.userId, organizationId, "organization_document.announced", {
+            documentId: document.id,
+            documentName: document.name,
+            delivered: written.length,
+          });
+          return { delivered: written.length };
+        }),
         delete: authed.cms.documents.delete.handler(async ({ context, input }) => {
           const organizationId = await requireOrgAdmin(deps.prisma, context.actor);
           const row = await runAsSystem("delete an organization document", async () => {
@@ -221,6 +254,7 @@ async function audit(
   action:
     | "organization_document.uploaded"
     | "organization_document.deleted"
+    | "organization_document.announced"
     | "organization_policy.changed"
     | "organization_model_policy.changed"
     | "credential.created"

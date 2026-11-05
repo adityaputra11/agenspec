@@ -18,7 +18,7 @@ import {
   toast,
 } from "@rakazo/ui-web";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { MoreHorizontal, Trash2, Upload } from "lucide-react";
+import { Megaphone, MoreHorizontal, Trash2, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import { SettingsGroup, SettingsRow } from "../../components/SettingsRows";
 import { useSpaceQueries } from "../../lib/query";
@@ -91,6 +91,15 @@ export function DocumentsPage() {
     }
   }
 
+  async function announce(document: DocumentRow) {
+    try {
+      const { delivered } = await rpc.cms.documents.announce({ id: document.id });
+      toast.success(t`Sent to ${delivered} members`);
+    } catch (err) {
+      toast.error(errorText(err, t`Could not announce this file`));
+    }
+  }
+
   const rows = documents.data ?? [];
 
   return (
@@ -152,6 +161,12 @@ export function DocumentsPage() {
                     <MoreHorizontal />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
+                    {document.status === "ready" ? (
+                      <DropdownMenuItem onClick={() => void announce(document)}>
+                        <Megaphone />
+                        <Trans>Announce</Trans>
+                      </DropdownMenuItem>
+                    ) : null}
                     <DropdownMenuItem
                       variant="destructive"
                       onClick={() => setPendingDelete(document)}

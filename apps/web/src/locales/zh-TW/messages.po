@@ -810,6 +810,10 @@ msgstr "無法使用匯入的 API 金鑰。請取消勾選後再試一次。"
 msgid "An integration tool"
 msgstr "整合工具"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Announce"
+msgstr ""
+
 #: src/lib/activity-list-filters.ts
 msgid "Another agent"
 msgstr "其他代理程式"
@@ -1920,6 +1924,10 @@ msgstr "無法新增 MCP 伺服器"
 
 #: src/components/integrations/plugin-marketplace.tsx
 msgid "Could not add skills"
+msgstr ""
+
+#: src/pages/cms/documents-page.tsx
+msgid "Could not announce this file"
 msgstr ""
 
 #: src/pages/PluginSubmissionsPanel.tsx
@@ -5902,6 +5910,10 @@ msgstr "正在傳送…"
 #: src/components/AskCard.tsx
 #: src/components/SecretAskCard.tsx
 msgid "Sent"
+msgstr ""
+
+#: src/pages/cms/documents-page.tsx
+msgid "Sent to {delivered} members"
 msgstr ""
 
 #: src/pages/memory-providers/SerenitySettingsForm.tsx

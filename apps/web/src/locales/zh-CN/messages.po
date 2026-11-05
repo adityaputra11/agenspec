@@ -809,6 +809,10 @@ msgstr "无法使用导入的 API 密钥。取消勾选后重试。"
 msgid "An integration tool"
 msgstr "集成工具"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Announce"
+msgstr ""
+
 #: src/lib/activity-list-filters.ts
 msgid "Another agent"
 msgstr "其他 Agent"
@@ -1920,6 +1924,10 @@ msgstr "无法添加 MCP 服务器"
 #: src/components/integrations/plugin-marketplace.tsx
 msgid "Could not add skills"
 msgstr "无法添加技能"
+
+#: src/pages/cms/documents-page.tsx
+msgid "Could not announce this file"
+msgstr ""
 
 #: src/pages/PluginSubmissionsPanel.tsx
 msgid "Could not approve plugin"
@@ -5902,6 +5910,10 @@ msgstr "正在发送…"
 #: src/components/SecretAskCard.tsx
 msgid "Sent"
 msgstr "已发送"
+
+#: src/pages/cms/documents-page.tsx
+msgid "Sent to {delivered} members"
+msgstr ""
 
 #: src/pages/memory-providers/SerenitySettingsForm.tsx
 msgid "Serenity endpoint is required."

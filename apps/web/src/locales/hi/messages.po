@@ -809,6 +809,10 @@ msgstr "इंपोर्ट की गई एक API कुंजी इस्
 msgid "An integration tool"
 msgstr "एक इंटीग्रेशन टूल"
 
+#: src/pages/cms/documents-page.tsx
+msgid "Announce"
+msgstr ""
+
 #: src/lib/activity-list-filters.ts
 msgid "Another agent"
 msgstr "दूसरा एजेंट"
@@ -1919,6 +1923,10 @@ msgstr "MCP सर्वर जोड़ा नहीं जा सका"
 
 #: src/components/integrations/plugin-marketplace.tsx
 msgid "Could not add skills"
+msgstr ""
+
+#: src/pages/cms/documents-page.tsx
+msgid "Could not announce this file"
 msgstr ""
 
 #: src/pages/PluginSubmissionsPanel.tsx
@@ -5901,6 +5909,10 @@ msgstr "भेजा जा रहा है…"
 #: src/components/AskCard.tsx
 #: src/components/SecretAskCard.tsx
 msgid "Sent"
+msgstr ""
+
+#: src/pages/cms/documents-page.tsx
+msgid "Sent to {delivered} members"
 msgstr ""
 
 #: src/pages/memory-providers/SerenitySettingsForm.tsx
