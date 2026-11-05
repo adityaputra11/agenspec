@@ -1,11 +1,12 @@
 import { Trans, useLingui } from "@lingui/react/macro";
 import { useQuery } from "@tanstack/react-query";
-import { Blocks, ChevronLeft, Cpu, FileText, LayoutDashboard, Users } from "lucide-react";
+import { Blocks, ChevronLeft, Cpu, FileText, LayoutDashboard, Network, Users } from "lucide-react";
 import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { PageLoading } from "../components/PageLoading";
 import { SETTINGS_CONTENT_WIDTH } from "../components/SettingsRows";
 import { useSpaceQueries } from "../lib/query";
 import { AppsPage } from "./cms/apps-page";
+import { BlueprintsPage } from "./cms/blueprints-page";
 import { DocumentsPage } from "./cms/documents-page";
 import { MembersPage } from "./cms/members-page";
 import { ModelsPage } from "./cms/models-page";
@@ -26,6 +27,7 @@ function CmsConsole({ organizationName }: { organizationName: string }) {
   const items = [
     { to: "/cms", label: t`Overview`, icon: LayoutDashboard },
     { to: "/cms/documents", label: t`Documents`, icon: FileText },
+    { to: "/cms/blueprints", label: t`Blueprints`, icon: Network },
     { to: "/cms/apps", label: t`Apps`, icon: Blocks },
     { to: "/cms/models", label: t`Models`, icon: Cpu },
     { to: "/cms/members", label: t`Members`, icon: Users },
@@ -78,6 +80,7 @@ function CmsConsole({ organizationName }: { organizationName: string }) {
               <Routes>
                 <Route index element={<OverviewPage />} />
                 <Route path="documents" element={<DocumentsPage />} />
+                <Route path="blueprints" element={<BlueprintsPage />} />
                 <Route path="apps" element={<AppsPage />} />
                 <Route path="models" element={<ModelsPage />} />
                 <Route path="members" element={<MembersPage />} />

@@ -24,6 +24,7 @@ import { PRIVATE_MODEL_ENDPOINT_MESSAGE } from "./openai-compatible-url.js";
 import { RetiredModelCredentialError, serializeModelSecret } from "./pi-oauth.js";
 import { modelsForRequest, resolveRuntimeModel } from "./pi-runtime-models.js";
 import {
+  blueprintReferenceLine,
   dockerComputerToolInstruction,
   persistentComputerInstruction,
   threadContextForRun,
@@ -4431,4 +4432,19 @@ describe("cross-chat history grant", () => {
       ).toBe(false);
     },
   );
+});
+
+describe("blueprintReferenceLine", () => {
+  it("names each reference slot with the bot's document and its status", () => {
+    expect(
+      blueprintReferenceLine([
+        { referenceName: "Design Approval", document: { name: "approval.pdf", status: "ready" } },
+        { referenceName: "Proposal", document: null },
+      ]),
+    ).toBe("Reference documents: Design Approval: approval.pdf (ready); Proposal: missing.");
+  });
+
+  it("is absent when the blueprint names no slots", () => {
+    expect(blueprintReferenceLine([])).toBeUndefined();
+  });
 });

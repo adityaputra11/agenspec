@@ -89,7 +89,7 @@ export function cmsRoutes(ctx: RouterContext) {
           const organizationId = await requireOrgAdmin(deps.prisma, context.actor);
           const rows = await runAsSystem("list organization documents", () =>
             deps.prisma.organizationDocument.findMany({
-              where: { organizationId },
+              where: { organizationId, botId: null },
               orderBy: { createdAt: "asc" },
               select: {
                 id: true,
@@ -116,53 +116,18 @@ export function cmsRoutes(ctx: RouterContext) {
         }),
         upload: authed.cms.documents.upload.handler(async ({ context, input }) => {
           const organizationId = await requireOrgAdmin(deps.prisma, context.actor);
-          const maxBytes = attachmentMaxBytes(deps.env);
-          // Check the encoded length before decoding, so an oversized upload is never held in memory.
-          if (input.contentBase64.length > Math.ceil(maxBytes / 3) * 4) {
-            throw new ORPCError("BAD_REQUEST", { message: "File is too large" });
-          }
-          const bytes = Buffer.from(input.contentBase64, "base64");
-          if (bytes.length === 0 || bytes.length > maxBytes) {
-            throw new ORPCError("BAD_REQUEST", { message: "File is too large" });
-          }
-          if (!DOCUMENT_MIME_TYPES.has(input.mimeType)) {
-            throw new ORPCError("BAD_REQUEST", { message: "Could not read this file" });
-          }
-          const mimeType = input.mimeType as OrganizationDocumentMimeType;
-          const name = input.name.trim();
-          const storeContext = {
-            operationId: `cms-upload:${organizationId}`,
-            traceId: `cms-upload:${organizationId}`,
-            spaceId: organizationId,
-            userId: context.actor.userId,
-            signal: context.signal ?? new AbortController().signal,
-          };
-          // The original file is kept so processing and attachments read the same bytes.
-          const stored = await deps.artifacts.put({ name, mimeType, bytes }, storeContext);
-          const row = await runAsSystem("store an organization document", () =>
-            deps.prisma.organizationDocument.create({
-              data: {
-                organizationId,
-                spaceId: organizationId,
-                name,
-                mimeType,
-                sizeBytes: bytes.length,
-                content: null,
-                status: "processing",
-                artifactStorageId: stored.id,
-                createdByUserId: context.actor.userId,
-              },
-            }),
+          const { bytes, mimeType } = decodeOrganizationDocument(
+            input.contentBase64,
+            input.mimeType,
+            attachmentMaxBytes(deps.env),
           );
-          await deps.jobs
-            .enqueue(organizationDocumentProcessJob(row.id))
-            .catch((error: unknown) => {
-              getLogger().error("organization document job enqueue", error);
-            });
-          await audit(context.actor.userId, organizationId, "organization_document.uploaded", {
-            documentId: row.id,
-            documentName: name,
-            sizeBytes: bytes.length,
+          const row = await storeOrganizationDocument(deps, context.actor.userId, organizationId, {
+            name: input.name.trim(),
+            mimeType,
+            bytes,
+            botId: null,
+            referenceName: null,
+            signal: context.signal,
           });
           return {
             id: row.id,
@@ -179,7 +144,7 @@ export function cmsRoutes(ctx: RouterContext) {
           const organizationId = await requireOrgAdmin(deps.prisma, context.actor);
           const document = await runAsSystem("read an organization document", () =>
             deps.prisma.organizationDocument.findFirst({
-              where: { id: input.id, organizationId, status: "ready" },
+              where: { id: input.id, organizationId, botId: null, status: "ready" },
               select: { id: true, name: true },
             }),
           );
@@ -210,41 +175,230 @@ export function cmsRoutes(ctx: RouterContext) {
         }),
         delete: authed.cms.documents.delete.handler(async ({ context, input }) => {
           const organizationId = await requireOrgAdmin(deps.prisma, context.actor);
-          const row = await runAsSystem("delete an organization document", async () => {
-            const found = await deps.prisma.organizationDocument.findFirst({
-              where: { id: input.id, organizationId },
+          const found = await runAsSystem("read an organization document", () =>
+            deps.prisma.organizationDocument.findFirst({
+              where: { id: input.id, organizationId, botId: null },
               select: { id: true, name: true, artifactStorageId: true },
+            }),
+          );
+          if (!found) throw new ORPCError("NOT_FOUND");
+          await removeOrganizationDocuments(deps, organizationId, context.actor.userId, [found], {
+            signal: context.signal,
+          });
+          await audit(context.actor.userId, organizationId, "organization_document.deleted", {
+            documentId: found.id,
+            documentName: found.name,
+          });
+          return { ok: true as const };
+        }),
+      },
+      blueprints: {
+        list: authed.cms.blueprints.list.handler(async ({ context }) => {
+          const organizationId = await requireOrgAdmin(deps.prisma, context.actor);
+          const rows = await runAsSystem("list agent blueprints", () =>
+            deps.prisma.agentBlueprint.findMany({
+              where: { organizationId },
+              orderBy: { createdAt: "asc" },
+            }),
+          );
+          return rows.map(blueprintView);
+        }),
+        create: authed.cms.blueprints.create.handler(async ({ context, input }) => {
+          const organizationId = await requireOrgAdmin(deps.prisma, context.actor);
+          // The organization's default Space has the organization's id, as for its documents.
+          const row = await runAsSystem("create an agent blueprint", () =>
+            deps.prisma.agentBlueprint.create({
+              data: {
+                organizationId,
+                spaceId: organizationId,
+                createdByUserId: context.actor.userId,
+                name: input.name,
+                description: input.description,
+                instructions: input.instructions,
+                referenceNames: input.referenceNames,
+              },
+            }),
+          );
+          await audit(context.actor.userId, organizationId, "agent_blueprint.created", {
+            blueprintId: row.id,
+            name: row.name,
+          });
+          return blueprintView(row);
+        }),
+        update: authed.cms.blueprints.update.handler(async ({ context, input }) => {
+          const organizationId = await requireOrgAdmin(deps.prisma, context.actor);
+          const row = await runAsSystem("update an agent blueprint", async () => {
+            const found = await deps.prisma.agentBlueprint.findFirst({
+              where: { id: input.id, organizationId },
+              select: { id: true },
             });
             if (!found) return null;
-            await deps.prisma.$transaction([
-              deps.prisma.organizationDocumentChunk.deleteMany({ where: { documentId: found.id } }),
-              deps.prisma.organizationDocument.delete({ where: { id: found.id } }),
-            ]);
-            return found;
+            return deps.prisma.agentBlueprint.update({
+              where: { id: found.id },
+              data: {
+                name: input.name,
+                description: input.description,
+                instructions: input.instructions,
+                referenceNames: input.referenceNames,
+              },
+            });
           });
           if (!row) throw new ORPCError("NOT_FOUND");
-          if (row.artifactStorageId) {
-            await deps.artifacts
-              .remove(row.artifactStorageId, {
-                operationId: `cms-delete:${row.id}`,
-                traceId: `cms-delete:${row.id}`,
-                spaceId: organizationId,
-                userId: context.actor.userId,
-                signal: context.signal ?? new AbortController().signal,
-              })
-              .catch((error: unknown) => {
-                getLogger().error("organization document file removal", error);
-              });
-          }
-          await audit(context.actor.userId, organizationId, "organization_document.deleted", {
-            documentId: row.id,
-            documentName: row.name,
+          await audit(context.actor.userId, organizationId, "agent_blueprint.updated", {
+            blueprintId: row.id,
+            name: row.name,
+          });
+          return blueprintView(row);
+        }),
+        // Bots made from the blueprint keep their own text; they simply stop following it.
+        delete: authed.cms.blueprints.delete.handler(async ({ context, input }) => {
+          const organizationId = await requireOrgAdmin(deps.prisma, context.actor);
+          const found = await runAsSystem("delete an agent blueprint", async () => {
+            const row = await deps.prisma.agentBlueprint.findFirst({
+              where: { id: input.id, organizationId },
+              select: { id: true, name: true },
+            });
+            if (!row) return null;
+            await deps.prisma.agentBlueprint.delete({ where: { id: row.id } });
+            return row;
+          });
+          if (!found) throw new ORPCError("NOT_FOUND");
+          await audit(context.actor.userId, organizationId, "agent_blueprint.deleted", {
+            blueprintId: found.id,
+            name: found.name,
           });
           return { ok: true as const };
         }),
       },
     },
   };
+}
+
+type AgentBlueprintRow = {
+  id: string;
+  name: string;
+  description: string;
+  instructions: string;
+  referenceNames: string[];
+  updatedAt: Date;
+};
+
+export function blueprintView(row: AgentBlueprintRow) {
+  return {
+    id: row.id,
+    name: row.name,
+    description: row.description,
+    instructions: row.instructions,
+    referenceNames: row.referenceNames,
+    updatedAt: row.updatedAt.toISOString(),
+  };
+}
+
+/** Checks an upload's size and type, and returns the decoded bytes. Shared by every document upload. */
+export function decodeOrganizationDocument(
+  contentBase64: string,
+  mimeType: string,
+  maxBytes: number,
+): { bytes: Buffer; mimeType: OrganizationDocumentMimeType } {
+  // Check the encoded length before decoding, so an oversized upload is never held in memory.
+  if (contentBase64.length > Math.ceil(maxBytes / 3) * 4) {
+    throw new ORPCError("BAD_REQUEST", { message: "File is too large" });
+  }
+  const bytes = Buffer.from(contentBase64, "base64");
+  if (bytes.length === 0 || bytes.length > maxBytes) {
+    throw new ORPCError("BAD_REQUEST", { message: "File is too large" });
+  }
+  if (!DOCUMENT_MIME_TYPES.has(mimeType)) {
+    throw new ORPCError("BAD_REQUEST", { message: "Could not read this file" });
+  }
+  return { bytes, mimeType: mimeType as OrganizationDocumentMimeType };
+}
+
+/**
+ * Stores the original file, records the document as processing, and queues its indexing.
+ * Organization documents pass no bot; a bot's reference passes its bot and reference name.
+ */
+export async function storeOrganizationDocument(
+  deps: RouterContext["deps"],
+  userId: string,
+  organizationId: string,
+  input: {
+    name: string;
+    mimeType: OrganizationDocumentMimeType;
+    bytes: Buffer;
+    botId: string | null;
+    referenceName: string | null;
+    signal?: AbortSignal;
+  },
+) {
+  const { name, mimeType, bytes } = input;
+  const storeContext = {
+    operationId: `cms-upload:${organizationId}`,
+    traceId: `cms-upload:${organizationId}`,
+    spaceId: organizationId,
+    userId,
+    signal: input.signal ?? new AbortController().signal,
+  };
+  // The original file is kept so processing and attachments read the same bytes.
+  const stored = await deps.artifacts.put({ name, mimeType, bytes }, storeContext);
+  const row = await runAsSystem("store an organization document", () =>
+    deps.prisma.organizationDocument.create({
+      data: {
+        organizationId,
+        spaceId: organizationId,
+        name,
+        mimeType,
+        sizeBytes: bytes.length,
+        content: null,
+        status: "processing",
+        artifactStorageId: stored.id,
+        createdByUserId: userId,
+        botId: input.botId,
+        referenceName: input.referenceName,
+      },
+    }),
+  );
+  await deps.jobs.enqueue(organizationDocumentProcessJob(row.id)).catch((error: unknown) => {
+    getLogger().error("organization document job enqueue", error);
+  });
+  await audit(userId, organizationId, "organization_document.uploaded", {
+    documentId: row.id,
+    documentName: name,
+    sizeBytes: bytes.length,
+  });
+  return row;
+}
+
+/** Deletes documents with their chunks, then their stored files. A failed file removal is logged only. */
+export async function removeOrganizationDocuments(
+  deps: RouterContext["deps"],
+  organizationId: string,
+  userId: string,
+  rows: Array<{ id: string; artifactStorageId: string | null }>,
+  options: { signal?: AbortSignal } = {},
+): Promise<void> {
+  if (rows.length === 0) return;
+  const ids = rows.map((row) => row.id);
+  await runAsSystem("delete organization documents", () =>
+    deps.prisma.$transaction([
+      deps.prisma.organizationDocumentChunk.deleteMany({ where: { documentId: { in: ids } } }),
+      deps.prisma.organizationDocument.deleteMany({ where: { id: { in: ids } } }),
+    ]),
+  );
+  for (const row of rows) {
+    if (!row.artifactStorageId) continue;
+    await deps.artifacts
+      .remove(row.artifactStorageId, {
+        operationId: `cms-delete:${row.id}`,
+        traceId: `cms-delete:${row.id}`,
+        spaceId: organizationId,
+        userId,
+        signal: options.signal ?? new AbortController().signal,
+      })
+      .catch((error: unknown) => {
+        getLogger().error("organization document file removal", error);
+      });
+  }
 }
 
 /** Admin actions are audited by name and identifiers only; document content never enters the log. */
@@ -255,6 +409,9 @@ async function audit(
     | "organization_document.uploaded"
     | "organization_document.deleted"
     | "organization_document.announced"
+    | "agent_blueprint.created"
+    | "agent_blueprint.updated"
+    | "agent_blueprint.deleted"
     | "organization_policy.changed"
     | "organization_model_policy.changed"
     | "credential.created"

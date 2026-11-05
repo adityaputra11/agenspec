@@ -100,6 +100,7 @@ export async function processOrganizationDocument(
         spaceId: key.spaceId,
         documentId: row.id,
         organizationId: row.organizationId,
+        botId: row.botId,
         ordinal: section.ordinal,
         heading: section.heading,
         content: encryptText(key, location, section.content),
@@ -164,18 +165,31 @@ export interface CompanySearchResult {
   ref: string;
   documentId: string;
   documentName: string;
+  /** The blueprint slot the document fills, when it is a bot's reference document. */
+  referenceName?: string;
   heading: string;
   excerpt: string;
 }
 
 /**
+ * The documents a search, attach or availability check may read: the organization's own (botId
+ * NULL), plus one bot's reference documents when a bot asks. No bot ever reads another bot's.
+ */
+export function companyScope(
+  botId: string | undefined,
+): { botId: null } | { OR: Array<{ botId: string | null }> } {
+  return botId ? { OR: [{ botId: null }, { botId }] } : { botId: null };
+}
+
+/**
  * Searches the ready documents of one organization. Tokens come from every key version of the
  * default space, so older chunks stay findable after a rotation. Only documents of
- * `organizationId` are considered.
+ * `organizationId` are considered, and of those only the organization's own documents and, when
+ * `botId` is given, that bot's reference documents.
  */
 export async function searchCompanyDocuments(
   prisma: PrismaClient,
-  input: { organizationId: string; query: string; limit: number },
+  input: { organizationId: string; query: string; limit: number; botId?: string },
 ): Promise<CompanySearchResult[]> {
   const encryption = contentEncryptionOf(prisma);
   if (!encryption) return [];
@@ -184,22 +198,28 @@ export async function searchCompanyDocuments(
   if (queryTokens.length === 0) return [];
   return runAsSystem("search organization documents", async () => {
     const indexed = await prisma.organizationDocumentChunk.findMany({
-      where: { organizationId: input.organizationId, searchTokens: { hasSome: queryTokens } },
+      where: {
+        organizationId: input.organizationId,
+        searchTokens: { hasSome: queryTokens },
+        ...companyScope(input.botId),
+      },
       select: { id: true, documentId: true, ordinal: true, searchTokens: true },
       orderBy: { createdAt: "desc" },
       take: COMPANY_SEARCH_MAX_INDEX_ROWS,
     });
     const ranked = rankCompanyCandidates(indexed, queryTokens, COMPANY_SEARCH_MAX_CANDIDATES);
     if (ranked.length === 0) return [];
+    // Checked on the document too: chunks written before a document had a bot owner carry no botId.
     const documents = await prisma.organizationDocument.findMany({
       where: {
         id: { in: [...new Set(indexed.map((row) => row.documentId))] },
         organizationId: input.organizationId,
         status: "ready",
+        ...companyScope(input.botId),
       },
-      select: { id: true, name: true },
+      select: { id: true, name: true, referenceName: true },
     });
-    const names = new Map(documents.map((doc) => [doc.id, doc.name]));
+    const documentsById = new Map(documents.map((doc) => [doc.id, doc]));
     const rows = await prisma.organizationDocumentChunk.findMany({
       where: { id: { in: ranked.map((candidate) => candidate.id) } },
       select: { id: true, documentId: true, ordinal: true, heading: true, content: true },
@@ -208,8 +228,8 @@ export async function searchCompanyDocuments(
     const results: CompanySearchResult[] = [];
     for (const candidate of ranked) {
       const row = byId.get(candidate.id);
-      const documentName = row ? names.get(row.documentId) : undefined;
-      if (!row || documentName === undefined) continue;
+      const document = row ? documentsById.get(row.documentId) : undefined;
+      if (!row || !document) continue;
       const key = await encryption.ring.byId(ciphertextKeyId(row.content) ?? "");
       const text = decryptText(
         key,
@@ -224,7 +244,8 @@ export async function searchCompanyDocuments(
       results.push({
         ref: `${row.documentId}#${row.ordinal}`,
         documentId: row.documentId,
-        documentName,
+        documentName: document.name,
+        ...(document.referenceName ? { referenceName: document.referenceName } : {}),
         heading: row.heading,
         excerpt: text.slice(0, COMPANY_EXCERPT_MAX_CHARS),
       });
@@ -234,13 +255,19 @@ export async function searchCompanyDocuments(
   });
 }
 
-/** Whether the organization has at least one document ready to search. */
+/**
+ * Whether the organization has at least one document ready to search, counting a bot's own
+ * reference documents when `botId` is given.
+ */
 export async function organizationHasReadyDocuments(
   prisma: PrismaClient,
   organizationId: string,
+  botId?: string,
 ): Promise<boolean> {
   const count = await runAsSystem("check organization documents", () =>
-    prisma.organizationDocument.count({ where: { organizationId, status: "ready" } }),
+    prisma.organizationDocument.count({
+      where: { organizationId, status: "ready", ...companyScope(botId) },
+    }),
   );
   return count > 0;
 }
@@ -257,16 +284,20 @@ export async function organizationIdForSpace(
 }
 
 /**
- * Whether a Space's organization has at least one ready document to search or attach. A failed
- * check hides the company tools for the run instead of failing the run.
+ * Whether a Space's organization has at least one ready document to search or attach, or the
+ * running bot has one of its own. A failed check hides the company tools for the run instead of
+ * failing the run.
  */
 export async function organizationHasReadyDocumentsForSpace(
   prisma: PrismaClient,
   spaceId: string,
+  botId?: string,
 ): Promise<boolean> {
   try {
     const organizationId = await organizationIdForSpace(prisma, spaceId);
-    return organizationId ? await organizationHasReadyDocuments(prisma, organizationId) : false;
+    return organizationId
+      ? await organizationHasReadyDocuments(prisma, organizationId, botId)
+      : false;
   } catch (error) {
     getLogger().error("organization document availability", error, { "space.id": spaceId });
     return false;
@@ -279,11 +310,16 @@ export async function organizationHasReadyDocumentsForSpace(
  */
 export async function readyCompanyDocument(
   prisma: PrismaClient,
-  input: { organizationId: string; documentId: string },
+  input: { organizationId: string; documentId: string; botId?: string },
 ): Promise<{ id: string; name: string; mimeType: string; artifactStorageId: string } | null> {
   const row = await runAsSystem("read an organization document for a chat", () =>
     prisma.organizationDocument.findFirst({
-      where: { id: input.documentId, organizationId: input.organizationId, status: "ready" },
+      where: {
+        id: input.documentId,
+        organizationId: input.organizationId,
+        status: "ready",
+        ...companyScope(input.botId),
+      },
       select: { id: true, name: true, mimeType: true, artifactStorageId: true },
     }),
   );
@@ -295,4 +331,50 @@ export async function readyCompanyDocument(
         artifactStorageId: row.artifactStorageId,
       }
     : null;
+}
+
+/** A blueprint's instructions and, per named slot, the bot's latest reference document for it. */
+export interface BotBlueprint {
+  instructions: string;
+  references: Array<{ referenceName: string; document: { name: string; status: string } | null }>;
+}
+
+/**
+ * The blueprint a bot was made from, or null when it was deleted or belongs to another
+ * organization than the bot's Space. Only the bot's own reference documents are read.
+ */
+export async function blueprintForBot(
+  prisma: PrismaClient,
+  input: { spaceId: string; botId: string; blueprintId: string },
+): Promise<BotBlueprint | null> {
+  const [organizationId, documents] = await Promise.all([
+    organizationIdForSpace(prisma, input.spaceId),
+    runAsSystem("read a bot's reference documents", () =>
+      prisma.organizationDocument.findMany({
+        where: { botId: input.botId, referenceName: { not: null } },
+        orderBy: { createdAt: "desc" },
+        select: { referenceName: true, name: true, status: true },
+      }),
+    ),
+  ]);
+  if (!organizationId) return null;
+  const blueprint = await runAsSystem("read a bot's blueprint", () =>
+    prisma.agentBlueprint.findFirst({
+      where: { id: input.blueprintId, organizationId },
+      select: { instructions: true, referenceNames: true },
+    }),
+  );
+  if (!blueprint) return null;
+  const latest = new Map<string, { name: string; status: string }>();
+  for (const doc of documents) {
+    if (doc.referenceName && !latest.has(doc.referenceName))
+      latest.set(doc.referenceName, { name: doc.name, status: doc.status });
+  }
+  return {
+    instructions: blueprint.instructions,
+    references: blueprint.referenceNames.map((referenceName) => ({
+      referenceName,
+      document: latest.get(referenceName) ?? null,
+    })),
+  };
 }

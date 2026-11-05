@@ -9,7 +9,7 @@ import {
   CommandList,
   CommandSeparator,
 } from "@rakazo/ui-web";
-import { Info, Lock, Plus, Users } from "lucide-react";
+import { Info, LayoutTemplate, Lock, Plus, Users } from "lucide-react";
 import { useMemo, useState } from "react";
 import { IconTooltip } from "../../components/IconTooltip";
 
@@ -19,12 +19,15 @@ export function BotCreatePicker({
   onOpenBot,
   onCreateGroup,
   onCreateSpace,
+  onCreateFromBlueprint,
 }: {
   bots: Bot[];
   onCreateBot: () => void;
   onOpenBot: (botId: string) => void;
   onCreateGroup: () => void;
   onCreateSpace: () => void;
+  /** Present only when the organization has a blueprint to make a bot from. */
+  onCreateFromBlueprint?: () => void;
 }) {
   const { t } = useLingui();
   const [query, setQuery] = useState("");
@@ -85,6 +88,19 @@ export function BotCreatePicker({
               </span>
               <Trans>New group chat</Trans>
             </CommandItem>
+            {onCreateFromBlueprint ? (
+              <CommandItem
+                value="create-from-blueprint"
+                data-testid="create-from-blueprint"
+                onSelect={() => onCreateFromBlueprint()}
+                className="gap-2"
+              >
+                <span className="flex size-[22px] shrink-0 items-center justify-center">
+                  <LayoutTemplate size={16} strokeWidth={1.8} aria-hidden="true" />
+                </span>
+                <Trans>New from blueprint</Trans>
+              </CommandItem>
+            ) : null}
             <CommandItem
               value="create-space"
               data-testid="create-new-space"

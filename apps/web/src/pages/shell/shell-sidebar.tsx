@@ -58,6 +58,7 @@ export function ShellSidebar({
   setPanel,
   navigate,
   setNewSpaceOpen,
+  onCreateFromBlueprint,
   setCreateBotOpen,
   roster,
   archived,
@@ -87,6 +88,7 @@ export function ShellSidebar({
   setPanel: (panel: Panel) => void;
   navigate: (path: string) => void;
   setNewSpaceOpen: (open: boolean) => void;
+  onCreateFromBlueprint?: () => void;
   setCreateBotOpen: (open: boolean) => void;
   roster: ReactNode;
   archived: ReactNode;
@@ -175,6 +177,7 @@ export function ShellSidebar({
           setPanel={setPanel}
           navigate={navigate}
           setNewSpaceOpen={setNewSpaceOpen}
+          onCreateFromBlueprint={onCreateFromBlueprint}
           setCreateBotOpen={setCreateBotOpen}
         />
         {mini ||

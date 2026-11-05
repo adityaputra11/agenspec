@@ -127,7 +127,10 @@ import {
 } from "./model-selection.js";
 import { modelAcceptsImageInput } from "./model-vision.js";
 import { usesNativeShell } from "./native-shell.js";
-import { organizationHasReadyDocumentsForSpace } from "./organization-documents.js";
+import {
+  blueprintForBot,
+  organizationHasReadyDocumentsForSpace,
+} from "./organization-documents.js";
 import { organizationModelFor } from "./organization-model.js";
 import { paymentWalletConnected } from "./payment-wallets.js";
 import { isRetiredModelCredentialError } from "./pi-oauth.js";
@@ -148,6 +151,7 @@ import { restoreTurnCheckpointEffects, settleRunningHelpers } from "./run-contex
 import { APPROVED_EFFECT_REPLAY_ORDER, buildApprovalContinuation } from "./run-effects.js";
 import {
   BOT_DIRECTORY_LIMIT,
+  blueprintReferenceLine,
   dockerComputerToolInstruction,
   persistentComputerInstruction,
   runIdentityInstruction,
@@ -650,6 +654,23 @@ export function createRunExecutor(executorDeps: ExecutorDeps) {
           loadRunLoginRedactions(deps.prisma, deps.secretStore, run, run.id),
           loadRunCodeRedactions(deps.prisma, deps.secretStore, run, run.id),
         ]);
+        // A bot made from a blueprint runs its instructions first, then its own. Only such bots
+        // pay for the extra reads; a deleted blueprint or another organization's leaves a normal bot.
+        const blueprint = bot.blueprintId
+          ? await blueprintForBot(deps.prisma, {
+              spaceId: run.spaceId,
+              botId: bot.id,
+              blueprintId: bot.blueprintId,
+            })
+          : null;
+        const botInstructions = [
+          ...(blueprint
+            ? [blueprint.instructions, blueprintReferenceLine(blueprint.references)]
+            : []),
+          runIdentityInstruction(bot, run.trigger),
+        ]
+          .filter((part): part is string => Boolean(part))
+          .join("\n\n");
         // Team chat reaches people besides the owner, so their runs get a group channel's limits.
         const teamChatConversationId =
           run.trigger === "messaging" ? thread.externalConversationId : null;
@@ -1366,6 +1387,7 @@ export function createRunExecutor(executorDeps: ExecutorDeps) {
             companyDocumentsReady: await organizationHasReadyDocumentsForSpace(
               deps.prisma,
               run.spaceId,
+              bot.id,
             ),
             userComputerScreen,
           }),
@@ -1835,7 +1857,7 @@ export function createRunExecutor(executorDeps: ExecutorDeps) {
               // cache-aware context for connections declaring a cache window.
               contextStrategy: deps.contextStrategy,
               instructions: userTurnInstructions({
-                botInstructions: runIdentityInstruction(bot, run.trigger),
+                botInstructions,
                 groupContext,
                 messagingContext,
                 redactedMemoryContext: memoryContext

@@ -623,6 +623,10 @@ msgstr "הוספת מפתח גישה"
 msgid "Add provider"
 msgstr "הוספת ספק"
 
+#: src/pages/cms/blueprints-page.tsx
+msgid "Add reference"
+msgstr ""
+
 #: src/components/ApprovalRulesSettings.tsx
 msgid "Add rule"
 msgstr ""
@@ -1121,6 +1125,19 @@ msgstr "לחסום"
 msgid "Blocked"
 msgstr "חסום"
 
+#: src/pages/shell/blueprint-bot-dialog.tsx
+msgid "Blueprint"
+msgstr ""
+
+#: src/pages/cms/blueprints-page.tsx
+msgid "Blueprint actions"
+msgstr ""
+
+#: src/pages/cms/blueprints-page.tsx
+#: src/pages/CmsPage.tsx
+msgid "Blueprints"
+msgstr ""
+
 #: src/components/SidebarFooter.tsx
 #: src/pages/Board.tsx
 msgid "Board"
@@ -1260,6 +1277,7 @@ msgstr "לא ניתן לקרוא תמונות"
 #: src/components/vault/VaultItemDetail.tsx
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/Artifacts.tsx
+#: src/pages/cms/blueprints-page.tsx
 #: src/pages/cms/documents-page.tsx
 #: src/pages/cms/models-page.tsx
 #: src/pages/KnowledgeSection.tsx
@@ -1270,6 +1288,8 @@ msgstr "לא ניתן לקרוא תמונות"
 #: src/pages/OrganizationSettingsPanel.tsx
 #: src/pages/PaymentWalletSettingsPanel.tsx
 #: src/pages/PluginSubmissionsPanel.tsx
+#: src/pages/shell/blueprint-bot-dialog.tsx
+#: src/pages/shell/bot-references.tsx
 #: src/pages/shell/create-bot-dialog.tsx
 #: src/pages/shell/dialogs.tsx
 #: src/pages/SpaceSettingOverrides.tsx
@@ -2023,6 +2043,7 @@ msgid "Could not continue"
 msgstr "לא ניתן להמשיך"
 
 #: src/pages/shell/agent-import.tsx
+#: src/pages/shell/blueprint-bot-dialog.tsx
 #: src/pages/shell/create-bot-dialog.tsx
 msgid "Could not create bot"
 msgstr "לא ניתן ליצור את הבוט"
@@ -2042,6 +2063,10 @@ msgstr "לא ניתן ליצור את המרחב"
 #: src/pages/Onboarding.tsx
 msgid "Could not create your bot"
 msgstr "לא ניתן ליצור את הבוט"
+
+#: src/pages/cms/blueprints-page.tsx
+msgid "Could not delete blueprint"
+msgstr ""
 
 #: src/pages/shell/dialogs.tsx
 msgid "Could not delete bot"
@@ -2286,6 +2311,10 @@ msgstr ""
 msgid "Could not remove the credential"
 msgstr "לא ניתן להסיר את פרטי הגישה"
 
+#: src/pages/shell/bot-references.tsx
+msgid "Could not remove this file"
+msgstr ""
+
 #: src/pages/model-settings/providers-section.tsx
 #: src/pages/PluginsOverlay.tsx
 msgid "Could not rename connection"
@@ -2340,6 +2369,10 @@ msgstr ""
 #: src/components/ApprovalRulesSettings.tsx
 msgid "Could not save Auto Review"
 msgstr "לא ניתן לשמור את Auto Review"
+
+#: src/pages/cms/blueprints-page.tsx
+msgid "Could not save blueprint"
+msgstr ""
 
 #: src/components/ComputerProviderSettings.tsx
 msgid "Could not save computer settings"
@@ -2473,6 +2506,7 @@ msgid "Could not update the default memory scope"
 msgstr "לא ניתן לעדכן את היקף הזיכרון המוגדר כברירת מחדל"
 
 #: src/pages/cms/documents-page.tsx
+#: src/pages/shell/bot-references.tsx
 msgid "Could not upload this file"
 msgstr ""
 
@@ -2531,6 +2565,7 @@ msgstr ""
 #: src/components/CreateOrganizationDialog.tsx
 #: src/pages/Board.tsx
 #: src/pages/shell/agent-import.tsx
+#: src/pages/shell/blueprint-bot-dialog.tsx
 #: src/pages/shell/create-bot-dialog.tsx
 #: src/pages/shell/dialogs.tsx
 #: src/pages/shell/sidebar-header.tsx
@@ -2698,6 +2733,7 @@ msgstr "היקף ברירת מחדל"
 #: src/components/PasskeySettings.tsx
 #: src/pages/Artifacts.tsx
 #: src/pages/BotContextMenu.tsx
+#: src/pages/cms/blueprints-page.tsx
 #: src/pages/cms/documents-page.tsx
 #: src/pages/KnowledgeSection.tsx
 #: src/pages/McpServersOverlay.tsx
@@ -2759,6 +2795,10 @@ msgstr "מחיקת המקטע"
 msgid "Delete space"
 msgstr "מחיקת המרחב"
 
+#: src/pages/cms/blueprints-page.tsx
+msgid "Delete this blueprint?"
+msgstr ""
+
 #: src/pages/cms/documents-page.tsx
 msgid "Delete this document?"
 msgstr ""
@@ -2796,6 +2836,7 @@ msgid "Deployment default ({0})"
 msgstr ""
 
 #: src/pages/Board.tsx
+#: src/pages/cms/blueprints-page.tsx
 #: src/pages/shell/agent-import.tsx
 msgid "Description"
 msgstr "תיאור"
@@ -3006,9 +3047,14 @@ msgstr "ניתן להשתמש בכל שם פעם אחת בלבד."
 #: src/components/AskCard.tsx
 #: src/components/vault/VaultItemDetail.tsx
 #: src/pages/AccountSettingsOverlay.tsx
+#: src/pages/cms/blueprints-page.tsx
 #: src/pages/McpServersOverlay.tsx
 msgid "Edit"
 msgstr "עריכה"
+
+#: src/pages/cms/blueprints-page.tsx
+msgid "Edit blueprint"
+msgstr ""
 
 #: src/components/AskCard.tsx
 msgid "Edit first"
@@ -3233,6 +3279,7 @@ msgstr "נכשל"
 #: src/components/SubagentCard.tsx
 #: src/pages/ActivityList.tsx
 #: src/pages/cms/documents-page.tsx
+#: src/pages/shell/bot-references.tsx
 msgid "Failed"
 msgstr "נכשל"
 
@@ -3655,6 +3702,7 @@ msgstr "היסטוריית הנחיות"
 
 #: src/components/AskCard.tsx
 #: src/components/InstructionSettings.tsx
+#: src/pages/cms/blueprints-page.tsx
 #: src/pages/shell/agent-import.tsx
 msgid "Instructions"
 msgstr "הנחיות"
@@ -4179,6 +4227,10 @@ msgstr "דקות"
 msgid "Missed call"
 msgstr ""
 
+#: src/pages/shell/bot-references.tsx
+msgid "Missing"
+msgstr ""
+
 #: src/components/ApprovalRulesSettings.tsx
 msgid "Mode"
 msgstr "מצב"
@@ -4298,6 +4350,7 @@ msgstr ""
 #: src/components/vault/VaultItemEditor.tsx
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/Auth.tsx
+#: src/pages/cms/blueprints-page.tsx
 #: src/pages/GroupPanel.tsx
 #: src/pages/McpServersOverlay.tsx
 #: src/pages/model-settings/providers-section.tsx
@@ -4305,6 +4358,7 @@ msgstr ""
 #: src/pages/PluginsOverlay.tsx
 #: src/pages/RoutineEditor.tsx
 #: src/pages/shell/agent-import.tsx
+#: src/pages/shell/blueprint-bot-dialog.tsx
 #: src/pages/shell/bot-panel.tsx
 #: src/pages/shell/create-bot-dialog.tsx
 #: src/pages/shell/dialogs.tsx
@@ -4377,6 +4431,10 @@ msgstr ""
 msgid "New API key"
 msgstr ""
 
+#: src/pages/cms/blueprints-page.tsx
+msgid "New blueprint"
+msgstr ""
+
 #: src/pages/Shell.tsx
 #: src/pages/shell/bot-picker.tsx
 #: src/pages/shell/create-bot-dialog.tsx
@@ -4393,6 +4451,12 @@ msgstr ""
 
 #: src/components/VaultSettings.tsx
 msgid "New contact"
+msgstr ""
+
+#: src/pages/Shell.tsx
+#: src/pages/shell/blueprint-bot-dialog.tsx
+#: src/pages/shell/bot-picker.tsx
+msgid "New from blueprint"
 msgstr ""
 
 #: src/pages/GroupPanel.tsx
@@ -5112,6 +5176,7 @@ msgid "Private workspace with its own bots and groups."
 msgstr "סביבת עבודה פרטית עם בוטים וקבוצות משלה."
 
 #: src/pages/cms/documents-page.tsx
+#: src/pages/shell/bot-references.tsx
 msgid "Processing"
 msgstr ""
 
@@ -5176,6 +5241,7 @@ msgid "Read replies aloud"
 msgstr "הקראת תשובות בקול"
 
 #: src/pages/cms/documents-page.tsx
+#: src/pages/shell/bot-references.tsx
 #: src/pages/shell/import-status.ts
 msgid "Ready"
 msgstr "מוכן"
@@ -5291,6 +5357,23 @@ msgstr ""
 msgid "Redirect URI"
 msgstr "כתובת הפניה (Redirect URI)"
 
+#: src/pages/shell/bot-references.tsx
+msgid "Reference actions"
+msgstr ""
+
+#. placeholder {0}: index + 1
+#: src/pages/cms/blueprints-page.tsx
+msgid "Reference document {0}"
+msgstr ""
+
+#: src/pages/cms/blueprints-page.tsx
+msgid "Reference documents"
+msgstr ""
+
+#: src/pages/shell/bot-references.tsx
+msgid "References"
+msgstr ""
+
 #: src/App.tsx
 #: src/components/ErrorBoundary.tsx
 #: src/components/ModelCredits.tsx
@@ -5352,6 +5435,7 @@ msgstr "טעינה מחדש"
 #: src/pages/ModelRoleSettings.tsx
 #: src/pages/PluginsOverlay.tsx
 #: src/pages/ScratchpadSection.tsx
+#: src/pages/shell/bot-references.tsx
 msgid "Remove"
 msgstr "הסרה"
 
@@ -5402,6 +5486,11 @@ msgstr "הסרת header"
 msgid "Remove message trigger"
 msgstr "הסרת טריגר ההודעה"
 
+#. placeholder {0}: index + 1
+#: src/pages/cms/blueprints-page.tsx
+msgid "Remove reference document {0}"
+msgstr ""
+
 #: src/pages/RoutineEditor.tsx
 msgid "Remove schedule"
 msgstr "הסרת התזמון"
@@ -5413,6 +5502,10 @@ msgstr "הסרת המיומנות {0}"
 
 #: src/components/integrations/plugin-marketplace.tsx
 msgid "Remove skills"
+msgstr ""
+
+#: src/pages/shell/bot-references.tsx
+msgid "Remove this file?"
 msgstr ""
 
 #: src/pages/RoutineEditor.tsx
@@ -5447,6 +5540,10 @@ msgstr "מתחדש ב-{day}"
 #: src/pages/ScratchpadSection.tsx
 msgid "Reopen"
 msgstr "פתיחה מחדש"
+
+#: src/pages/shell/bot-references.tsx
+msgid "Replace"
+msgstr ""
 
 #: src/pages/model-settings/connection-controls.tsx
 msgid "Replace API key"
@@ -5697,6 +5794,7 @@ msgstr "שבת"
 #: src/pages/AccountSettingsOverlay.tsx
 #: src/pages/Board.tsx
 #: src/pages/cms/apps-page.tsx
+#: src/pages/cms/blueprints-page.tsx
 #: src/pages/cms/models-page.tsx
 #: src/pages/ExternalConversationSettings.tsx
 #: src/pages/GroupPanel.tsx
@@ -6466,6 +6564,10 @@ msgstr "בודק…"
 msgid "The bot can use the file but won't see the picture."
 msgstr "הבוט יוכל להשתמש בקובץ, אבל לא יראה את התמונה."
 
+#: src/pages/shell/bot-references.tsx
+msgid "The bot stops reading it."
+msgstr ""
+
 #: src/lib/dictation.ts
 msgid "The browser keeps dropping the microphone. Start dictation again to retry."
 msgstr ""
@@ -6589,6 +6691,7 @@ msgstr ""
 msgid "This can't be undone."
 msgstr "לא ניתן לבטל פעולה זו."
 
+#: src/pages/cms/blueprints-page.tsx
 #: src/pages/OrganizationSettingsPanel.tsx
 #: src/pages/shell/dialogs.tsx
 msgid "This cannot be undone."
@@ -6960,6 +7063,7 @@ msgstr ""
 #: src/components/integrations/skills-dialog.tsx
 #: src/pages/cms/documents-page.tsx
 #: src/pages/shell/avatar-studio-popover.tsx
+#: src/pages/shell/bot-references.tsx
 msgid "Upload"
 msgstr "העלאה"
 
@@ -6991,6 +7095,7 @@ msgid "Use a found model"
 msgstr "שימוש במודל שנמצא"
 
 #: src/pages/cms/documents-page.tsx
+#: src/pages/shell/bot-references.tsx
 msgid "Use a PDF, TXT or Markdown file"
 msgstr ""
 
@@ -7028,6 +7133,10 @@ msgstr ""
 
 #: src/pages/model-settings/space-bots-model.tsx
 msgid "Use space default"
+msgstr ""
+
+#: src/pages/cms/blueprints-page.tsx
+msgid "Use Spec template"
 msgstr ""
 
 #: src/pages/memory-providers/HonchoSettingsForm.tsx

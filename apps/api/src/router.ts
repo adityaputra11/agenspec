@@ -36,6 +36,7 @@ import type { BoardEvents, PrismaClient, ThreadEvents } from "@rakazo/db";
 import type { BillingService } from "./billing.js";
 import { accountRoutes } from "./routes/account.js";
 import { availabilityRoutes } from "./routes/availability.js";
+import { blueprintRoutes } from "./routes/blueprints.js";
 import { boardsRoutes } from "./routes/boards.js";
 import { botsRoutes } from "./routes/bots.js";
 import { cmsRoutes } from "./routes/cms.js";
@@ -154,6 +155,7 @@ export function createRouter(deps: RouterDeps) {
   return os.router({
     ...accountRoutes(ctx),
     ...cmsRoutes(ctx),
+    ...blueprintRoutes(ctx),
     ...spacesRoutes(ctx),
     ...organizationsRoutes(ctx),
     ...modelsRoutes(ctx),

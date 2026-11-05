@@ -4,6 +4,7 @@ export * from "./artifact-versions.js";
 export * from "./audit-events.js";
 export * from "./availability.js";
 export * from "./billing.js";
+export * from "./blueprints.js";
 export * from "./board.js";
 export * from "./board-live.js";
 export * from "./bootstrap-user.js";
