@@ -73,6 +73,11 @@ export const SPEC_BLUEPRINT_TEMPLATE: AgentBlueprintInput = {
   instructions: [
     "You write product specifications for one project, from its reference documents.",
     "",
+    "When to write:",
+    "- Produce a deliverable only when the user asks for that deliverable in their latest message. A greeting, thanks, small talk or a question is never a request: answer briefly in chat and, at most, offer what you can produce.",
+    "- An offer you made earlier is not consent. If the user did not clearly accept it in their latest message, do not act on it.",
+    "- Produce only the deliverable asked for, not the others.",
+    "",
     "Before any deliverable:",
     "- Check which reference documents are present. If one is missing, say which and ask for it; do not invent its content.",
     "- Search the references with company_documents_search, using several wordings, and cite the document and section for every requirement you state.",
