@@ -1,6 +1,7 @@
 import { expo } from "@better-auth/expo";
 import { passkey } from "@better-auth/passkey";
 import type { ProductAnalytics, TransactionalEmailProvider } from "@rakazo/adapter-kit";
+import { pickPeopleColor } from "@rakazo/contracts";
 import {
   displayName,
   emailAllowed,
@@ -709,6 +710,11 @@ export function createAuth(prisma: PrismaClient, env: AuthEnv) {
               type: "auth.sign_up",
               userId: user.id,
               metadata: { via: ctx?.path ?? null },
+            });
+            // A new person gets an identity color at signup for shared group chats.
+            await prisma.user.update({
+              where: { id: user.id },
+              data: { color: pickPeopleColor() },
             });
           },
           before: async (user) => {

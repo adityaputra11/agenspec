@@ -60,7 +60,7 @@ function message(id: string, text: string): ThreadMessage {
   };
 }
 
-function Host({ messages }: { messages: ThreadMessage[] }) {
+function Host({ messages, currentUserId }: { messages: ThreadMessage[]; currentUserId?: string }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const artifactTarget = useMemo(() => ({ botId: "bot" }), []);
   const none = useMemo(() => new Set<string>(), []);
@@ -73,6 +73,7 @@ function Host({ messages }: { messages: ThreadMessage[] }) {
   return (
     <Transcript
       rpc={rpc}
+      currentUserId={currentUserId}
       scrollRef={scrollRef}
       scrollRequest={null}
       onScrollRequestHandled={reply}
@@ -143,6 +144,20 @@ it.each([false, true])(
     }
   },
 );
+
+it("aligns your messages right and another person's left", () => {
+  const mine: ThreadMessage = { ...message("mine", "Siap."), role: "user" };
+  const theirs: ThreadMessage = {
+    ...message("theirs", "Cek tiket ya."),
+    role: "user",
+    sender: { userId: "rina", name: "Rina", color: "#DC2626" },
+  };
+  act(() => root.render(<Host messages={[mine, theirs]} currentUserId="me" />));
+  const frames = container.querySelectorAll('[data-testid="message-bubble-frame"]');
+  expect(frames).toHaveLength(2);
+  expect(frames[0]!.parentElement!.className).toContain("justify-end");
+  expect(frames[1]!.parentElement!.className).toContain("justify-start");
+});
 
 it("redraws a page card's reply only when a newer card supersedes it", () => {
   const card = (id: string, version: number): ThreadMessage => ({

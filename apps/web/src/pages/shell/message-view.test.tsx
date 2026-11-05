@@ -124,6 +124,29 @@ it("keeps a received peer marker off the user's side while user replies align to
   expect(container.querySelector(".items-end")?.textContent).toContain("Thanks.");
 });
 
+it("renders another person's message as a neutral bubble with their colored name", () => {
+  renderView("user", [{ kind: "text", text: "Cek tiket ya." }], {
+    isOwn: false,
+    senderName: "Rina",
+    senderColor: "#DC2626",
+  });
+  expect(container.querySelector('[data-testid="message-user-bubble"]')).toBeNull();
+  expect(container.querySelector('[data-testid="message-bot-bubble"]')?.textContent).toContain(
+    "Cek tiket ya.",
+  );
+  const name = [...container.querySelectorAll("div[dir]")].find(
+    (element) => element.textContent === "Rina",
+  )!;
+  expect(name.getAttribute("style")).toContain("rgb(220, 38, 38)");
+});
+
+it("keeps the viewer's own message in the user bubble", () => {
+  renderView("user", [{ kind: "text", text: "Siap." }], { isOwn: true });
+  expect(container.querySelector('[data-testid="message-user-bubble"]')?.textContent).toContain(
+    "Siap.",
+  );
+});
+
 it("names a new bot inline in the reply, in its color", () => {
   const { mention, onOpenBot } = renderMessage(
     [{ kind: "text", text: "Planner is ready." }],

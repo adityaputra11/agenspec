@@ -1,4 +1,5 @@
 import { createHmac } from "node:crypto";
+import { PEOPLE_COLORS } from "@rakazo/contracts";
 import { describe, expect, it, vi } from "vitest";
 import {
   authRateLimitOptions,
@@ -203,6 +204,28 @@ describe("stored account names", () => {
     expect(await hook({ name: " 李雷 " })).toMatchObject({ data: { name: "李雷" } });
     const result = await hook({ emailVerified: true });
     expect(result).toEqual({ data: { emailVerified: true } });
+  });
+});
+
+describe("signup identity color", () => {
+  it("assigns a palette color right after account creation", async () => {
+    const update = vi.fn();
+    const auth = createAuth({ user: { update } } as never, {
+      secret: "offline-auth-secret-at-least-32-characters",
+      baseURL: "https://api.example.test",
+      webOrigin: "https://app.example.test",
+      signupsEnabled: "true",
+      signupAllowlist: "",
+    });
+    await auth.options.databaseHooks!.user!.create!.after!(
+      { id: "user-1", createdAt: new Date() } as never,
+      undefined as never,
+    );
+    expect(update).toHaveBeenCalledExactlyOnceWith({
+      where: { id: "user-1" },
+      data: { color: expect.stringMatching(/^#[0-9A-Fa-f]{6}$/) },
+    });
+    expect(PEOPLE_COLORS).toContain(update.mock.calls[0]![0].data.color);
   });
 });
 

@@ -1,5 +1,5 @@
 import type { MessageBlock, ThreadMessage, ThreadMessagePage } from "@rakazo/contracts";
-import { MessageBlock as MessageBlockSchema } from "@rakazo/contracts";
+import { colorForUserId, MessageBlock as MessageBlockSchema } from "@rakazo/contracts";
 import {
   BACKGROUND_RUN_TRIGGERS,
   callIdFromClientNonce,
@@ -262,17 +262,22 @@ async function toThreadMessages(prisma: MessageDb, rows: MessageRow[]): Promise<
   if (senderIds.length === 0) return rows.map((row) => toThreadMessage(row));
   const users = await prisma.user.findMany({
     where: { id: { in: senderIds } },
-    select: { id: true, name: true },
+    select: { id: true, name: true, color: true },
   });
-  const nameById = new Map(users.map((user) => [user.id, user.name]));
-  return rows.map((row) =>
-    toThreadMessage(
+  const userById = new Map(users.map((user) => [user.id, user]));
+  return rows.map((row) => {
+    const user = row.senderUserId ? userById.get(row.senderUserId) : undefined;
+    return toThreadMessage(
       row,
       row.senderUserId
-        ? { userId: row.senderUserId, name: nameById.get(row.senderUserId) ?? "" }
+        ? {
+            userId: row.senderUserId,
+            name: user?.name ?? "",
+            color: user?.color ?? colorForUserId(row.senderUserId),
+          }
         : undefined,
-    ),
-  );
+    );
+  });
 }
 
 function toThreadMessage(
@@ -296,7 +301,7 @@ function toThreadMessage(
     clientNonce?: string | null;
     createdAt: Date;
   },
-  sender?: { userId: string; name: string },
+  sender?: { userId: string; name: string; color?: string },
 ): ThreadMessage {
   const parent = row.replyTo?.threadId === row.threadId ? row.replyTo : null;
   const parsed = parent ? MessageBlockSchema.array().safeParse(parent.blocks) : undefined;

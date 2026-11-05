@@ -11,6 +11,7 @@ import type {
   ThreadSnapshot,
 } from "@rakazo/contracts";
 import {
+  colorForUserId,
   GROUP_MEMBER_MIN,
   MessageBlock as MessageBlockSchema,
   resolveBotAvatarSet,
@@ -338,10 +339,17 @@ async function recordGroupSender(
   tx: Prisma.TransactionClient,
   actor: Actor,
   messageId: string,
-): Promise<{ userId: string; name: string }> {
+): Promise<{ userId: string; name: string; color: string }> {
   await tx.message.update({ where: { id: messageId }, data: { senderUserId: actor.userId } });
-  const user = await tx.user.findUnique({ where: { id: actor.userId }, select: { name: true } });
-  return { userId: actor.userId, name: user?.name ?? "" };
+  const user = await tx.user.findUnique({
+    where: { id: actor.userId },
+    select: { name: true, color: true },
+  });
+  return {
+    userId: actor.userId,
+    name: user?.name ?? "",
+    color: user?.color ?? colorForUserId(actor.userId),
+  };
 }
 
 /** A shared group's thread belongs to its owner; the target already proved this person may open it. */

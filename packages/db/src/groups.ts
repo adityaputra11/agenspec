@@ -1,5 +1,10 @@
 import type { Actor, Group, GroupMember, GroupPerson, SpaceGroup } from "@rakazo/contracts";
-import { GROUP_MEMBER_MAX, GROUP_MEMBER_MIN, resolveBotAvatarSet } from "@rakazo/contracts";
+import {
+  colorForUserId,
+  GROUP_MEMBER_MAX,
+  GROUP_MEMBER_MIN,
+  resolveBotAvatarSet,
+} from "@rakazo/contracts";
 import { displayName } from "@rakazo/core";
 import { cancelRunsInTransaction } from "./cancel-runs.js";
 import type { Prisma, PrismaClient } from "./client.js";
@@ -43,7 +48,7 @@ type GroupRecord = {
       runs: Array<{ status: string }>;
     };
   }>;
-  users?: Array<{ userId: string; user: { name: string; email: string } }>;
+  users?: Array<{ userId: string; user: { name: string; email: string; color: string | null } }>;
 };
 
 /** A people change the owner asked for that the group can't take; the route answers BAD_REQUEST. */
@@ -109,6 +114,7 @@ function mapGroup(group: GroupRecord): Group {
       userId: share.userId,
       name: share.user.name,
       email: share.user.email,
+      color: share.user.color ?? colorForUserId(share.userId),
     })),
   };
 }
@@ -183,7 +189,7 @@ function memberRowsInOrder(groupId: string, botIds: string[], base = Date.now())
 const groupMemberOrder = [{ createdAt: "asc" as const }, { botId: "asc" as const }];
 
 const groupUsersInclude = {
-  select: { userId: true, user: { select: { name: true, email: true } } },
+  select: { userId: true, user: { select: { name: true, email: true, color: true } } },
   orderBy: { createdAt: "asc" },
 } as const;
 
@@ -470,13 +476,14 @@ export function createGroupRepos(prisma: PrismaClient) {
       if (!group) throw new IsolationError();
       const members = await prisma.member.findMany({
         where: { organizationId: group.space.organizationId, userId: { not: actor.userId } },
-        select: { userId: true, user: { select: { name: true, email: true } } },
+        select: { userId: true, user: { select: { name: true, email: true, color: true } } },
         orderBy: [{ createdAt: "asc" }, { userId: "asc" }],
       });
       return members.map((member) => ({
         userId: member.userId,
         name: member.user.name,
         email: member.user.email,
+        color: member.user.color ?? colorForUserId(member.userId),
       }));
     },
 
