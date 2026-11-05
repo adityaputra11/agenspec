@@ -7,15 +7,22 @@ import {
 } from "./database-access.js";
 
 const sent = vi.hoisted(() => [] as string[]);
+const db = vi.hoisted(() => ({ loginExists: false, runtimeLogsIn: true }));
 vi.mock("pg", async (importActual) => ({
   ...(await importActual<typeof import("pg")>()),
   Client: class {
-    async connect() {}
+    constructor(private readonly options: { connectionString: string }) {}
+    async connect() {
+      if (this.options.connectionString.includes("rakazo_app:") && !db.runtimeLogsIn)
+        throw new Error("password authentication failed");
+    }
     async end() {}
     async query(sql: string) {
       sent.push(sql);
       if (sql.includes("current_user"))
         return { rowCount: 1, rows: [{ can: true, superuser: true }] };
+      if (sql.includes("rolsuper, rolbypassrls") && db.loginExists)
+        return { rowCount: 1, rows: [{ rolsuper: false, rolbypassrls: false }] };
       return sql.startsWith("SELECT 1") ? { rowCount: 1, rows: [{}] } : { rowCount: 0, rows: [] };
     }
   },
@@ -97,5 +104,28 @@ describe("provisionRuntimeRole", () => {
     const setPassword = sent.find((sql) => sql.includes("PASSWORD"));
     expect(setPassword).toMatch(/^CREATE ROLE "rakazo_app" LOGIN PASSWORD 'SCRAM-SHA-256\$4096:/);
     expect(sent.join("\n")).not.toContain("app-password");
+  });
+
+  it("leaves the password of a login that already logs in with it", async () => {
+    sent.length = 0;
+    db.loginExists = true;
+    db.runtimeLogsIn = true;
+    await provisionRuntimeRole(owner, runtime);
+    expect(sent.some((sql) => sql.includes("PASSWORD"))).toBe(false);
+    expect(sent).toContain(
+      'ALTER ROLE "rakazo_app" LOGIN  NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE NOREPLICATION',
+    );
+  });
+
+  it("resets the password of a login that cannot log in with it", async () => {
+    sent.length = 0;
+    db.loginExists = true;
+    db.runtimeLogsIn = false;
+    await provisionRuntimeRole(owner, runtime);
+    expect(sent.find((sql) => sql.includes("PASSWORD"))).toMatch(
+      /^ALTER ROLE "rakazo_app" LOGIN PASSWORD 'SCRAM-SHA-256/,
+    );
+    db.loginExists = false;
+    db.runtimeLogsIn = true;
   });
 });

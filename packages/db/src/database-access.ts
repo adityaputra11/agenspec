@@ -137,7 +137,11 @@ async function provisionWith(owner: Client, runtimeUrl: string): Promise<{ warni
     throw cannotChange();
   }
   const name = escapeIdentifier(login);
-  const secret = password ? `PASSWORD ${escapeLiteral(scramSha256Verifier(password))}` : "";
+  // A login that already accepts DATABASE_URL's password keeps it. Some managed Postgres take a
+  // password only in plain text and refuse the verifier, so it is sent only when it must change.
+  const keepsPassword = Boolean(role && password) && (await logsIn(runtimeUrl));
+  const secret =
+    password && !keepsPassword ? `PASSWORD ${escapeLiteral(scramSha256Verifier(password))}` : "";
   // Only a superuser may set SUPERUSER, BYPASSRLS or REPLICATION, even to false. A
   // CREATEROLE owner leaves them at their defaults (off), and a login that already has
   // one of them was returned above.
@@ -155,6 +159,16 @@ async function provisionWith(owner: Client, runtimeUrl: string): Promise<{ warni
     throw error;
   }
   return {};
+}
+
+async function logsIn(url: string): Promise<boolean> {
+  const client = new Client({ connectionString: url });
+  const connected = await client.connect().then(
+    () => true,
+    () => false,
+  );
+  await client.end().catch(() => undefined);
+  return connected;
 }
 
 const RUNTIME_LOGIN_FAILED_WARNING =
