@@ -3703,6 +3703,7 @@ msgstr "지침 기록"
 #: src/components/AskCard.tsx
 #: src/components/InstructionSettings.tsx
 #: src/pages/cms/blueprints-page.tsx
+#: src/pages/GroupPanel.tsx
 #: src/pages/shell/agent-import.tsx
 msgid "Instructions"
 msgstr "지침"
@@ -7297,6 +7298,10 @@ msgstr ""
 
 #: src/pages/shell/message-cards.tsx
 msgid "What do you want me on first?"
+msgstr ""
+
+#: src/pages/GroupPanel.tsx
+msgid "What every bot here should do"
 msgstr ""
 
 #: src/components/teach/TeachComputerOverlay.tsx

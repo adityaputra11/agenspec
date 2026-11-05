@@ -3703,6 +3703,7 @@ msgstr "指示の履歴"
 #: src/components/AskCard.tsx
 #: src/components/InstructionSettings.tsx
 #: src/pages/cms/blueprints-page.tsx
+#: src/pages/GroupPanel.tsx
 #: src/pages/shell/agent-import.tsx
 msgid "Instructions"
 msgstr "指示"
@@ -7298,6 +7299,10 @@ msgstr "Rakazoに最も手伝ってほしいことは何ですか？"
 #: src/pages/shell/message-cards.tsx
 msgid "What do you want me on first?"
 msgstr "まず何から取りかかりましょうか？"
+
+#: src/pages/GroupPanel.tsx
+msgid "What every bot here should do"
+msgstr ""
 
 #: src/components/teach/TeachComputerOverlay.tsx
 msgid "What result will you demonstrate?"

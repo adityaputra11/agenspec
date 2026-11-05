@@ -844,6 +844,8 @@ model ChatGroup {
   space      Space             @relation(fields: [spaceId], references: [id], onDelete: Cascade)
   userId     String
   name       String
+  /// What every bot in this group follows here, on top of its own instructions.
+  instructions String          @default("")
   pinned     Boolean           @default(false)
   sectionId  String?
   section    BotSection?       @relation(fields: [sectionId], references: [id], onDelete: SetNull)

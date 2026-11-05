@@ -241,6 +241,18 @@ export async function handoffToGroupBot(
   };
 }
 
+/**
+ * The user's instructions for one group chat. They apply only in this group, and where they
+ * conflict with the bot's own standing work, the group's instructions win here.
+ */
+export function groupInstructionsBlock(
+  instructions: string | null | undefined,
+): string | undefined {
+  const text = instructions?.trim();
+  if (!text) return undefined;
+  return `Group instructions from the user. Follow them in this group chat; where they conflict with your own instructions or standing routines, these win here:\n${text}`;
+}
+
 export async function loadGroupContext(
   prisma: PrismaClient,
   groupId: string,
@@ -259,11 +271,16 @@ export async function loadGroupContext(
     },
   });
   if (!group) return undefined;
-  return renderGroupMembersContext(
-    group.name,
-    group.members.map((member) => member.bot),
-    self,
-  );
+  return [
+    renderGroupMembersContext(
+      group.name,
+      group.members.map((member) => member.bot),
+      self,
+    ),
+    groupInstructionsBlock(group.instructions),
+  ]
+    .filter(Boolean)
+    .join("\n\n");
 }
 
 /** Only the current bot's active groups in the same owner/space are discoverable. */

@@ -104,7 +104,7 @@ function rerenderComposer(overrides: Partial<ComponentProps<typeof Composer>>) {
 
 it("offers the attach button only where the chat takes attachments", () => {
   const onAttachmentPick = vi.fn(() => true);
-  renderComposer(async () => {}, { onAttachmentPick });
+  renderComposer(async () => true, { onAttachmentPick });
   const attach = () => container?.querySelector('[aria-label="Attach file"]');
   expect(attach()).not.toBeNull();
   rerenderComposer({ attachmentsAllowed: false });

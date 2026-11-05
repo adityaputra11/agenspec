@@ -1,7 +1,11 @@
 import type { PrismaClient } from "@rakazo/db";
 import { RunHistoryWriteError } from "@rakazo/db";
 import { describe, expect, it, vi } from "vitest";
-import { handoffToGroupBot, loadBotGroupDirectory } from "./group-handoff.js";
+import {
+  groupInstructionsBlock,
+  handoffToGroupBot,
+  loadBotGroupDirectory,
+} from "./group-handoff.js";
 
 const run = {
   id: "run-a",
@@ -462,4 +466,14 @@ it("discovers only active groups the bot belongs to under the same owner and spa
       },
     }),
   );
+});
+
+describe("group instructions", () => {
+  it("adds the user's group instructions, and nothing when there are none", () => {
+    expect(groupInstructionsBlock("  ")).toBeUndefined();
+    expect(groupInstructionsBlock(undefined)).toBeUndefined();
+    const block = groupInstructionsBlock(" Just chat here; no daily reports. ");
+    expect(block).toContain("Just chat here; no daily reports.");
+    expect(block).toContain("these win here");
+  });
 });
