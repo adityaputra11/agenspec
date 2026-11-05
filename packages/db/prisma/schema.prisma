@@ -765,6 +765,8 @@ model Bot {
   modelId           String?
   thinkingLevel     String?
   disabledBuiltinTools String[] @default([])
+  /// Agent skill names this bot does not use; empty means every skill is available.
+  disabledSkills       String[] @default([])
   webhookSecretId   String?
   teamChatAmbientEnabled Boolean @default(false)
   teamChatRules          String  @default("")

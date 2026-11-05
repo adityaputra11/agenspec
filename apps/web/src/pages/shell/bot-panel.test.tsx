@@ -19,6 +19,7 @@ vi.mock("../../lib/rpc", () => {
       list: vi.fn().mockResolvedValue([]),
     },
     me: vi.fn().mockResolvedValue(null),
+    agentSkills: { list: vi.fn().mockResolvedValue([]) },
   };
   return {
     rpc,

@@ -7,6 +7,7 @@ import {
   skillDeleteFromTool,
   skillReadFromTool,
   skillUpdateFromTool,
+  withoutDisabledSkills,
 } from "./skill-tools.js";
 
 type Scope = { spaceId?: string; userId?: string; OR?: Array<{ spaceId?: string }> };
@@ -227,6 +228,27 @@ describe("skill tools", () => {
     const catalog = formatSkillsCatalogInstruction(records);
     expect(catalog).toContain("- Daily standup: Prepare standup notes");
     expect(catalog).toContain("skill_read");
+  });
+
+  it("leaves out the skills a bot turned off, by name and without regard to case", async () => {
+    await skillCreateFromTool(prisma as never, owner, {
+      name: "Daily standup",
+      description: "Prepare standup notes",
+      body: "steps",
+    });
+    const records = await listAgentSkillRecords(prisma as never, {
+      ...owner,
+      disabledSkills: ["daily STANDUP"],
+    });
+    expect(records.map((row) => row.name)).not.toContain("Daily standup");
+    expect(records.length).toBeGreaterThan(0);
+    const read = await skillReadFromTool(
+      prisma as never,
+      { ...owner, disabledSkills: ["Daily standup"] },
+      { name: "Daily standup" },
+    );
+    expect(read).toEqual({ error: "Skill not found." });
+    expect(withoutDisabledSkills([{ name: "A" }], undefined)).toEqual([{ name: "A" }]);
   });
 
   it("rejects update/delete for plugin and builtin skills", async () => {

@@ -6832,6 +6832,14 @@ msgstr "परीक्षण फिर से आज़माएँ।"
 msgid "Tuesday"
 msgstr "मंगलवार"
 
+#: src/pages/shell/bot-panel.tsx
+msgid "Turn off a skill"
+msgstr ""
+
+#: src/pages/shell/bot-panel.tsx
+msgid "Turn on {name}"
+msgstr ""
+
 #: src/components/vault/VaultItemDetail.tsx
 #: src/components/vault/VaultItemEditor.tsx
 msgid "Type"

@@ -16,6 +16,7 @@ vi.mock("../../lib/rpc", () => {
       list: vi.fn(async () => []),
     },
     me: vi.fn(async () => ({})),
+    agentSkills: { list: vi.fn(async () => []) },
   };
   return {
     rpc,
