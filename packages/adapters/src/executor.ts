@@ -1,4 +1,9 @@
-import type { AgentRunRequest, ComputerRef, SemanticMemoryProvider } from "@rakazo/adapter-kit";
+import type {
+  AgentRunRequest,
+  AgentRuntimeEvent,
+  ComputerRef,
+  SemanticMemoryProvider,
+} from "@rakazo/adapter-kit";
 import {
   DEFAULT_CONTEXT_STRATEGY,
   isModelCredentialRejected,
@@ -111,6 +116,15 @@ import {
   neutralizeSpeakerLabels,
   USER_SPEAKER,
 } from "./history-speakers.js";
+import type { LegalRunObservation } from "./legal-answer-cache.js";
+import {
+  isLegalBot,
+  legalCacheKeyFor,
+  lookupLegalAnswer,
+  observeLegalRun,
+  replayLegalAnswer,
+  storeLegalAnswer,
+} from "./legal-answer-cache.js";
 import { createMediaGenerationProvider } from "./media-generation-factory.js";
 import { loadAgentMemoryContext } from "./memory-context.js";
 import { HostedModelCreditsRequiredError } from "./model-credit-observer.js";
@@ -1323,7 +1337,14 @@ export function createRunExecutor(executorDeps: ExecutorDeps) {
           (run.trigger === "user" || run.trigger === "follow_up") && run.sourceMessageId
             ? await deps.prisma.message.findUnique({
                 where: { id: run.sourceMessageId },
-                select: { clientNonce: true, role: true, blocks: true, threadId: true },
+                select: {
+                  id: true,
+                  clientNonce: true,
+                  role: true,
+                  blocks: true,
+                  threadId: true,
+                  createdAt: true,
+                },
               })
             : null;
         // Calls carry no schema flag: the sending client encodes them in the clientNonce.
@@ -1827,210 +1848,246 @@ export function createRunExecutor(executorDeps: ExecutorDeps) {
           return true;
         };
 
+        // The Legal bot answers a standalone question it already answered for this organization,
+        // from the same documents, with that answer instead of a new model run.
+        const legalCache =
+          run.trigger === "user" && sourceMessage?.role === "user" && isLegalBot(bot)
+            ? await legalCacheKeyFor(deps.prisma, run, sourceMessage)
+            : null;
+        const cachedLegalAnswer = legalCache
+          ? await lookupLegalAnswer(deps.prisma, legalCache).catch((error: unknown) => {
+              getLogger().error("read a cached Legal answer", error);
+              return null;
+            })
+          : null;
+        const legalObservation: LegalRunObservation = {
+          searched: false,
+          documentIds: [],
+          finalText: "",
+        };
         try {
           if (checkpointLoadError) throw checkpointLoadError;
-          const runtimeEvents = deps.runtime.run(
-            {
-              botId: bot.id,
-              verbatimMcpServers,
-              threadId: thread.id,
-              runId,
-              routineId: run.routineId,
-              sourceMessageId: run.sourceMessageId,
-              onUsage: async (event) => {
-                await recordUsage(deps.prisma, event, {
-                  spaceId: run.spaceId,
-                  botId: bot.id,
-                  userId: run.userId,
-                  runId,
-                  parentRunId: runId,
-                  operationId: runId,
-                });
-              },
-              prompt,
-              ...(speakers &&
-              (run.trigger === "user" ||
-                (run.trigger === "follow_up" && sourceMessage?.role === "user"))
-                ? { promptSpeaker: USER_SPEAKER }
-                : {}),
-              // Keep an explicit executor override, but let the runtime select
-              // cache-aware context for connections declaring a cache window.
-              contextStrategy: deps.contextStrategy,
-              instructions: userTurnInstructions({
-                botInstructions,
-                groupContext,
-                messagingContext,
-                redactedMemoryContext: memoryContext
-                  ? redactSecrets(memoryContext, runSecrets)
-                  : undefined,
-                redactedScratchpadContext: scratchpadContext
-                  ? redactSecrets(scratchpadContext, runSecrets)
-                  : undefined,
-                redactedTicketContext: ticketContext
-                  ? redactSecrets(ticketContext, runSecrets)
-                  : undefined,
-                hasHistoricalContext: historicalContext.length > 0,
-                historyRetrievalEnabled: contextStrategy !== "current",
-                computerInstruction,
-                pageBrowserAllowed,
-                taskCatalogInstruction,
-                workspaceInstruction,
-                agentEnvironmentInstruction,
-                botDirectory,
-                pluginLine,
-                agentSkillsLine,
-                taughtSkillsLine,
-                replyGuidance: runReplyGuidance(run.trigger),
-                disabledBuiltinTools: isStrategicInitiativeRun(run)
-                  ? new Set(
-                      builtinAgentTools
-                        .map((tool) => tool.name)
-                        .filter((name) => !strategicBuiltins.some((tool) => tool.name === name)),
-                    )
-                  : disabledBuiltinTools,
-                offeredFleetTools: offeredFleetTools(strategicBuiltins),
-                followUpsOffered: followUpsOffered(strategicBuiltins, ownerStartedRun),
-                userComputer,
-              })
-                .filter((instruction): instruction is string => Boolean(instruction))
-                .join("\n\n"),
-              history: runtimeHistory,
-              currentTurnImages,
-              currentRunRequiresImageInput,
-              currentTurnImageFileFallback: Boolean(
-                currentTurnImages?.length &&
-                  currentTurnFiles.length &&
-                  !turnBlocks?.some(
-                    (block) => block.kind === "image" && block.imageHandling === "confirm",
-                  ),
-              ),
-              tools,
-              model: mainRunModel,
-              computerModel,
-              fallbackModels: fallbackModels.map(({ provider, modelId, credentialId }) => ({
-                provider,
-                id: modelId,
-                ...(credentialId ? { connectionId: credentialId } : {}),
-              })),
-              resolveFallbackModel:
-                checkpointModelResolver || fallbackModelKeys.size
-                  ? async (provider, modelId, connectionId) => {
-                      if (checkpointModelResolver?.has(provider, modelId, connectionId))
-                        return checkpointModelResolver(provider, modelId, connectionId);
-                      const key = fallbackKey(provider, modelId, connectionId);
-                      if (!fallbackModelKeys.has(key))
-                        throw new Error("Backup model is not selected");
-                      return resolveConnectedModel(
-                        { userId: run.userId, spaceId: run.spaceId },
-                        provider,
-                        modelId,
-                        (values) => runSecrets.push(...values),
-                        true,
-                        fallbackModels.find(
-                          (candidate) =>
-                            fallbackKey(
-                              candidate.provider,
-                              candidate.modelId,
-                              candidate.credentialId,
-                            ) === key,
-                        )?.thinkingLevel ?? null,
-                        connectionId,
-                      );
+          const liveEvents = (): AsyncIterable<AgentRuntimeEvent> =>
+            deps.runtime.run(
+              {
+                botId: bot.id,
+                verbatimMcpServers,
+                threadId: thread.id,
+                runId,
+                routineId: run.routineId,
+                sourceMessageId: run.sourceMessageId,
+                onUsage: async (event) => {
+                  await recordUsage(deps.prisma, event, {
+                    spaceId: run.spaceId,
+                    botId: bot.id,
+                    userId: run.userId,
+                    runId,
+                    parentRunId: runId,
+                    operationId: runId,
+                  });
+                },
+                prompt,
+                ...(speakers &&
+                (run.trigger === "user" ||
+                  (run.trigger === "follow_up" && sourceMessage?.role === "user"))
+                  ? { promptSpeaker: USER_SPEAKER }
+                  : {}),
+                // Keep an explicit executor override, but let the runtime select
+                // cache-aware context for connections declaring a cache window.
+                contextStrategy: deps.contextStrategy,
+                instructions: userTurnInstructions({
+                  botInstructions,
+                  groupContext,
+                  messagingContext,
+                  redactedMemoryContext: memoryContext
+                    ? redactSecrets(memoryContext, runSecrets)
+                    : undefined,
+                  redactedScratchpadContext: scratchpadContext
+                    ? redactSecrets(scratchpadContext, runSecrets)
+                    : undefined,
+                  redactedTicketContext: ticketContext
+                    ? redactSecrets(ticketContext, runSecrets)
+                    : undefined,
+                  hasHistoricalContext: historicalContext.length > 0,
+                  historyRetrievalEnabled: contextStrategy !== "current",
+                  computerInstruction,
+                  pageBrowserAllowed,
+                  taskCatalogInstruction,
+                  workspaceInstruction,
+                  agentEnvironmentInstruction,
+                  botDirectory,
+                  pluginLine,
+                  agentSkillsLine,
+                  taughtSkillsLine,
+                  replyGuidance: runReplyGuidance(run.trigger),
+                  disabledBuiltinTools: isStrategicInitiativeRun(run)
+                    ? new Set(
+                        builtinAgentTools
+                          .map((tool) => tool.name)
+                          .filter((name) => !strategicBuiltins.some((tool) => tool.name === name)),
+                      )
+                    : disabledBuiltinTools,
+                  offeredFleetTools: offeredFleetTools(strategicBuiltins),
+                  followUpsOffered: followUpsOffered(strategicBuiltins, ownerStartedRun),
+                  userComputer,
+                })
+                  .filter((instruction): instruction is string => Boolean(instruction))
+                  .join("\n\n"),
+                history: runtimeHistory,
+                currentTurnImages,
+                currentRunRequiresImageInput,
+                currentTurnImageFileFallback: Boolean(
+                  currentTurnImages?.length &&
+                    currentTurnFiles.length &&
+                    !turnBlocks?.some(
+                      (block) => block.kind === "image" && block.imageHandling === "confirm",
+                    ),
+                ),
+                tools,
+                model: mainRunModel,
+                computerModel,
+                fallbackModels: fallbackModels.map(({ provider, modelId, credentialId }) => ({
+                  provider,
+                  id: modelId,
+                  ...(credentialId ? { connectionId: credentialId } : {}),
+                })),
+                resolveFallbackModel:
+                  checkpointModelResolver || fallbackModelKeys.size
+                    ? async (provider, modelId, connectionId) => {
+                        if (checkpointModelResolver?.has(provider, modelId, connectionId))
+                          return checkpointModelResolver(provider, modelId, connectionId);
+                        const key = fallbackKey(provider, modelId, connectionId);
+                        if (!fallbackModelKeys.has(key))
+                          throw new Error("Backup model is not selected");
+                        return resolveConnectedModel(
+                          { userId: run.userId, spaceId: run.spaceId },
+                          provider,
+                          modelId,
+                          (values) => runSecrets.push(...values),
+                          true,
+                          fallbackModels.find(
+                            (candidate) =>
+                              fallbackKey(
+                                candidate.provider,
+                                candidate.modelId,
+                                candidate.credentialId,
+                              ) === key,
+                          )?.thinkingLevel ?? null,
+                          connectionId,
+                        );
+                      }
+                    : undefined,
+                onModelChange: async (provider, modelId, computerMode) => {
+                  const roleModel =
+                    [mainRunModel, computerModel].some(
+                      (model) => model?.provider === provider && model.id === modelId,
+                    ) || checkpointModelResolver?.hasModel(provider, modelId);
+                  if (!roleModel && !fallbackModelIds.has(fallbackKey(provider, modelId))) {
+                    throw new Error("Model is not selected");
+                  }
+                  // The run's model is what retries and pins rerun; computer mode is a detour from it.
+                  if (!computerMode) {
+                    const updated = await deps.prisma.run.updateMany({
+                      where: {
+                        id: runId,
+                        status: "running",
+                        leaseOwner: workerId,
+                        leaseFence: fence,
+                      },
+                      data: { modelProvider: provider, modelId },
+                    });
+                    if (updated.count !== 1) {
+                      throw new Error("Run lease was lost before the backup model could be used");
                     }
-                  : undefined,
-              onModelChange: async (provider, modelId, computerMode) => {
-                const roleModel =
-                  [mainRunModel, computerModel].some(
-                    (model) => model?.provider === provider && model.id === modelId,
-                  ) || checkpointModelResolver?.hasModel(provider, modelId);
-                if (!roleModel && !fallbackModelIds.has(fallbackKey(provider, modelId))) {
-                  throw new Error("Model is not selected");
-                }
-                // The run's model is what retries and pins rerun; computer mode is a detour from it.
-                if (!computerMode) {
-                  const updated = await deps.prisma.run.updateMany({
-                    where: {
-                      id: runId,
-                      status: "running",
+                  }
+                  activeModel["model.provider"] = provider;
+                  activeModel["model.id"] = modelId;
+                },
+                resumeFromCheckpoint: takeoverResume?.checkpoint,
+                turnCheckpoint,
+                onCheckpoint: async (capture, executionId) => {
+                  effects.pendingTurnCheckpoints.set(executionId, capture);
+                },
+                resumeToolResult: {
+                  content: [{ type: "text", text: takeoverResume?.promptNote ?? taskPrompt }],
+                },
+                script,
+                allowSilentEmpty: allowSilentEmptyRun,
+                emptyResponseText,
+                executeTool: scripted
+                  ? undefined
+                  : (name, args, executionId, route, observer) =>
+                      applyTool(ctx, name, args, executionId, route, observer),
+                resolveModel: scripted
+                  ? undefined
+                  : (provider, modelId) =>
+                      resolveConnectedModel(run, provider, modelId, (values) =>
+                        runSecrets.push(...values),
+                      ),
+                onToolCompleted: (completion) => {
+                  if (effects.restoredPending?.executionId === completion.executionId)
+                    effects.restoredPending = undefined;
+                  if (!completion.paused)
+                    effects.pendingTurnCheckpoints.delete(completion.executionId);
+                  const audited = appendToolCompletionAudit(
+                    deps,
+                    {
+                      spaceId: run.spaceId,
+                      threadId: thread.id,
+                      botId: bot.id,
+                      runId,
+                    },
+                    completion,
+                    runSecrets,
+                  );
+                  state.toolResults.set(
+                    completion.executionId,
+                    toolResultFingerprint(completion.result, completion.error),
+                  );
+                  return audited;
+                },
+                claimSteering: (seenIds) =>
+                  claimRunSteering(
+                    deps,
+                    {
+                      threadId: thread.id,
+                      botId: bot.id,
+                      runId,
                       leaseOwner: workerId,
                       leaseFence: fence,
                     },
-                    data: { modelProvider: provider, modelId },
-                  });
-                  if (updated.count !== 1) {
-                    throw new Error("Run lease was lost before the backup model could be used");
-                  }
-                }
-                activeModel["model.provider"] = provider;
-                activeModel["model.id"] = modelId;
+                    seenIds,
+                    context,
+                    pendingTurnFiles,
+                    {
+                      messageId: currentTurnMessage?.id,
+                      hasImages: Boolean(currentTurnImages?.length),
+                    },
+                  ),
               },
-              resumeFromCheckpoint: takeoverResume?.checkpoint,
-              turnCheckpoint,
-              onCheckpoint: async (capture, executionId) => {
-                effects.pendingTurnCheckpoints.set(executionId, capture);
-              },
-              resumeToolResult: {
-                content: [{ type: "text", text: takeoverResume?.promptNote ?? taskPrompt }],
-              },
-              script,
-              allowSilentEmpty: allowSilentEmptyRun,
-              emptyResponseText,
-              executeTool: scripted
-                ? undefined
-                : (name, args, executionId, route, observer) =>
-                    applyTool(ctx, name, args, executionId, route, observer),
-              resolveModel: scripted
-                ? undefined
-                : (provider, modelId) =>
-                    resolveConnectedModel(run, provider, modelId, (values) =>
-                      runSecrets.push(...values),
-                    ),
-              onToolCompleted: (completion) => {
-                if (effects.restoredPending?.executionId === completion.executionId)
-                  effects.restoredPending = undefined;
-                if (!completion.paused)
-                  effects.pendingTurnCheckpoints.delete(completion.executionId);
-                const audited = appendToolCompletionAudit(
-                  deps,
-                  {
-                    spaceId: run.spaceId,
-                    threadId: thread.id,
-                    botId: bot.id,
-                    runId,
-                  },
-                  completion,
-                  runSecrets,
-                );
-                state.toolResults.set(
-                  completion.executionId,
-                  toolResultFingerprint(completion.result, completion.error),
-                );
-                return audited;
-              },
-              claimSteering: (seenIds) =>
-                claimRunSteering(
-                  deps,
-                  {
-                    threadId: thread.id,
-                    botId: bot.id,
-                    runId,
-                    leaseOwner: workerId,
-                    leaseFence: fence,
-                  },
-                  seenIds,
-                  context,
-                  pendingTurnFiles,
-                  {
-                    messageId: currentTurnMessage?.id,
-                    hasImages: Boolean(currentTurnImages?.length),
-                  },
-                ),
-            },
-            context,
-          );
+              context,
+            );
+          const runtimeEvents = cachedLegalAnswer
+            ? replayLegalAnswer(runId, cachedLegalAnswer)
+            : legalCache
+              ? observeLegalRun(liveEvents(), legalObservation)
+              : liveEvents();
           if (await consumeRunEvents(ctx, runtimeEvents)) return;
           if (await interruptedByShutdown()) return;
           await completeRun(ctx);
+          // Only a completed answer to a standalone question, grounded in a document search, is kept.
+          if (legalCache?.standalone && !cachedLegalAnswer && legalObservation.searched) {
+            const finished = await deps.prisma.run.findUnique({
+              where: { id: runId },
+              select: { status: true },
+            });
+            if (finished?.status === "completed") {
+              await storeLegalAnswer(deps.prisma, legalCache, {
+                text: legalObservation.finalText,
+                documentIds: legalObservation.documentIds,
+              });
+            }
+          }
         } catch (caughtError) {
           if (await interruptedByShutdown()) return;
           await failRun(ctx, caughtError, {

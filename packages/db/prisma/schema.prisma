@@ -2486,3 +2486,26 @@ model OrganizationDocumentChunk {
   @@index([botId])
   @@map("organization_document_chunks")
 }
+
+/// A Legal bot answer reused for the same standalone question in one organization. The question is
+/// kept only as a keyed digest and the answer is encrypted with the organization's space key.
+model LegalAnswerCache {
+  id             String   @id @default(cuid())
+  organizationId String
+  /// The organization's default Space id: keys row-level security and the answer's encryption.
+  spaceId        String
+  /// Keyed digest of the normalized question.
+  questionKey    String
+  /// Digest of the organization's ready documents and the Legal instructions the answer came from.
+  version        String
+  answer         String
+  /// Organization documents the answer attached, attached again when it is reused.
+  documentIds    String[] @default([])
+  hitCount       Int      @default(0)
+  createdAt      DateTime @default(now())
+  expiresAt      DateTime
+
+  @@unique([organizationId, questionKey, version])
+  @@index([expiresAt])
+  @@map("legal_answer_cache")
+}

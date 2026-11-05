@@ -166,6 +166,14 @@ function token(hmacKey: Buffer, domain: SearchTokenDomain, term: string): number
   return createHmac("sha256", hmacKey).update(`${domain}\0${term}`).digest().readInt32BE(0);
 }
 
+/**
+ * A keyed digest of a whole text, for exact lookups (such as a repeated question) that must not
+ * store the text itself. Compare only digests made with the same key.
+ */
+export function exactDigest(key: DataKey, domain: string, text: string): string {
+  return createHmac("sha256", searchKey(key)).update(`exact:${domain}\0${text}`).digest("hex");
+}
+
 /** Word tokens for history text plus prefix tokens for every string in the value. */
 export function searchTokens(key: DataKey, input: { words: string; strings: string[] }): number[] {
   const hmacKey = searchKey(key);
