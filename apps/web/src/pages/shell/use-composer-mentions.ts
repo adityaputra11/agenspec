@@ -1,5 +1,12 @@
 import { useLingui } from "@lingui/react/macro";
-import type { Bot, Connection, ConnectionCatalogItem, Group, Routine } from "@rakazo/contracts";
+import type {
+  Bot,
+  Connection,
+  ConnectionCatalogItem,
+  Group,
+  GroupPerson,
+  Routine,
+} from "@rakazo/contracts";
 import {
   buildComposerMentionOptions,
   createRoutineMentionBatcher,
@@ -31,6 +38,8 @@ export function useComposerMentions({
   groups,
   inGroup,
   groupId,
+  groupPeople,
+  viewerUserId,
   integrationsOpen,
   initialBotsLoaded,
 }: {
@@ -40,6 +49,9 @@ export function useComposerMentions({
   groups: Group[];
   inGroup: boolean;
   groupId: string | undefined;
+  /** The open group's people (shared group chats only); the viewer is left out here. */
+  groupPeople: GroupPerson[];
+  viewerUserId: string | undefined;
   integrationsOpen: boolean;
   initialBotsLoaded: boolean;
 }) {
@@ -121,6 +133,9 @@ export function useComposerMentions({
           avatarSet: bot.avatarSet,
         })),
         groups: groups.map((group) => ({ id: group.id, name: group.name })),
+        people: (inGroup ? groupPeople : [])
+          .filter((person) => person.userId !== viewerUserId)
+          .map((person) => ({ userId: person.userId, name: person.name })),
         routines: mentionRoutines.map((routine) => ({
           id: routine.id,
           name: routine.name,
@@ -131,7 +146,17 @@ export function useComposerMentions({
         connectors: mentionConnectors,
         cronLabels: cronLabels(i18n.locale),
       }),
-    [bots, groupId, groups, i18n.locale, inGroup, mentionConnectors, mentionRoutines],
+    [
+      bots,
+      groupId,
+      groupPeople,
+      groups,
+      i18n.locale,
+      inGroup,
+      mentionConnectors,
+      mentionRoutines,
+      viewerUserId,
+    ],
   );
   return { composerMentionTargets, footerLogos, setFooterLogos };
 }

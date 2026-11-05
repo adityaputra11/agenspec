@@ -3,7 +3,14 @@ import type { CronLabels } from "./cron.js";
 import { ENGLISH_CRON_LABELS, formatCron } from "./cron.js";
 import { displayName } from "./display-name.js";
 
-export const COMPOSER_MENTION_KINDS = ["bot", "group", "routine", "connector", "everyone"] as const;
+export const COMPOSER_MENTION_KINDS = [
+  "bot",
+  "group",
+  "routine",
+  "connector",
+  "everyone",
+  "user",
+] as const;
 
 export type ComposerMentionKind = (typeof COMPOSER_MENTION_KINDS)[number];
 
@@ -33,6 +40,8 @@ export type MentionPickerBot = {
   avatarSet?: BotAvatarSet;
 };
 export type MentionPickerGroup = { id: string; name: string };
+/** A person sharing the open group chat; the viewer is left out by the caller. */
+export type MentionPickerPerson = { userId: string; name: string };
 export type MentionPickerRoutine = {
   id: string;
   name: string;
@@ -296,11 +305,16 @@ export function partitionComposerMentions(mentions: readonly ComposerMention[]) 
 /** Payload entries for `threads/send` mentions (legacy bare bot ids still accepted). */
 export function toThreadMentionPayload(
   mentions: readonly ComposerMention[],
-): Array<string | { kind: "bot" | "group" | "routine" | "connector"; id: string }> {
-  const payload: Array<string | { kind: "bot" | "group" | "routine" | "connector"; id: string }> =
-    [];
+): Array<string | { kind: "bot" | "group" | "routine" | "connector" | "user"; id: string }> {
+  const payload: Array<
+    string | { kind: "bot" | "group" | "routine" | "connector" | "user"; id: string }
+  > = [];
   for (const mention of mentions) {
     if (mention.kind === "everyone") continue;
+    if (mention.kind === "user") {
+      payload.push({ kind: "user", id: mention.id });
+      continue;
+    }
     if (mention.kind === "bot") {
       payload.push({ kind: "bot", id: mention.id });
       continue;
@@ -358,6 +372,8 @@ export function buildComposerMentionOptions(input: {
   query: string;
   bots: readonly MentionPickerBot[];
   groups: readonly MentionPickerGroup[];
+  /** Shared group chats only: the people in it, minus the viewer. */
+  people?: readonly MentionPickerPerson[];
   routines: readonly MentionPickerRoutine[];
   connectors: readonly MentionPickerConnector[];
   currentGroupId?: string | null;
@@ -405,6 +421,12 @@ export function buildComposerMentionOptions(input: {
       name,
       subtitle: "Group",
     });
+  }
+
+  for (const person of input.people ?? []) {
+    const name = displayName(person.name, "Person");
+    if (!matches(name)) continue;
+    options.push({ kind: "user", id: person.userId, name });
   }
 
   const routineNameCounts = new Map<string, number>();

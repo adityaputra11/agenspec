@@ -89,6 +89,7 @@ describe.skipIf(!enabled)("typed replies to waiting cards (PostgreSQL)", () => {
       groupName: group.name,
       members: [],
       memberBotIds: [botId, peerBotId],
+      shared: false,
     };
   });
   afterEach(async () => {

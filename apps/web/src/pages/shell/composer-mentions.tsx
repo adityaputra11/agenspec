@@ -32,6 +32,13 @@ export function MentionOptionIcon({ mention }: { mention: ComposerMention }) {
       </span>
     );
   }
+  if (mention.kind === "user") {
+    return (
+      <span className="grid h-4 w-4 shrink-0 place-items-center rounded-full bg-accent text-[9px] text-foreground/75">
+        {mention.name.charAt(0).toUpperCase()}
+      </span>
+    );
+  }
   if (mention.kind === "everyone") {
     return (
       <span className="grid h-4 w-4 shrink-0 place-items-center rounded-full bg-accent text-[9px] text-foreground/75">
@@ -55,6 +62,13 @@ function MentionCardIcon({ mention }: { mention: ComposerMention }) {
   }
   if (mention.kind === "connector") {
     return <Puzzle size={12} strokeWidth={1.7} className="text-muted-foreground/70" />;
+  }
+  if (mention.kind === "user") {
+    return (
+      <span className="grid size-3 place-items-center rounded-full bg-accent text-[9px] leading-none text-foreground/75">
+        {mention.name.charAt(0).toUpperCase()}
+      </span>
+    );
   }
   if (mention.kind === "group" || mention.kind === "everyone") {
     return (

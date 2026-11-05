@@ -54,6 +54,8 @@ function fixture(space: string) {
     groups: [],
     inGroup: false,
     groupId: undefined,
+    groupPeople: [],
+    viewerUserId: "me",
     integrationsOpen: false,
     initialBotsLoaded: true,
   } as unknown as Parameters<typeof useComposerMentions>[0];
@@ -136,4 +138,29 @@ it("keeps per-bot cache data and one-bot invalidation while batching the cold ro
   expect(queryClient.getQueryData(key("space-a", "bot-99"))).toEqual(rows("bot-99", "space-a"));
   expect(other.batch).toHaveBeenCalledTimes(1);
   act(() => root.unmount());
+});
+
+it("offers the group's people in a shared group chat, minus the viewer, and none in a bot chat", async () => {
+  vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
+  const f = fixture("space-a");
+  const root = createRoot(document.createElement("div"));
+  const render = (props: Parameters<typeof useComposerMentions>[0]) =>
+    act(async () =>
+      root.render(
+        createElement(
+          QueryClientProvider,
+          { client: queryClient },
+          createElement(Probe, { props }),
+        ),
+      ),
+    );
+  const people = [
+    { userId: "me", name: "Me" },
+    { userId: "sam", name: "Sam" },
+  ];
+  await render({ ...f.props, inGroup: true, groupId: "g1", groupPeople: people });
+  const inGroup = latest.composerMentionTargets.filter((target) => target.kind === "user");
+  expect(inGroup).toEqual([expect.objectContaining({ id: "sam", name: "Sam" })]);
+  await render({ ...f.props, inGroup: false, groupPeople: people });
+  expect(latest.composerMentionTargets.some((target) => target.kind === "user")).toBe(false);
 });

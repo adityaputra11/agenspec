@@ -167,6 +167,7 @@ it("updates an accessible group thread and emits its normal update event", async
         name: "Team",
         thread: { id: "group-thread" },
         members: ["bot", "peer"].map((id) => ({ bot: { id, name: id, runs: [] } })),
+        users: [],
       })),
     },
   });

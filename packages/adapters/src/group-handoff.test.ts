@@ -5,6 +5,7 @@ import {
   groupInstructionsBlock,
   handoffToGroupBot,
   loadBotGroupDirectory,
+  loadGroupContext,
 } from "./group-handoff.js";
 
 const run = {
@@ -475,5 +476,32 @@ describe("group instructions", () => {
     const block = groupInstructionsBlock(" Just chat here; no daily reports. ");
     expect(block).toContain("Just chat here; no daily reports.");
     expect(block).toContain("these win here");
+  });
+});
+
+describe("group people context", () => {
+  function fakePrisma(users: Array<{ user: { name: string } }>) {
+    return {
+      chatGroup: {
+        findUnique: vi.fn(async () => ({
+          name: "Ops",
+          userId: "owner-1",
+          instructions: "",
+          members: [{ bot: { id: "b_1", name: "Anya", description: "" } }],
+          users,
+        })),
+      },
+      user: { findUnique: vi.fn(async () => ({ name: "Owen" })) },
+    } as unknown as PrismaClient;
+  }
+
+  it("names the owner and shared people to a bot, and omits the block when not shared", async () => {
+    const shared = await loadGroupContext(fakePrisma([{ user: { name: "Sam" } }]), "g1", {
+      id: "b_1",
+      name: "Anya",
+    });
+    expect(shared).toContain("- Owen\n- Sam");
+    const alone = await loadGroupContext(fakePrisma([]), "g1", { id: "b_1", name: "Anya" });
+    expect(alone).not.toContain("group_people");
   });
 });

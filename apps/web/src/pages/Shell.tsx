@@ -582,6 +582,8 @@ function SpaceShell() {
     groups,
     inGroup,
     groupId,
+    groupPeople: inGroup ? (activeGroup?.people ?? []) : [],
+    viewerUserId: userId,
     integrationsOpen: overlay?.kind === "integrations",
     initialBotsLoaded,
   });

@@ -114,6 +114,33 @@ describe("buildComposerMentionOptions", () => {
   });
 });
 
+describe("person mentions", () => {
+  it("offers the people of a shared group and sends them as user targets", () => {
+    const options = buildComposerMentionOptions({
+      query: "",
+      bots: [{ id: "b1", name: "Chief" }],
+      groups: [],
+      people: [{ userId: "sam", name: "Sam" }],
+      routines: [],
+      connectors: [],
+    });
+    const person = options.find((option) => option.kind === "user");
+    expect(person).toMatchObject({ id: "sam", name: "Sam" });
+    expect(toThreadMentionPayload([person!])).toEqual([{ kind: "user", id: "sam" }]);
+  });
+
+  it("offers no people in a direct bot chat", () => {
+    const options = buildComposerMentionOptions({
+      query: "",
+      bots: [{ id: "b1", name: "Chief" }],
+      groups: [],
+      routines: [],
+      connectors: [],
+    });
+    expect(options.some((option) => option.kind === "user")).toBe(false);
+  });
+});
+
 describe("resolveComposerSendPlan", () => {
   it("opens a chip-only @Group from a 1:1 without sending", () => {
     const plan = resolveComposerSendPlan({
