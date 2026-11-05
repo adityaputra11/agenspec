@@ -102,6 +102,23 @@ function rerenderComposer(overrides: Partial<ComponentProps<typeof Composer>>) {
   act(() => root?.render(<Composer {...composerProps} />));
 }
 
+it("offers the attach button only where the chat takes attachments", () => {
+  const onAttachmentPick = vi.fn(() => true);
+  renderComposer(async () => {}, { onAttachmentPick });
+  const attach = () => container?.querySelector('[aria-label="Attach file"]');
+  expect(attach()).not.toBeNull();
+  rerenderComposer({ attachmentsAllowed: false });
+  expect(attach()).toBeNull();
+  const files = [new File(["x"], "note.txt", { type: "text/plain" })];
+  const fieldset = container?.querySelector("fieldset");
+  const drop = new Event("drop", { bubbles: true, cancelable: true });
+  Object.defineProperty(drop, "dataTransfer", { value: { types: ["Files"], files } });
+  act(() => {
+    fieldset?.dispatchEvent(drop);
+  });
+  expect(onAttachmentPick).not.toHaveBeenCalled();
+});
+
 it("shows a readable run error with raw details, while preserving send errors", () => {
   const runError = '429: {"message":"Too many requests","metadata":{"provider":"OpenRouter"}}';
   renderComposer(async () => true, { runError, runErrorId: "failed-run" });

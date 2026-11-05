@@ -99,7 +99,10 @@ const ComposerBody = memo(function Composer({
   draftKey,
   enterToSend,
   docked = false,
+  attachmentsAllowed = true,
 }: {
+  /** False for a chat that takes text only: no attach button, and dropped or pasted files are ignored. */
+  attachmentsAllowed?: boolean;
   activeName?: string;
   running: boolean;
   disabled?: boolean;
@@ -316,7 +319,7 @@ const ComposerBody = memo(function Composer({
   }, []);
 
   function pickAttachments(files: FileList | readonly File[] | null) {
-    if (!files?.length) return;
+    if (!attachmentsAllowed || !files?.length) return;
     if (onAttachmentPick(files)) markEdited();
   }
 
@@ -487,7 +490,7 @@ const ComposerBody = memo(function Composer({
     const dataTransfer = event.dataTransfer;
     if (!isFileDrag(dataTransfer)) return;
     event.preventDefault();
-    if (disabled) {
+    if (disabled || !attachmentsAllowed) {
       dragDepth.current = 0;
       setDraggingFiles(false);
       return;
@@ -500,8 +503,9 @@ const ComposerBody = memo(function Composer({
     const dataTransfer = event.dataTransfer;
     if (!isFileDrag(dataTransfer)) return;
     event.preventDefault();
-    dataTransfer.dropEffect = disabled ? "none" : "copy";
-    if (disabled) {
+    const blocked = disabled || !attachmentsAllowed;
+    dataTransfer.dropEffect = blocked ? "none" : "copy";
+    if (blocked) {
       dragDepth.current = 0;
       setDraggingFiles(false);
       return;
@@ -532,7 +536,7 @@ const ComposerBody = memo(function Composer({
   function handlePaste(event: ClipboardEvent<HTMLTextAreaElement>) {
     const clipboardData = event.clipboardData;
     // Only intercept real FileList pastes; leave text-only / empty-files native.
-    if (disabled || !clipboardData || !isFilePaste(clipboardData)) return;
+    if (disabled || !attachmentsAllowed || !clipboardData || !isFilePaste(clipboardData)) return;
     event.preventDefault();
     pickAttachments(clipboardData.files);
     const text = clipboardData.getData("text/plain");
@@ -778,19 +782,21 @@ const ComposerBody = memo(function Composer({
           className="hidden"
           onChange={(event) => pickAttachments(event.target.files)}
         />
-        <Button
-          ref={attachButtonRef}
-          variant="ghost"
-          size="icon"
-          aria-label={t`Attach file`}
-          disabled={disabled}
-          onClick={() => fileInputRef.current?.click()}
-          className={`col-start-1 size-8 shrink-0 rounded-full border border-border bg-muted text-muted-foreground transition-colors hover:bg-accent hover:text-foreground ${
-            expanded ? "row-start-2" : ""
-          }`}
-        >
-          <Plus size={16} strokeWidth={2} />
-        </Button>
+        {attachmentsAllowed ? (
+          <Button
+            ref={attachButtonRef}
+            variant="ghost"
+            size="icon"
+            aria-label={t`Attach file`}
+            disabled={disabled}
+            onClick={() => fileInputRef.current?.click()}
+            className={`col-start-1 size-8 shrink-0 rounded-full border border-border bg-muted text-muted-foreground transition-colors hover:bg-accent hover:text-foreground ${
+              expanded ? "row-start-2" : ""
+            }`}
+          >
+            <Plus size={16} strokeWidth={2} />
+          </Button>
+        ) : null}
         <div
           ref={composerFieldRef}
           data-testid="composer-field"
