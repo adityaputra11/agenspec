@@ -6084,6 +6084,11 @@ msgstr "Sunucu URL'si"
 msgid "Settings"
 msgstr "Ayarlar"
 
+#. placeholder {0}: group.spaceName
+#: src/pages/shell/sidebar-roster.tsx
+msgid "Settings for {0}"
+msgstr ""
+
 #: src/components/AskCard.tsx
 msgid "Settings updated"
 msgstr "Ayarlar güncellendi"
