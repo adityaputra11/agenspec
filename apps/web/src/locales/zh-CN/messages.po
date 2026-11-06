@@ -6084,6 +6084,11 @@ msgstr "服务器 URL"
 msgid "Settings"
 msgstr "设置"
 
+#. placeholder {0}: group.spaceName
+#: src/pages/shell/sidebar-roster.tsx
+msgid "Settings for {0}"
+msgstr ""
+
 #: src/components/AskCard.tsx
 msgid "Settings updated"
 msgstr "设置已更新"

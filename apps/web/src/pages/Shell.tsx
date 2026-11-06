@@ -1010,7 +1010,12 @@ function SpaceShell() {
             applyRosterDrop={rosterDrop.applyRosterDrop}
             openSpaceChat={openSpaceChat}
             spaceMenuAnchor={dialogs.spaceMenuAnchor}
-            setSpaceMenu={dialogs.setSpaceMenu}
+            // A space whose only action is Settings opens them directly instead of a one-item menu.
+            setSpaceMenu={(menu) =>
+              spaces.find((space) => space.id === menu.id)?.canDelete
+                ? dialogs.setSpaceMenu(menu)
+                : openSpaceSettings(menu.id)
+            }
             setRenameSectionTarget={dialogs.setRenameSectionTarget}
             setDeleteSectionTarget={dialogs.setDeleteSectionTarget}
             toggleSidebarSection={toggleSidebarSection}

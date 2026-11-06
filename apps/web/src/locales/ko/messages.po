@@ -6084,6 +6084,11 @@ msgstr "서버 URL"
 msgid "Settings"
 msgstr "설정"
 
+#. placeholder {0}: group.spaceName
+#: src/pages/shell/sidebar-roster.tsx
+msgid "Settings for {0}"
+msgstr ""
+
 #: src/components/AskCard.tsx
 msgid "Settings updated"
 msgstr "설정이 업데이트됨"

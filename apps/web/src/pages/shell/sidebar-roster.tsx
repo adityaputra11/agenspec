@@ -14,7 +14,15 @@ import {
   ContextMenuTrigger,
   GroupAvatar,
 } from "@rakazo/ui-web";
-import { ChevronDown, CircleAlert, Lock, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import {
+  ChevronDown,
+  CircleAlert,
+  Lock,
+  MoreHorizontal,
+  Pencil,
+  Settings,
+  Trash2,
+} from "lucide-react";
 import type { Dispatch, ReactNode, RefObject, SetStateAction } from "react";
 import { Suspense } from "react";
 import { IconTooltip } from "../../components/IconTooltip";
@@ -244,7 +252,11 @@ export function SidebarRoster({
                         ? `col-start-1 row-start-1 justify-self-end self-center ${group.emptySpaceId ? "" : "me-6"}`
                         : undefined
                     }
-                    aria-label={t`Actions for ${group.spaceName}`}
+                    aria-label={
+                      group.canDeleteSpace
+                        ? t`Actions for ${group.spaceName}`
+                        : t`Settings for ${group.spaceName}`
+                    }
                     onClick={(event) => {
                       const rect = event.currentTarget.getBoundingClientRect();
                       spaceMenuAnchor.current = event.currentTarget;
@@ -254,7 +266,11 @@ export function SidebarRoster({
                       });
                     }}
                   >
-                    <MoreHorizontal size={14} aria-hidden="true" />
+                    {group.canDeleteSpace ? (
+                      <MoreHorizontal size={14} aria-hidden="true" />
+                    ) : (
+                      <Settings size={14} aria-hidden="true" />
+                    )}
                   </Button>
                 ) : null}
               </div>
